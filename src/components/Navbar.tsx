@@ -16,6 +16,9 @@ function Navbar() {
         <Link to="/denuncias">Denuncias</Link>
         <Link to="/concesiones">Concesiones</Link>
         <Link to="/uso-precario">Uso Precario</Link>
+        <Link to="/Panel-Citas">Tabla Citas</Link>
+        <Link to="/Panel-Denuncias">Tabla Denuncias</Link>
+
       </div>
       <div className="navbar__search">
       <button type="button"><Link to="/login">Iniciar Sesion</Link></button>
