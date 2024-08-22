@@ -1,0 +1,73 @@
+.form-container {
+    width: 60%;
+    margin: 0 auto;
+    border: 1px solid #000;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    margin-top: 55px;
+}
+
+h2, h3 {
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+h3 {
+    margin-top: 10px;
+    text-decoration: underline;
+}
+
+p {
+    text-align: center;
+    font-weight: bold;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group textarea {
+    width: 100%;
+    padding: 5px;
+    margin-top: 5px;
+    box-sizing: border-box;
+}
+
+.form-group input[type="radio"] {
+    margin-right: 10px;
+}
+
+textarea {
+    height: 60px;
+    resize: none;
+}
+.form-group input[type="file"] {
+    padding: 5px;
+    margin-top: 5px;
+    width: 100%;
+}
+
+.form-group button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+.form-group button:hover {
+    background-color: #45a049;
+}
