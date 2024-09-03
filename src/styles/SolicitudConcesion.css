@@ -1,0 +1,65 @@
+/* FormularioDocumentos.css */
+
+.container {
+    padding: 20px;
+    margin-top: 20px;
+  }
+  
+  .form-container {
+    margin-top: 20px;
+  }
+  
+  .form-title {
+    margin-bottom: 10px;
+  }
+  
+  .form-subtitle {
+    margin-bottom: 20px;
+  }
+  
+  .pdf-download {
+    margin-bottom: 20px;
+  }
+  
+  .form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgb(82, 80, 214);
+  }
+  
+  .form-field {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-label {
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+  
+  .form-input {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+  
+  .submit-button {
+    padding: 12px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 12px;
+  }
+  

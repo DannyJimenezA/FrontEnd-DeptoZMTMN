@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import PanelCitas from './pages/PanelesAdministrativos/PanelCitas';
 import PanelDenuncia from './pages/PanelesAdministrativos/PanelDenuncia';
+import PanelSolicitudConcesion from "./pages/PanelesAdministrativos/PanelSolicitudConcesion";
 
 
 function App () {
@@ -28,6 +29,7 @@ function App () {
         <Route path="/register" element={<Register />} />
        <Route path="/Panel-Citas" element={<PanelCitas/>}/>
        <Route path= "/Panel-Denuncias" element={<PanelDenuncia/>}/>
+       <Route path= "/Panel-Solicitud-Concesion" element={<PanelSolicitudConcesion/>}/>
 
       </Routes>
     </Router>
