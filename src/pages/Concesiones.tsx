@@ -1,5 +1,6 @@
 import "../styles/SolicitudConcesion.css"
 import { useForm } from "react-hook-form";
+//import {}from "../assets/PROYECTOS_2024_CE.pdf"
 function  Concesiones () {
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
   
@@ -15,7 +16,7 @@ function  Concesiones () {
 
     {/* Apartado para descargar un PDF */}
     <div className="pdf-download">
-      <a href="ruta/a/tu/documento.pdf" download>
+      <a href="../assets/PROYECTOS_2024_CE.pdf" download>
         Descargar PDF
       </a>
     </div>
