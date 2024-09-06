@@ -16,7 +16,7 @@ function  Concesiones () {
 
     {/* Apartado para descargar un PDF */}
     <div className="pdf-download">
-      <a href="../assets/PROYECTOS_2024_CE.pdf" download>
+      <a href="/assets/SolicitudConcesion.pdf" download>
         Descargar PDF
       </a>
     </div>
