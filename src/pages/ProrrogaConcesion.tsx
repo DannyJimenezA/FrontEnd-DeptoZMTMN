@@ -16,7 +16,7 @@ function ProrrogaConcesion() {
 
       {/* Apartado para descargar un PDF relacionado con la prórroga */}
       <div className="pdf-download">
-        <a href="/assets/ProrrogaConcesion.pdf" download>
+        <a href="/assets/Formulario de Prorroga Concesion.pdf" download>
           Descargar PDF de Prórroga
         </a>
       </div>
