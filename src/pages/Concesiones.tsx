@@ -2,9 +2,9 @@ import "../styles/SolicitudConcesion.css"
 import { useForm } from "react-hook-form";
 //import {}from "../assets/PROYECTOS_2024_CE.pdf"
 function  Concesiones () {
-  const { register, handleSubmit, watch, formState: { errors } } = useForm();
+  const { register, handleSubmit, formState: { errors } } = useForm();
   
-  const onSubmit = (data) => {
+  const onSubmit = (data: unknown) => {
     console.log(data);
     //lógica para enviar los documentos al servidor.
   };
