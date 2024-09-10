@@ -4,13 +4,13 @@ import "../../styles/Administrativos/TablaSolicitudConcesio.css";
 // Interfaz para las solicitudes
 interface Solicitud {
   id: number;
-  ArchivoAdjunto: string;
-  IdUser: string;
+  Nombre: string;
+  Apellido1: string;
 }
 
 // Función para obtener las solicitudes desde la API
 const fetchSolicitudes = async (): Promise<Solicitud[]> => {
-  const urlBase = 'http://localhost:3003/Concesiones';
+  const urlBase = 'http://localhost:3003/Users';
   
   try {
     const response = await fetch(urlBase, {
@@ -32,7 +32,7 @@ const fetchSolicitudes = async (): Promise<Solicitud[]> => {
   }
 };
 
-const TablaSolicitudes1 : React.FC = () => {
+const TablaSolicitudes: React.FC = () => {
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
 
   useEffect(() => {
@@ -47,6 +47,7 @@ const TablaSolicitudes1 : React.FC = () => {
 
     obtenerSolicitudes();
   }, []);
+
 
   const manejarAceptar = (id: number) => {
     console.log(`Aceptar solicitud con ID: ${id}`);
@@ -73,21 +74,20 @@ const TablaSolicitudes1 : React.FC = () => {
             <th>ID</th>
             <th>Nombre</th>
             <th>Apellido</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {solicitudes.map((solicitud) => (
             <tr key={solicitud.id}>
               <td>{solicitud.id}</td>
-              <td>{solicitud.ArchivoAdjunto}</td>
-              <td>{solicitud.IdUser}</td>
+              <td>{solicitud.Nombre}</td>
+              <td>{solicitud.Apellido1}</td>
               <td>
                 <button onClick={() => manejarAceptar(solicitud.id)}>Aceptar</button>
                 <button onClick={() => manejarDenegar(solicitud.id)}>Denegar</button>
                 <button onClick={() => manejarVer(solicitud.id)}>Ver</button>
                 <button onClick={() => manejarEliminar(solicitud.id)}>Eliminar</button>
-                <button onClick={() => manejarEliminar(solicitud.ArchivoAdjunto)}>file</button>
-                <button onClick={() => manejarEliminar(solicitud.IdUser)}>Id user</button>
               </td>
             </tr>
           ))}
@@ -97,4 +97,4 @@ const TablaSolicitudes1 : React.FC = () => {
   );
 };
 
-export default TablaSolicitudes1;
+export default TablaSolicitudes;

@@ -9,10 +9,8 @@ import Concesiones from './pages/Concesiones';
 import UsoPrecario from './pages/UsoPrecario';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import PanelCitas from './pages/PanelesAdministrativos/PanelCitas';
-import PanelDenuncia from './pages/PanelesAdministrativos/PanelDenuncia';
-import PanelSolicitudConcesion from "./pages/PanelesAdministrativos/PanelSolicitudConcesion";
-
+import TablaSolicitudes from './pages/PanelesAdministrativos/PanelControlUsuario';
+import TablaSolicitudes1 from './pages/PanelesAdministrativos/PanelSolicitudConcesion';
 
 function App () {
   return (
@@ -27,10 +25,8 @@ function App () {
         <Route path="/uso-precario" element={<UsoPrecario />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-       <Route path="/Panel-Citas" element={<PanelCitas/>}/>
-       <Route path= "/Panel-Denuncias" element={<PanelDenuncia/>}/>
-       <Route path= "/Panel-Solicitud-Concesion" element={<PanelSolicitudConcesion/>}/>
-
+        <Route path="/TablaSolicitudes" element={<TablaSolicitudes />} />
+        <Route path="/TablaSolicitudes1" element={<TablaSolicitudes1 />} />
       </Routes>
     </Router>
   );

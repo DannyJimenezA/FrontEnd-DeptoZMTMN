@@ -19,7 +19,8 @@ function Navbar() {
         <Link to="/Panel-Citas">Tabla Citas</Link>
         <Link to="/Panel-Denuncias">Tabla Denuncias</Link>
         <Link to="/Panel-Solicitud-Concesion">Solicitudes Concesion</Link>
-
+        <Link to="/TablaSolicitudes">Tabla de solicitudes</Link>
+        <Link to="/TablaSolicitudes1">Tabla de concesiones</Link>
       </div>
       <div className="navbar__search">
       <button type="button"><Link to="/login">Iniciar Sesion</Link></button>
