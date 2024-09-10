@@ -15,6 +15,7 @@ import PanelCitas from './pages/PanelesAdministrativos/PanelCitas';
 import PanelDenuncia from './pages/PanelesAdministrativos/PanelDenuncia';
 import PanelSolicitudConcesion from "./pages/PanelesAdministrativos/PanelSolicitudConcesion";
 import ProrrogaConcesion from './pages/ProrrogaConcesion'; // Importa el componente de Prórroga de Concesión
+import PanelProrrogaConcesiones from './pages/PanelesAdministrativos/PanelProrrogaConcesiones';
 
 
 function App () {
@@ -36,6 +37,7 @@ function App () {
         <Route path="/Panel-Citas" element={<PanelCitas />} />
         <Route path="/Panel-Denuncias" element={<PanelDenuncia />} />
         <Route path="/Panel-Solicitud-Concesion" element={<PanelSolicitudConcesion />} />
+        <Route path="/Panel-Prorroga-Concesiones" element={<PanelProrrogaConcesiones />} />
 
       </Routes>
     </Router>

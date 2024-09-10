@@ -10,7 +10,7 @@ interface Solicitud {
 
 // Función para obtener las solicitudes desde la API
 const fetchSolicitudes = async (): Promise<Solicitud[]> => {
-  const urlBase = 'http://localhost:3006/Concesiones';
+  const urlBase = 'http://localhost:3006/concesiones/';  // Nueva ruta para obtener las solicitudes
   
   try {
     const response = await fetch(urlBase, {
@@ -32,7 +32,7 @@ const fetchSolicitudes = async (): Promise<Solicitud[]> => {
   }
 };
 
-const TablaSolicitudes1 : React.FC = () => {
+const TablaSolicitudes1: React.FC = () => {
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
 
   useEffect(() => {
@@ -50,15 +50,12 @@ const TablaSolicitudes1 : React.FC = () => {
 
   // Función para ver el PDF
   const manejarVer = (archivoAdjunto: string) => {
-    const baseUrl = 'http://localhost:3006/'; // Ruta base del servidor
-  
-    // Asegúrate de que archivoAdjunto no contenga duplicados de /uploads/
-    if (archivoAdjunto.startsWith('uploads/')) {
-      archivoAdjunto = archivoAdjunto.replace('uploads/', '');  // Remueve 'uploads/' si ya está presente
-    }
+    const baseUrl = 'http://localhost:3006/'; // Cambiar la URL base para ajustarse a la nueva ruta
   
     if (archivoAdjunto) {
-      window.open(baseUrl + archivoAdjunto, '_blank');
+      const pdfUrl = baseUrl + archivoAdjunto;
+      console.log('Abriendo PDF en:', pdfUrl);  // Para depuración
+      window.open(pdfUrl, '_blank');  // Abre el PDF en una nueva pestaña
     } else {
       console.error('No hay archivo adjunto para ver.');
     }
@@ -71,9 +68,6 @@ const TablaSolicitudes1 : React.FC = () => {
   const manejarDenegar = (id: number) => {
     console.log(`Denegar solicitud con ID: ${id}`);
   };
-
-  
-  
 
   return (
     <div className="tabla-container">

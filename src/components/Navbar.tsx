@@ -33,9 +33,9 @@ function Navbar() {
             <div className="dropdown__menu">
               {/* <Link to="/Panel-Citas">Tabla Citas</Link> */}
               {/* <Link to="/Panel-Denuncias">Tabla Denuncias</Link> */}
+              <Link to="/TablaSolicitudes">Tabla de usuarios</Link>
               <Link to="/Panel-Solicitud-Concesion">Solicitudes Concesión</Link>
-              <Link to="/TablaSolicitudes">Tabla de Solicitudes</Link>
-              <Link to="/TablaSolicitudes1">Tabla de Concesiones</Link>
+              <Link to="/Panel-Prorroga-Concesiones">Prorroga de Concesiones</Link>
             </div>
           )}
         </div>
