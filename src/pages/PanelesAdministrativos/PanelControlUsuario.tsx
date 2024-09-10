@@ -10,7 +10,7 @@ interface Solicitud {
 
 // Función para obtener las solicitudes desde la API
 const fetchSolicitudes = async (): Promise<Solicitud[]> => {
-  const urlBase = 'http://localhost:3003/Users';
+  const urlBase = 'http://localhost:3006/Users';
   
   try {
     const response = await fetch(urlBase, {

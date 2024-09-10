@@ -12,7 +12,11 @@ interface Solicitud {
 
 // Función para obtener las solicitudes desde la API
 const fetchSolicitudes = async (): Promise<Solicitud[]> => {
+
   const urlBase = 'http://localhost:3006/concesiones';
+
+  const urlBase = 'http://localhost:3006/concesiones/';  // Nueva ruta para obtener las solicitudes
+
   
   try {
     const response = await fetch(urlBase, {
@@ -34,7 +38,7 @@ const fetchSolicitudes = async (): Promise<Solicitud[]> => {
   }
 };
 
-const TablaSolicitudes1 : React.FC = () => {
+const TablaSolicitudes1: React.FC = () => {
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
 
   useEffect(() => {
@@ -50,6 +54,21 @@ const TablaSolicitudes1 : React.FC = () => {
     obtenerSolicitudes();
   }, []);
 
+
+  // Función para ver el PDF
+  const manejarVer = (archivoAdjunto: string) => {
+    const baseUrl = 'http://localhost:3006/'; // Cambiar la URL base para ajustarse a la nueva ruta
+  
+    if (archivoAdjunto) {
+      const pdfUrl = baseUrl + archivoAdjunto;
+      console.log('Abriendo PDF en:', pdfUrl);  // Para depuración
+      window.open(pdfUrl, '_blank');  // Abre el PDF en una nueva pestaña
+    } else {
+      console.error('No hay archivo adjunto para ver.');
+    }
+  };
+
+
   const manejarAceptar = (id: number) => {
     console.log(`Aceptar solicitud con ID: ${id}`);
   };
@@ -58,6 +77,7 @@ const TablaSolicitudes1 : React.FC = () => {
     console.log(`Denegar solicitud con ID: ${id}`);
   };
 
+
   const manejarVer = (id: number) => {
     console.log(`Ver detalles de la solicitud con ID: ${id}`);
   };
@@ -65,6 +85,7 @@ const TablaSolicitudes1 : React.FC = () => {
   const manejarEliminar = (id: number) => {
     console.log(`Eliminar solicitud con ID: ${id}`);
   };
+
 
   return (
     <div className="tabla-container">
