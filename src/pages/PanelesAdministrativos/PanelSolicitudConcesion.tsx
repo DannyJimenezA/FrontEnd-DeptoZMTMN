@@ -4,13 +4,13 @@ import "../../styles/Administrativos/TablaSolicitudConcesio.css";
 // Interfaz para las solicitudes
 interface Solicitud {
   id: number;
-  ArchivoAdjunto: string;
+  ArchivoAdjunto: string;  // Debe ser la URL del PDF
   IdUser: string;
 }
 
 // Función para obtener las solicitudes desde la API
 const fetchSolicitudes = async (): Promise<Solicitud[]> => {
-  const urlBase = 'http://localhost:3003/Concesiones';
+  const urlBase = 'http://localhost:3006/Concesiones';
   
   try {
     const response = await fetch(urlBase, {
@@ -48,6 +48,22 @@ const TablaSolicitudes1 : React.FC = () => {
     obtenerSolicitudes();
   }, []);
 
+  // Función para ver el PDF
+  const manejarVer = (archivoAdjunto: string) => {
+    const baseUrl = 'http://localhost:3006/'; // Ruta base del servidor
+  
+    // Asegúrate de que archivoAdjunto no contenga duplicados de /uploads/
+    if (archivoAdjunto.startsWith('uploads/')) {
+      archivoAdjunto = archivoAdjunto.replace('uploads/', '');  // Remueve 'uploads/' si ya está presente
+    }
+  
+    if (archivoAdjunto) {
+      window.open(baseUrl + archivoAdjunto, '_blank');
+    } else {
+      console.error('No hay archivo adjunto para ver.');
+    }
+  };
+
   const manejarAceptar = (id: number) => {
     console.log(`Aceptar solicitud con ID: ${id}`);
   };
@@ -56,13 +72,8 @@ const TablaSolicitudes1 : React.FC = () => {
     console.log(`Denegar solicitud con ID: ${id}`);
   };
 
-  const manejarVer = (id: number) => {
-    console.log(`Ver detalles de la solicitud con ID: ${id}`);
-  };
-
-  const manejarEliminar = (id: number) => {
-    console.log(`Eliminar solicitud con ID: ${id}`);
-  };
+  
+  
 
   return (
     <div className="tabla-container">
@@ -71,8 +82,9 @@ const TablaSolicitudes1 : React.FC = () => {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Nombre</th>
-            <th>Apellido</th>
+            <th>Archivo Adjunto</th>
+            <th>Id User</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -82,12 +94,9 @@ const TablaSolicitudes1 : React.FC = () => {
               <td>{solicitud.ArchivoAdjunto}</td>
               <td>{solicitud.IdUser}</td>
               <td>
+                <button onClick={() => manejarVer(solicitud.ArchivoAdjunto)}>Ver PDF</button>
                 <button onClick={() => manejarAceptar(solicitud.id)}>Aceptar</button>
                 <button onClick={() => manejarDenegar(solicitud.id)}>Denegar</button>
-                <button onClick={() => manejarVer(solicitud.id)}>Ver</button>
-                <button onClick={() => manejarEliminar(solicitud.id)}>Eliminar</button>
-                <button onClick={() => manejarEliminar(solicitud.ArchivoAdjunto)}>file</button>
-                <button onClick={() => manejarEliminar(solicitud.IdUser)}>Id user</button>
               </td>
             </tr>
           ))}
