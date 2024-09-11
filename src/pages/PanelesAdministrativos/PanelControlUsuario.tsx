@@ -1,20 +1,16 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import "../../styles/Administrativos/TablaSolicitudConcesio.css";
 
 // Interfaz para las solicitudes
 interface Solicitud {
   id: number;
-  ArchivoAdjunto: string;
-  IdUser: {
-    id: number; 
-  };
+  Nombre: string;
+  Apellido1: string;
 }
 
 // Función para obtener las solicitudes desde la API
 const fetchSolicitudes = async (): Promise<Solicitud[]> => {
-
-  const urlBase = 'http://localhost:3006/concesiones/';  // Nueva ruta para obtener las solicitudes
-
+  const urlBase = 'http://localhost:3006/Users';
   
   try {
     const response = await fetch(urlBase, {
@@ -36,7 +32,7 @@ const fetchSolicitudes = async (): Promise<Solicitud[]> => {
   }
 };
 
-const TablaSolicitudes1: React.FC = () => {
+const TablaSolicitudes: React.FC = () => {
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
 
   useEffect(() => {
@@ -53,19 +49,6 @@ const TablaSolicitudes1: React.FC = () => {
   }, []);
 
 
-  // Función para ver el PDF
-  const manejarVer = (archivoAdjunto: string) => {
-    const baseUrl = 'http://localhost:3006/'; // Cambiar la URL base para ajustarse a la nueva ruta
-  
-    if (archivoAdjunto) {
-      const pdfUrl = baseUrl + archivoAdjunto;
-      console.log('Abriendo PDF en:', pdfUrl);  // Para depuración
-      window.open(pdfUrl, '_blank');  // Abre el PDF en una nueva pestaña
-    } else {
-      console.error('No hay archivo adjunto para ver.');
-    }
-  };
-
   const manejarAceptar = (id: number) => {
     console.log(`Aceptar solicitud con ID: ${id}`);
   };
@@ -74,10 +57,13 @@ const TablaSolicitudes1: React.FC = () => {
     console.log(`Denegar solicitud con ID: ${id}`);
   };
 
+  const manejarVer = (id: number) => {
+    console.log(`Ver detalles de la solicitud con ID: ${id}`);
+  };
+
   const manejarEliminar = (id: number) => {
     console.log(`Eliminar solicitud con ID: ${id}`);
   };
-
 
   return (
     <div className="tabla-container">
@@ -86,8 +72,8 @@ const TablaSolicitudes1: React.FC = () => {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Archivo Adjunto</th>
-            <th>ID Usuario</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -95,12 +81,12 @@ const TablaSolicitudes1: React.FC = () => {
           {solicitudes.map((solicitud) => (
             <tr key={solicitud.id}>
               <td>{solicitud.id}</td>
-              <td>{solicitud.ArchivoAdjunto}</td>
-              <td>{solicitud.IdUser ? solicitud.IdUser.id : 'ID no disponible'}</td>{/* Acceder correctamente al ID del usuario */}
+              <td>{solicitud.Nombre}</td>
+              <td>{solicitud.Apellido1}</td>
               <td>
                 <button onClick={() => manejarAceptar(solicitud.id)}>Aceptar</button>
                 <button onClick={() => manejarDenegar(solicitud.id)}>Denegar</button>
-                <button onClick={() => manejarVer(solicitud.ArchivoAdjunto)}>Ver PDF</button>
+                <button onClick={() => manejarVer(solicitud.id)}>Ver</button>
                 <button onClick={() => manejarEliminar(solicitud.id)}>Eliminar</button>
               </td>
             </tr>
@@ -111,4 +97,4 @@ const TablaSolicitudes1: React.FC = () => {
   );
 };
 
-export default TablaSolicitudes1;
+export default TablaSolicitudes;
