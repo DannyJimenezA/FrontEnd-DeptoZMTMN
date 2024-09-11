@@ -17,12 +17,12 @@ function Navbar() {
       </div>
       <div className="navbar__links">
         <Link to="/">Inicio</Link>
-        <Link to="/citas-audiencias">Citas / Audiencias</Link>
+        <Link to="/citas-audiencias">Citas</Link>
+        <Link to="/concesiones">Concesiones</Link>
+        <Link to="/prorroga-concesion">Prórroga de Concesión</Link>
         <Link to="/solicitud-expediente">Solicitud Expediente</Link>
         <Link to="/denuncias">Denuncias</Link>
-        <Link to="/concesiones">Concesiones</Link>
         <Link to="/uso-precario">Uso Precario</Link>
-        <Link to="/prorroga-concesion">Prórroga de Concesión</Link>
 
         {/* Dropdown para paneles y tablas */}
         <div className="dropdown">
@@ -36,6 +36,7 @@ function Navbar() {
               <Link to="/TablaSolicitudes">Tabla de usuarios</Link>
               <Link to="/Panel-Solicitud-Concesion">Solicitudes Concesión</Link>
               <Link to="/Panel-Prorroga-Concesiones">Prorroga de Concesiones</Link>
+              <Link to="/Panel-citas">Tabla de citas</Link>
             </div>
           )}
         </div>
