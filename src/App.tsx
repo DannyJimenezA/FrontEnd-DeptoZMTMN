@@ -15,7 +15,7 @@ import PanelCitas from './pages/PanelesAdministrativos/PanelCitas';
 import PanelDenuncia from './pages/PanelesAdministrativos/PanelDenuncia';
 import PanelSolicitudConcesion from "./pages/PanelesAdministrativos/PanelSolicitudConcesion";
 import ProrrogaConcesion from './pages/ProrrogaConcesion'; // Importa el componente de Prórroga de Concesión
-import PanelProrrogaConcesiones from './pages/PanelesAdministrativos/PanelProrrogaConcesiones';
+import PanelProrrogaConcesiones from './pages/PanelesAdministrativos/PanelProrrogaConcesion';
 
 
 function App () {
