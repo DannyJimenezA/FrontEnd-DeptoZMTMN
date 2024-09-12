@@ -4,8 +4,8 @@ import "../../styles/Administrativos/TablaSolicitudConcesio.css";
 // Interfaz para las solicitudes
 interface Solicitud {
   id: number;
-  Nombre: string;
-  Apellido1: string;
+  nombre: string;
+  apellido1: string;
 }
 
 // Función para obtener las solicitudes desde la API
@@ -81,8 +81,8 @@ const TablaSolicitudes: React.FC = () => {
           {solicitudes.map((solicitud) => (
             <tr key={solicitud.id}>
               <td>{solicitud.id}</td>
-              <td>{solicitud.Nombre}</td>
-              <td>{solicitud.Apellido1}</td>
+              <td>{solicitud.nombre}</td>
+              <td>{solicitud.apellido1}</td>
               <td>
                 <button onClick={() => manejarAceptar(solicitud.id)}>Aceptar</button>
                 <button onClick={() => manejarDenegar(solicitud.id)}>Denegar</button>

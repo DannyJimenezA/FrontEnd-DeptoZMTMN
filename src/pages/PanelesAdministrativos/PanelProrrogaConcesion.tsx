@@ -4,18 +4,16 @@ import "../../styles/Administrativos/TablaProrrogaConcesion.css";
 // Interfaz para las prórrogas
 interface Prorroga {
   id: number;
-  ArchivoAdjunto: string;
-  IdConcesion: {
+  ArchivoProrroga: string;
+  IdUser: {
     id: number; 
   };
-  FechaInicio: string;
-  FechaFin: string;
 }
 
 // Función para obtener las prórrogas desde la API
 const fetchProrrogas = async (): Promise<Prorroga[]> => {
 
-  const urlBase = 'http://localhost:3006/prorrogas/';  // Ruta para obtener las prórrogas
+  const urlBase = 'http://localhost:3006/Prorrogas/';  // Ruta para obtener las prórrogas
 
   try {
     const response = await fetch(urlBase, {
@@ -58,22 +56,36 @@ const TablaProrrogas: React.FC = () => {
     obtenerProrrogas();
   }, []);
 
-  // Función para ver el PDF
-  const manejarVer = (archivoAdjunto: string) => {
+   // Función para ver los archivos PDF asociados a una prórroga
+   const manejarVer = async (id: number) => {
     const baseUrl = 'http://localhost:3006/'; // URL base del servidor
+    const endpoint = `${baseUrl}Prorrogas/${id}/archivo`; // Endpoint que coincide con la ruta en el backend
   
-    if (archivoAdjunto) {
-      const pdfUrl = baseUrl + archivoAdjunto;
-      console.log('Abriendo PDF en:', pdfUrl);
-      window.open(pdfUrl, '_blank');
-    } else {
-      console.error('No hay archivo adjunto para ver.');
+    try {
+      const response = await fetch(endpoint); // Realiza la solicitud al backend
+      if (!response.ok) {
+        throw new Error('Error al obtener los archivos adjuntos.');
+      }
+  
+      const data = await response.json(); // Parsear la respuesta del backend
+      const archivosAdjuntos = data.archivosAdjuntos; // Obtener los archivos adjuntos
+  
+      if (archivosAdjuntos && archivosAdjuntos.length > 0) {
+        archivosAdjuntos.forEach((archivo: string) => {
+          const pdfUrl = baseUrl + archivo; // Construir la URL completa del archivo
+          window.open(pdfUrl, '_blank'); // Abrir el PDF en una nueva pestaña
+        });
+      } else {
+        console.error('No hay archivos adjuntos para ver.');
+      }
+    } catch (error) {
+      console.error('Error al cargar los archivos adjuntos:', error);
     }
   };
-
+  
   const manejarAceptar = async (id: number) => {
     try {
-      const response = await fetch(`http://localhost:3006/prorrogas/${id}/aceptar`, {
+      const response = await fetch(`http://localhost:3006/Prorrogas/${id}/aceptar`, {
         method: 'POST',
       });
       if (!response.ok) {
@@ -142,9 +154,7 @@ const TablaProrrogas: React.FC = () => {
           <tr>
             <th>ID</th>
             <th>Archivo Adjunto</th>
-            <th>ID Concesión</th>
-            <th>Fecha de Inicio</th>
-            <th>Fecha de Fin</th>
+            <th>ID Solicitante</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -152,14 +162,12 @@ const TablaProrrogas: React.FC = () => {
           {prorrogas.map((prorroga) => (
             <tr key={prorroga.id}>
               <td>{prorroga.id}</td>
-              <td>{prorroga.ArchivoAdjunto}</td>
-              <td>{prorroga.IdConcesion ? prorroga.IdConcesion.id : 'ID no disponible'}</td>
-              <td>{prorroga.FechaInicio}</td>
-              <td>{prorroga.FechaFin}</td>
+              <td>{prorroga.ArchivoProrroga}</td>
+              <td>{prorroga.IdUser ? prorroga.IdUser.id : 'ID no disponible'}</td>
               <td>
                 <button onClick={() => manejarAceptar(prorroga.id)}>Aceptar</button>
                 <button onClick={() => manejarDenegar(prorroga.id)}>Denegar</button>
-                <button onClick={() => manejarVer(prorroga.ArchivoAdjunto)}>Ver PDF</button>
+                <button onClick={() => manejarVer(prorroga.id)}>Ver PDF</button>
                 <button onClick={() => manejarEliminar(prorroga.id)}>Eliminar</button>
               </td>
             </tr>
