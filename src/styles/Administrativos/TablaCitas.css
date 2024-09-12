@@ -1,0 +1,80 @@
+/* TablaProrrogaConcesio.css */
+
+/* Estilos para el contenedor de la tabla */
+.tabla-container {
+    width: 90%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Estilos para la tabla */
+  .tabla-citas {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 1rem;
+    text-align: left;
+  }
+  
+  /* Estilos para las celdas y bordes */
+  .tabla-citas th,
+  .tabla-citas td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+  }
+  
+  /* Estilos para el encabezado de la tabla */
+  .tabla-citas th {
+    background-color: #4CAF50; /* Verde para el encabezado */
+    color: white;
+    font-weight: bold;
+  }
+  
+  /* Estilo alterno para las filas */
+  .tabla-citas tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  /* Estilo para las filas al pasar el mouse */
+  .tabla-citas tr:hover {
+    background-color: #e0f7fa;
+  }
+  
+  /* Estilos para los botones */
+  .tabla-citas button {
+    padding: 8px 12px;
+    margin: 4px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  
+  /* Colores de los botones */
+  .tabla-citas button:hover {
+    opacity: 0.8;
+  }
+  
+  .tabla-citas button:nth-child(1) {
+    background-color: #4CAF50; /* Botón Aceptar - Verde */
+    color: white;
+  }
+  
+  .tabla-citas button:nth-child(2) {
+    background-color: #f44336; /* Botón Denegar - Rojo */
+    color: white;
+  }
+  
+  .tabla-citas button:nth-child(3) {
+    background-color: #2196F3; /* Botón Ver - Azul */
+    color: white;
+  }
+  
+  .tabla-citas button:nth-child(4) {
+    background-color: #FF5722; /* Botón Eliminar - Naranja */
+    color: white;
+  }
+  
