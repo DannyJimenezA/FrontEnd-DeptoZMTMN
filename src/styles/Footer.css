@@ -1,0 +1,38 @@
+/* Estilos para el contenedor del footer */
+.footer-container {
+  background-color: #004080;
+  color: #ffffff;
+  padding: 40px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.footer-container h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.footer-container p {
+  font-size: 16px;
+  margin-bottom: 30px;
+  color: #ffffff;
+}
+
+/* Estilos para los enlaces de redes sociales */
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* Espacio entre los íconos */
+  margin-top: 20px;
+}
+
+.social-icon {
+  font-size: 30px; /* Tamaño de los íconos */
+  color: #ffffff; /* Color del ícono */
+  transition: transform 0.2s ease, color 0.2s ease; /* Transición para el hover */
+}
+
+.social-icon:hover {
+  color: #ffffff; /* Cambia el color al pasar el mouse */
+  transform: scale(1.2); /* Aumenta el tamaño del ícono al pasar el mouse */
+}
