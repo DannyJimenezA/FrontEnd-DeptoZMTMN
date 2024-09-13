@@ -1,7 +1,6 @@
 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Banner from './components/Banner';
 import CitasAudiencias from './pages/CitasAudiencias';
 import SolicitudExpediente from './pages/SolicitudExpediente';
 import Denuncias from './pages/Denuncias';
@@ -14,16 +13,20 @@ import TablaSolicitudes1 from './pages/PanelesAdministrativos/PanelSolicitudConc
 import PanelCitas from './pages/PanelesAdministrativos/PanelCitas';
 import PanelDenuncia from './pages/PanelesAdministrativos/PanelDenuncia';
 import PanelSolicitudConcesion from "./pages/PanelesAdministrativos/PanelSolicitudConcesion";
-import ProrrogaConcesion from './pages/ProrrogaConcesion'; // Importa el componente de Prórroga de Concesión
+import ProrrogaConcesion from './pages/ProrrogaConcesion'; 
 import PanelProrrogaConcesiones from './pages/PanelesAdministrativos/PanelProrrogaConcesion';
+import LandingPage from './pages/LandigPage';
 
 
 function App () {
   return (
+
+
+
     <Router>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Banner />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/citas-audiencias" element={<CitasAudiencias />} />
         <Route path="/solicitud-expediente" element={<SolicitudExpediente />} />
         <Route path="/denuncias" element={<Denuncias />} />

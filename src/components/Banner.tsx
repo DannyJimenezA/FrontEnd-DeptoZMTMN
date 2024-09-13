@@ -23,7 +23,6 @@ function Banner () {
 
   return (
     <div className="banner">
-      <h1>Departamento Zona Marítima Terrestre Municipalidad de Nicoya</h1>
       <Slider {...settings}>
         <div>
           <img src={image1} alt="Imagen 1" className="banner-image" />
@@ -35,14 +34,17 @@ function Banner () {
           <img src={image3} alt="Imagen 3" className="banner-image" />
         </div>
       </Slider>
+      <h1/>
 
-      <h2> La Zona Marítimo Terrestre es la franja territorial de doscientos metros de ancho a todo lo largo de los litorales 
-        Atlántico y Pacífico de la República, cualquiera que sea su naturaleza, medidos horizontalmente a partir de la línea 
-        de la pleamar ordinaria, los terrenos y rocas que deje el mar en descubierto en la marea baja. </h2>
-
-      <h2> Esta zona marítima se extiende también por las márgenes de los ríos hasta el sitio en que sean navegables o se hagan sensibles 
-        las mareas, con un ancho de doscientos metros desde cada orilla, contados desde la línea que marque la marea alta. Su uso y 
-        aprovechamiento se encuentra regulado por la Ley No. 6043.  </h2>
+      <h2> La Zona Marítimo Terrestre es la franja territorial de doscientos metros de ancho a 
+        todo lo largo de los litorales Atlántico y Pacífico de la República, cualquiera que sea 
+        su naturaleza, medidos horizontalmente a partir de la línea de la pleamar ordinaria, 
+        los terrenos y rocas que deje el mar en descubierto en la marea baja. </h2>
+      <h1/>
+        <h2> Esta zona marítima se extiende también por las márgenes de los ríos hasta el sitio 
+          en que sean navegables o se hagan sensibles las mareas, con un ancho de doscientos metros 
+          desde cada orilla, contados desde la línea que marque la marea alta. Su uso y aprovechamiento 
+          se encuentra regulado por la Ley No. 6043.   </h2>
     </div>
   );
 };

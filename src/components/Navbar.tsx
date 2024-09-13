@@ -36,7 +36,7 @@ function Navbar() {
               <Link to="/TablaSolicitudes">Tabla de usuarios</Link>
               <Link to="/Panel-Solicitud-Concesion">Solicitudes Concesión</Link>
               <Link to="/Panel-Prorroga-Concesiones">Prorroga de Concesiones</Link>
-              <Link to="/Panel-citas">Tabla de citas</Link>
+              <Link to="/Panel-Citas">Tabla de citas</Link>
             </div>
           )}
         </div>
