@@ -13,8 +13,6 @@ interface Solicitud {
 // Función para obtener las solicitudes desde la API
 const fetchSolicitudes = async (): Promise<Solicitud[]> => {
 
-  const urlBase = 'http://localhost:3006/concesiones';
-
   const urlBase = 'http://localhost:3006/concesiones/';  // Nueva ruta para obtener las solicitudes
 
   
@@ -68,18 +66,12 @@ const TablaSolicitudes1: React.FC = () => {
     }
   };
 
-
   const manejarAceptar = (id: number) => {
     console.log(`Aceptar solicitud con ID: ${id}`);
   };
 
   const manejarDenegar = (id: number) => {
     console.log(`Denegar solicitud con ID: ${id}`);
-  };
-
-
-  const manejarVer = (id: number) => {
-    console.log(`Ver detalles de la solicitud con ID: ${id}`);
   };
 
   const manejarEliminar = (id: number) => {
@@ -108,7 +100,7 @@ const TablaSolicitudes1: React.FC = () => {
               <td>
                 <button onClick={() => manejarAceptar(solicitud.id)}>Aceptar</button>
                 <button onClick={() => manejarDenegar(solicitud.id)}>Denegar</button>
-                <button onClick={() => manejarVer(solicitud.id)}>Ver</button>
+                <button onClick={() => manejarVer(solicitud.ArchivoAdjunto)}>Ver PDF</button>
                 <button onClick={() => manejarEliminar(solicitud.id)}>Eliminar</button>
               </td>
             </tr>
