@@ -6,6 +6,9 @@ interface Solicitud {
   id: number;
   nombre: string;
   apellido1: string;
+  apellido2: string;
+  email: string;
+  telefono: number;
 }
 
 // Función para obtener las solicitudes desde la API
@@ -71,23 +74,27 @@ const TablaSolicitudes: React.FC = () => {
       <table className="tabla-solicitudes">
         <thead>
           <tr>
-            <th>ID</th>
+            {/* <th>ID</th> */}
             <th>Nombre</th>
-            <th>Apellido</th>
+            <th>Apellidos</th>
+            <th>Correo</th>
+            {/* <th>Telefono</th> */}
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {solicitudes.map((solicitud) => (
             <tr key={solicitud.id}>
-              <td>{solicitud.id}</td>
+              {/* <td>{solicitud.id}</td> */}
               <td>{solicitud.nombre}</td>
-              <td>{solicitud.apellido1}</td>
+              <td>{`${solicitud.apellido1} ${solicitud.apellido2}`} </td>
+              <td>{solicitud.email}</td>
+              {/* <td>{solicitud.telefono}</td> */}
               <td>
-                <button onClick={() => manejarAceptar(solicitud.id)}>Aceptar</button>
-                <button onClick={() => manejarDenegar(solicitud.id)}>Denegar</button>
-                <button onClick={() => manejarVer(solicitud.id)}>Ver</button>
-                <button onClick={() => manejarEliminar(solicitud.id)}>Eliminar</button>
+                {/* <button onClick={() => manejarAceptar(solicitud.id)}>Aceptar</button>
+                <button onClick={() => manejarDenegar(solicitud.id)}>Denegar</button> */}
+                <button onClick={() => manejarVer(solicitud.id)}>Ver mas informacion</button>
+                {/* <button onClick={() => manejarEliminar(solicitud.id)}>Eliminar</button> */}
               </td>
             </tr>
           ))}

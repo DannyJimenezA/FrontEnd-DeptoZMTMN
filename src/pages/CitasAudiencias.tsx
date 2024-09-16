@@ -4,34 +4,17 @@ import "../styles/FormAudiencia.css";
 function CitasAudiencias() {
   const [selectedDate, setSelectedDate] = useState(""); // Estado para la fecha
   const [selectedTime, setSelectedTime] = useState(""); // Estado para la hora
-  const [cedula, setCedula] = useState(""); // Estado para el número de cédula
-  const [asunto, setAsunto] = useState(""); // Estado para el asunto
+  const [descripcion, setDescripcion] = useState(""); // Estado para la descripción
 
-  // Manejador de la fecha, solo permite seleccionar miércoles
+  // Manejador de la fecha
   const handleDateChange = (event) => {
-    
-    //const selected = new Date(event.target.value);
     const selectedDate = new Date(event.target.value);
-    // Depuramos el valor que recibe la fecha
     console.log("Fecha seleccionada:", selectedDate);
-    console.log("Día de la semana:", selectedDate.getDay()); // Verifica qué valor devuelve getDay()
 
-    
-
-  // Verifica el día de la semana de la fecha seleccionada
-  /*if (selectedDate.getDay()) { // 3 corresponde al miércoles
-    alert("Por favor selecciona un miércoles.");
-    event.target.value = ''; // Limpiar la fecha si no es válida
-    return;
-  }*/
-
-  // Actualizar el estado con la fecha seleccionada
-  setSelectedDate(event.target.value);
-
-    //setSelectedDate(event.target.value);
+    // Actualizar el estado con la fecha seleccionada
+    setSelectedDate(event.target.value);
   };
 
-  // Manejador para el envío del formulario
   // Manejador para el envío del formulario
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -59,16 +42,15 @@ function CitasAudiencias() {
     const [hours, minutes] = selectedTime.split(":");
   
     // Crear la fecha en UTC manualmente
-    const citaFechaHora = new Date(Date.UTC(year, month - 1, day, hours, minutes, 0));
+    const citaFechaHora = new Date(Date.UTC(year, month, day, hours, minutes, 0));
   
     const cita = {
-      descripcion: asunto,
+      descripcion, // Descripción proporcionada por el usuario
       fecha: citaFechaHora.toISOString(),
-      userId: cedula,
     };
   
     try {
-      const response = await fetch('http://localhost:3006/citas', {
+      const response = await fetch('http://localhost:3000/appointments', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -125,20 +107,11 @@ function CitasAudiencias() {
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Numero de Cedula:</label>
-          <input 
-            type="text" 
-            required 
-            value={cedula} 
-            onChange={(e) => setCedula(e.target.value)} 
-          />
-        </div>
-        <div className="form-group">
-          <label>Asunto a tratar:</label>
+          <label>Descripción de la cita:</label>
           <textarea 
             required 
-            value={asunto} 
-            onChange={(e) => setAsunto(e.target.value)} 
+            value={descripcion} 
+            onChange={(e) => setDescripcion(e.target.value)} 
           />
         </div>
         <div className="form-group">
