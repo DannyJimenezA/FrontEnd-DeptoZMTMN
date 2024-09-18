@@ -1,42 +1,68 @@
+/* Estilo del contenedor del formulario */
 .form-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    margin-top: 200px;
+  padding: 20px;
+  padding-top: 70px;
+  margin-top: 80px; /* Asegúrate de que este margen compense la altura del navbar */
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #f9f9f9; /* Fondo claro para mayor claridad */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para hacer que el formulario resalte */
 }
 
-.form-group {
-    margin-bottom: 15px;
+/* Estilos del formulario */
+.form-container h2, .form-container h3 {
+  text-align: center;
 }
 
-.form-group label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
+.form-container .form-group {
+  margin-bottom: 15px;
 }
 
-.form-group input, .form-group textarea, .form-group select {
-    width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+.form-container label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
 }
 
-.form-group button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    cursor: pointer;
-    text-align: center;
-    width: 100%;
-    margin-top: 10px;
-    font-size: 16px;
+.form-container input, 
+.form-container textarea, 
+.form-container select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
 }
 
-.form-group button:hover {
-    background-color: #45a049;
+.form-container textarea {
+  min-height: 80px;
+}
+
+.form-container button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.form-container button:hover {
+  background-color: #0056b3;
+}
+.react-datepicker__triangle {
+  z-index: 1000; /* Asegúrate de que el calendario esté sobre otros elementos */
+}
+
+.react-datepicker {
+  position: absolute;
+  z-index: 1000; /* Ajusta este valor según sea necesario */
+}
+
+.container {
+  position: relative; /* Asegúrate de que el contenedor del selector de fechas esté posicionado correctamente */
+  overflow: visible;
 }

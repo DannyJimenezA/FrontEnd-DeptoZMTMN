@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import "../../styles/Administrativos/TablaProrrogaConcesion.css";
+import { FaFilePdf } from 'react-icons/fa';
 
 // Interfaz para las prórrogas
 interface Prorroga {
   id: number;
   ArchivoProrroga: string;
   IdUser: {
-    id: number; 
+    id: number;
+    nombre: string;
+    apellido1: string;
+    apellido2: string;
   };
+  IdEstado: {
+    id: number,
+    descripcion: string;
+  }
 }
 
 // Función para obtener las prórrogas desde la API
@@ -56,8 +64,8 @@ const TablaProrrogas: React.FC = () => {
     obtenerProrrogas();
   }, []);
 
-   // Función para ver los archivos PDF asociados a una prórroga
-   const manejarVer = async (id: number) => {
+  // Función para ver los archivos PDF asociados a una prórroga
+  const manejarVer = async (id: number) => {
     const baseUrl = 'http://localhost:3006/'; // URL base del servidor
     const endpoint = `${baseUrl}Prorrogas/${id}/archivo`; // Endpoint que coincide con la ruta en el backend
   
@@ -152,18 +160,23 @@ const TablaProrrogas: React.FC = () => {
       <table className="tabla-prorrogas">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Archivo Adjunto</th>
-            <th>ID Solicitante</th>
+            <th>Nombre</th>
+            <th>Apellidos </th>
+            <th>Archivos Adjuntos</th>
+            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {prorrogas.map((prorroga) => (
             <tr key={prorroga.id}>
-              <td>{prorroga.id}</td>
-              <td>{prorroga.ArchivoProrroga}</td>
-              <td>{prorroga.IdUser ? prorroga.IdUser.id : 'ID no disponible'}</td>
+              <td>{prorroga.IdUser ? prorroga.IdUser.nombre : 'Nombre no disponible'}</td>
+              <td>{prorroga.IdUser ? `${prorroga.IdUser.apellido1} ${prorroga.IdUser.apellido2}` : 'Apellidos no disponibles'}</td>
+              <td>{prorroga.ArchivoProrroga ? (<FaFilePdf style={{ cursor: 'pointer'}} onClick={() => manejarVer(prorroga.ArchivoProrroga)} tittle="ver archivo" /> ) : (
+                'No disponible'
+              )}</td>
+              <td>{prorroga.IdEstado ? prorroga.IdEstado.descripcion : 'Apellidos no disponibles'}</td>
+
               <td>
                 <button onClick={() => manejarAceptar(prorroga.id)}>Aceptar</button>
                 <button onClick={() => manejarDenegar(prorroga.id)}>Denegar</button>
