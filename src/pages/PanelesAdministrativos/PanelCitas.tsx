@@ -25,6 +25,9 @@ const fetchCitas = async (): Promise<Cita[]> => {
         'Authorization': `Bearer ${token}`,
       },
     });
+    if (response.status === 403) {
+      throw new Error('No tienes permiso para acceder a estas citas.'); // Manejar caso de error 403
+    }
 
     if (!response.ok) {
       throw new Error(`Error: ${response.status} - ${response.statusText}`);
