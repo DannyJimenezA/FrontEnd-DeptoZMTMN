@@ -62,30 +62,33 @@ const TablaCitas: React.FC = () => {
     obtenerCitas();
   }, []);
 
-  const manejarEliminar = async (idCita: number) => {
+  const manejarEliminar = async (id: number) => {
+    const token = localStorage.getItem('token');
+    if (!token){
+      console.error('Token no encontrado');
+      return;
+    }
+    const confirmacion = window.confirm('Estas seguro de eliminar la cita?')
+    if (!confirmacion) return;
     try {
-      const response = await fetch(`http://localhost:3006/citas/${idCita}`, {
+      const response = await fetch(`http://localhost:3000/appointments/${id}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
       });
       if (!response.ok) {
-        throw new Error(`Error al eliminar la cita con ID: ${idCita}`);
+        throw new Error(`Error al eliminar la cita con ID: ${id}`);
       }
       setCitas((prevCitas) =>
-        prevCitas.filter((cita) => cita.idCita !== idCita)
+        prevCitas.filter((cita) => cita.id !== id)
       );
-      console.log(`Cita con ID: ${idCita} eliminada`);
+      console.log(`Cita con ID: ${id} eliminada`);
     } catch (error) {
       console.error('Error al eliminar la cita:', error);
     }
   };
-
-  if (loading) {
-    return <p>Cargando citas...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
 
   return (
     <div className="tabla-container">
