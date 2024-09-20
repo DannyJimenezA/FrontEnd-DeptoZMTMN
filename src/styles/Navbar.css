@@ -7,35 +7,37 @@
   justify-content: space-between;
   align-items: center;
   padding: 0px 0px;
-  background-color: #fff;
+  background-color: #004080;
   border-bottom: 0px solid #ccc;
   z-index: 1000;
 }
 
 .navbar__logo img {
-  height: 50px;
+  height: 35px;
 }
 
 .navbar__links {
   display: flex;
+  flex-grow: 1;
+  justify-content: center;
   align-items: center;
 }
 
 .navbar__links a {
   margin: 0 10px;
   text-decoration: none;
-  color: #333;
+  color: #ffffff;
 }
 
-/* Dropdown Styles */
 .dropdown {
   position: relative;
+  margin-left: auto;
 }
 
 .dropdown__toggle {
   background: none;
   border: none;
-  color: #333;
+  color: #a3a3a3;
   font-weight: bold;
   cursor: pointer;
   margin-left: 10px;
@@ -68,18 +70,3 @@
   display: flex;
 }
 
-/* Search bar styles */
-.navbar__search input {
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-}
-
-.navbar__search button {
-  padding: 5px 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-}
