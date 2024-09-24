@@ -3,10 +3,11 @@ import "../../styles/Administrativos/TablaCitas.css";
 
 // Interfaz para las citas
 interface Cita {
-  idCita: number;
-  descripcion: string;
-  fecha: string; // Nota: Se usa string para las fechas en JSON
-  IdUser: {
+  id: number;
+  description: string;
+  date: string; // Nota: Se usa string para las fechas en JSON
+  time: string;
+  user: { // Cambia `IdUser` por `user` si así lo llamas en el backend
     id: number;
     nombre: string;
   };
@@ -14,15 +15,19 @@ interface Cita {
 
 // Función para obtener las citas desde la API
 const fetchCitas = async (): Promise<Cita[]> => {
-  const urlBase = 'http://localhost:3006/citas/';  // Ruta para obtener las citas
-
+  const urlBase = 'http://localhost:3000/appointments';  // Ruta para obtener las citas
+  const token = localStorage.getItem('token');
   try {
     const response = await fetch(urlBase, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
     });
+    if (response.status === 403) {
+      throw new Error('No tienes permiso para acceder a estas citas.'); // Manejar caso de error 403
+    }
 
     if (!response.ok) {
       throw new Error(`Error: ${response.status} - ${response.statusText}`);
@@ -57,30 +62,33 @@ const TablaCitas: React.FC = () => {
     obtenerCitas();
   }, []);
 
-  const manejarEliminar = async (idCita: number) => {
+  const manejarEliminar = async (id: number) => {
+    const token = localStorage.getItem('token');
+    if (!token){
+      console.error('Token no encontrado');
+      return;
+    }
+    const confirmacion = window.confirm('Estas seguro de eliminar la cita?')
+    if (!confirmacion) return;
     try {
-      const response = await fetch(`http://localhost:3006/citas/${idCita}`, {
+      const response = await fetch(`http://localhost:3000/appointments/${id}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
       });
       if (!response.ok) {
-        throw new Error(`Error al eliminar la cita con ID: ${idCita}`);
+        throw new Error(`Error al eliminar la cita con ID: ${id}`);
       }
       setCitas((prevCitas) =>
-        prevCitas.filter((cita) => cita.idCita !== idCita)
+        prevCitas.filter((cita) => cita.id !== id)
       );
-      console.log(`Cita con ID: ${idCita} eliminada`);
+      console.log(`Cita con ID: ${id} eliminada`);
     } catch (error) {
       console.error('Error al eliminar la cita:', error);
     }
   };
-
-  if (loading) {
-    return <p>Cargando citas...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
 
   return (
     <div className="tabla-container">
@@ -97,13 +105,13 @@ const TablaCitas: React.FC = () => {
         </thead>
         <tbody>
           {citas.map((cita) => (
-            <tr key={cita.idCita}>
-              <td>{cita.idCita}</td>
-              <td>{cita.descripcion}</td>
-              <td>{new Date(cita.fecha).toLocaleString()}</td> {/* Formateo de fecha */}
-              <td>{cita.IdUser ? `${cita.IdUser.nombre}` : 'ID no disponible'}</td>
+            <tr key={cita.id}>
+              <td>{cita.id}</td>
+              <td>{cita.description}</td>
+              <td>{new Date(cita.date).toLocaleString()}</td> {/* Formateo de fecha */}
+              <td>{cita.user ? `${cita.user.nombre}` : 'ID no disponible'}</td>
               <td>
-                <button onClick={() => manejarEliminar(cita.idCita)}>Eliminar</button>
+                <button onClick={() => manejarEliminar(cita.id)}>Eliminar</button>
               </td>
             </tr>
           ))}

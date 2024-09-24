@@ -53,3 +53,16 @@
 .form-container button:hover {
   background-color: #0056b3;
 }
+.react-datepicker__triangle {
+  z-index: 1000; /* Asegúrate de que el calendario esté sobre otros elementos */
+}
+
+.react-datepicker {
+  position: absolute;
+  z-index: 1000; /* Ajusta este valor según sea necesario */
+}
+
+.container {
+  position: relative; /* Asegúrate de que el contenedor del selector de fechas esté posicionado correctamente */
+  overflow: visible;
+}

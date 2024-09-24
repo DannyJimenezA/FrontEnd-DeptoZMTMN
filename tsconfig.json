@@ -1,4 +1,11 @@
 {
+  "compilerOptions": {
+    "module": "esnext",  // Configura el sistema de módulos. Puedes probar cambiar a 'commonjs' si sigue el problema.
+    "esModuleInterop": true,  // Habilita la interoperabilidad entre módulos CommonJS y ES Modules
+    "allowSyntheticDefaultImports": true,  // Permite las importaciones por defecto
+    "strict": true,  // (opcional) Activa el modo estricto de TypeScript para mejorar la verificación de tipos
+    "target": "es6"  // (opcional) Configura el nivel de compatibilidad de ECMAScript
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },

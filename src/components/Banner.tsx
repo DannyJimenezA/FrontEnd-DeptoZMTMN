@@ -5,9 +5,9 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
 // Importa las imágenes desde la carpeta img
-import image1 from '../img/ZMT1.jpg';
-import image2 from '../img/ZMT2.jpg';
-import image3 from '../img/ZMT3.jpg';
+import image1 from '../img/IMG01.jpg';
+import image2 from '../img/IMG03.jpg';
+import image3 from '../img/IMG05.jpg';
 
 function Banner () {
   // Configuración del carrusel
