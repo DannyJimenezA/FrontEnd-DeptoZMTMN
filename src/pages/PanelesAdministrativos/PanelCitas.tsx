@@ -10,7 +10,9 @@ interface Cita {
   user: { // Cambia `IdUser` por `user` si así lo llamas en el backend
     id: number;
     nombre: string;
+    cedula: string;
   };
+  status: string;
 }
 
 // Función para obtener las citas desde la API
@@ -89,6 +91,35 @@ const TablaCitas: React.FC = () => {
       console.error('Error al eliminar la cita:', error);
     }
   };
+  const manejarCambioEstado = async (id: number, nuevoEstado: string)=>{
+   const token = localStorage.getItem('token');
+   if (!token){
+    console.error('Token no encontrado');
+    return;
+   }
+   try{
+    const response = await fetch(`http://localhost:3000/appointments/${id}/status`,{
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({status: nuevoEstado}),
+    });
+    if (!response.ok){
+      throw new Error(`Error al actualizar el estado de la cita con ID: ${id}`);
+    }
+    setCitas((prevCitas)=>
+      prevCitas.map((cita)=>
+        cita.id === id ? {...cita, status: nuevoEstado}:cita
+  )
+);
+console.log(`Estado de la cita con ID: ${id} cambiado a ${nuevoEstado}`);
+   }catch(error){
+    console.error('Error al cambiar el estado de la cita:', error);
+
+   }
+  };
 
   return (
     <div className="tabla-container">
@@ -99,7 +130,10 @@ const TablaCitas: React.FC = () => {
             <th>ID Cita</th>
             <th>Descripción</th>
             <th>Fecha</th>
+            <th>Hora</th>
             <th>ID Solicitante</th>
+            <th>Nombre </th>
+            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -108,9 +142,14 @@ const TablaCitas: React.FC = () => {
             <tr key={cita.id}>
               <td>{cita.id}</td>
               <td>{cita.description}</td>
-              <td>{new Date(cita.date).toLocaleString()}</td> {/* Formateo de fecha */}
-              <td>{cita.user ? `${cita.user.nombre}` : 'ID no disponible'}</td>
+              <td>{new Date(cita.date).toLocaleDateString()}</td> {/* Formateo de fecha */}
+              <td>{cita.time}</td>
+              <td>{cita.user ? `${cita.user.cedula}` : 'ID no disponible'}</td>
+              <td>{cita.user ? cita.user.nombre : 'Nombre no disponible'}</td>
+              <td>{cita.status}</td>
               <td>
+                <button onClick={()=> manejarCambioEstado(cita.id, 'aprobada')}>Aprobar</button>
+                <button onClick={()=> manejarCambioEstado(cita.id, 'denegada')}>Denegar</button>
                 <button onClick={() => manejarEliminar(cita.id)}>Eliminar</button>
               </td>
             </tr>
