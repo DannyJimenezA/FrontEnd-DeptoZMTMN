@@ -59,7 +59,7 @@ function Navbar() {
             </div>
         )}
         <Link to="/">Inicio</Link>
-        <Link to="/citas-audiencias">Citas</Link>
+        <Link to="/citas-Listas">Citas</Link>
         <Link to="/concesiones">Concesiones</Link>
         <Link to="/prorroga-concesion">Prórroga de Concesión</Link>
         <Link to="/solicitud-expediente">Solicitud Expediente</Link>
@@ -77,6 +77,8 @@ function Navbar() {
               <Link to="/Panel-Solicitud-Concesion">Solicitudes Concesión</Link>
               <Link to="/Panel-Prorroga-Concesiones">Prorroga de Concesiones</Link>
               <Link to="/Panel-Citas">Tabla de citas</Link>
+              <Link to="/Panel-Solicitud-Expediente">Tabla de solicitud expediente</Link>
+
             </div>
           )}
         </div>

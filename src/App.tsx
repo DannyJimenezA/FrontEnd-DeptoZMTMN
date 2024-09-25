@@ -17,6 +17,10 @@ import ProrrogaConcesion from './pages/ProrrogaConcesion';
 import PanelProrrogaConcesiones from './pages/PanelesAdministrativos/PanelProrrogaConcesion';
 import LandingPage from './pages/LandigPage';
 
+import TablaSolicitudExpediente from './pages/PanelesAdministrativos/SolicitudExpediente';
+import AppointmentsList from './pages/User/AppointmentsList';
+
+
 
 function App () {
   return (
@@ -27,6 +31,7 @@ function App () {
       <Navbar />
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path= "citas-Listas" element={<AppointmentsList/>}/>
         <Route path="/citas-audiencias" element={<CitasAudiencias />} />
         <Route path="/solicitud-expediente" element={<SolicitudExpediente />} />
         <Route path="/denuncias" element={<Denuncias />} />
@@ -41,6 +46,7 @@ function App () {
         <Route path="/Panel-Denuncias" element={<PanelDenuncia />} />
         <Route path="/Panel-Solicitud-Concesion" element={<PanelSolicitudConcesion />} />
         <Route path="/Panel-Prorroga-Concesiones" element={<PanelProrrogaConcesiones />} />
+        <Route path="/Panel-Solicitud-Expediente" element={<TablaSolicitudExpediente />} />
 
       </Routes>
     </Router>

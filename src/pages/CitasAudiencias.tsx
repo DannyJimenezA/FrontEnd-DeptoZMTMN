@@ -1,18 +1,18 @@
 import { useState } from "react";
 import "../styles/FormAudiencia.css";
+import DatePicker from "react-datepicker"
+import "react-datepicker/dist/react-datepicker.css";
+import { addDays, startOfWeek, endOfWeek, isWednesday } from "date-fns";
 
 function CitasAudiencias() {
-  const [selectedDate, setSelectedDate] = useState(""); // Estado para la fecha
+  const [selectedDate, setSelectedDate] = useState(null); // Estado para la fecha
   const [selectedTime, setSelectedTime] = useState(""); // Estado para la hora
   const [descripcion, setDescripcion] = useState(""); // Estado para la descripción
 
   // Manejador de la fecha
-  const handleDateChange = (event) => {
-    const selectedDate = new Date(event.target.value);
-    console.log("Fecha seleccionada:", selectedDate);
-
-    // Actualizar el estado con la fecha seleccionada
-    setSelectedDate(event.target.value);
+  const filterWeekdays = (date) => {
+    // Devuelve verdadero solo si la fecha es un miércoles
+    return date && isWednesday(date);
   };
 
   // Manejador para el envío del formulario
@@ -38,38 +38,50 @@ function CitasAudiencias() {
     }
   
     // Crear la fecha y hora combinadas
-    const [year, month, day] = selectedDate.split("-");
-    const [hours, minutes] = selectedTime.split(":");
+    const citaFechaHora = new Date(`${selectedDate}T${selectedTime}`);
   
-    // Crear la fecha en UTC manualmente
-    const citaFechaHora = new Date(Date.UTC(year, month, day, hours, minutes, 0));
-  
-    const cita = {
-      descripcion, // Descripción proporcionada por el usuario
-      fecha: citaFechaHora.toISOString(),
-    };
-  
-    try {
-      const response = await fetch('http://localhost:3000/appointments', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(cita),
-      });
-  
-      if (!response.ok) {
-        throw new Error('Error al crear la cita.');
-      }
-  
-      const result = await response.json();
-      alert('Cita creada exitosamente');
-      console.log('Cita creada:', result);
-    } catch (error) {
-      console.error('Error al crear la cita:', error);
-      alert('Hubo un error al crear la cita.');
-    }
+    const token = localStorage.getItem('token');
+  const decodedToken = parseJwt(token);  // Necesitarás una función para decodificar el JWT
+  const userId = decodedToken.userId;  // Este es el ID del usuario autenticado
+
+  const cita = {
+    description: descripcion, 
+    date: selectedDate,
+    time: selectedTime,
+    user_id: userId,
   };
+
+  try {
+    const response = await fetch('http://localhost:3000/appointments', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,  // Agrega el token a la cabecera
+      },
+      body: JSON.stringify(cita),
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al crear la cita.');
+    }
+
+    const result = await response.json();
+    alert('Cita creada exitosamente');
+    console.log('Cita creada:', result);
+  } catch (error) {
+    console.error('Error al crear la cita:', error);
+    alert('Hubo un error al crear la cita.');
+  }
+};
+
+// Función para decodificar el JWT
+const parseJwt = (token) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+};
   
   // Generación de opciones de tiempo (horarios)
   const getTimeOptions = () => {
@@ -116,7 +128,14 @@ function CitasAudiencias() {
         </div>
         <div className="form-group">
           <label>Seleccione la fecha:</label>
-          <input type="date" onChange={handleDateChange} required />
+          <DatePicker
+            selected={selectedDate}
+            onChange={(date) => setSelectedDate(date)}
+            filterDate={filterWeekdays} // Filtra las fechas para mostrar solo miércoles
+            dateFormat="yyyy-MM-dd"
+            placeholderText="Selecciona una fecha"
+            minDate={new Date()} // Opcional: No permitir fechas pasadas
+          />
         </div>
         {selectedDate && (
           <div className="form-group">
