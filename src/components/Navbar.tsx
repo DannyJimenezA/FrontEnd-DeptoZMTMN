@@ -59,7 +59,7 @@ function Navbar() {
             </div>
         )}
         <Link to="/">Inicio</Link>
-        <Link to="/citas-audiencias">Citas</Link>
+        <Link to="/citas-Listas">Citas</Link>
         <Link to="/concesiones">Concesiones</Link>
         <Link to="/prorroga-concesion">Prórroga de Concesión</Link>
         <Link to="/solicitud-expediente">Solicitud Expediente</Link>
