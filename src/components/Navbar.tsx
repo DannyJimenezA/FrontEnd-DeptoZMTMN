@@ -77,6 +77,8 @@ function Navbar() {
               <Link to="/Panel-Solicitud-Concesion">Solicitudes Concesión</Link>
               <Link to="/Panel-Prorroga-Concesiones">Prorroga de Concesiones</Link>
               <Link to="/Panel-Citas">Tabla de citas</Link>
+              <Link to="/Panel-Solicitud-Expediente">Tabla de solicitud expediente</Link>
+
             </div>
           )}
         </div>
