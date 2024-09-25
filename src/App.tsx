@@ -19,6 +19,9 @@ import LandingPage from './pages/LandigPage';
 
 import TablaSolicitudExpediente from './pages/PanelesAdministrativos/SolicitudExpediente';
 import AppointmentsList from './pages/User/AppointmentsList';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import ConfirmAccount from './pages/ConfirmAccount';
 
 
 
@@ -47,7 +50,10 @@ function App () {
         <Route path="/Panel-Solicitud-Concesion" element={<PanelSolicitudConcesion />} />
         <Route path="/Panel-Prorroga-Concesiones" element={<PanelProrrogaConcesiones />} />
         <Route path="/Panel-Solicitud-Expediente" element={<TablaSolicitudExpediente />} />
-
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/users/confirm/:token" element={<ConfirmAccount />} /> {/* Ruta para la confirmación */}
+        
       </Routes>
     </Router>
   );

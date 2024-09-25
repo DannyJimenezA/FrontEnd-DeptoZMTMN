@@ -34,10 +34,13 @@ function Login() {
       // Almacenar el token JWT en el localStorage o donde prefieras
       localStorage.setItem('token', data.access_token);
 
-      // Redirigir al usuario a la página principal u otra página
       navigate('/');
     } catch (error) {
-      setError(error.message);  // Manejar el error si ocurre
+      if (error.message === 'Usuario no encontrado' || error.message === 'Contraseña incorrecta') {
+        setError('Correo o contraseña incorrectos'); // Mensaje de error más amigable para el usuario
+      } else {
+        setError(error.message); // Otros errores
+      }
     }
   };
 
@@ -70,6 +73,10 @@ function Login() {
 
         <p>
           ¿No tienes cuenta? <Link to="/register">Regístrate aquí</Link>
+        </p>
+        <p>
+        <Link to ="/forgot-password"> Olvidaste tu contraseña?</Link>
+
         </p>
         
         <button type="submit">Iniciar Sesión</button>  {/* Enviar el formulario */}
