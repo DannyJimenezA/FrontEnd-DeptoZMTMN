@@ -16,7 +16,7 @@ interface CopiaExpediente {
 
 // Función para obtener las copias de expediente desde la API
 const fetchCopiasExpedientes = async (): Promise<CopiaExpediente[]> => {
-  const urlBase = 'http://localhost:3000/expedientes/';  // Nueva ruta para obtener las copias de expediente
+  const urlBase = 'http://localhost:3000/expedientes/solicitud';  // Nueva ruta para obtener las copias de expediente
 
   try {
     const response = await fetch(urlBase, {
@@ -68,7 +68,7 @@ const TablaSolicitudExpediente: React.FC = () => {
 
   const manejarAceptar = async (idExpediente: number) => {
     try {
-      const response = await fetch(`http://localhost:3000/expedientes/${idExpediente}/aceptar`, {
+      const response = await fetch(`http://localhost:3000/expedientes/solicitud/${idExpediente}/aceptar`, {
         method: 'POST',
       });
       if (!response.ok) {
@@ -88,7 +88,7 @@ const TablaSolicitudExpediente: React.FC = () => {
 
   const manejarEliminar = async (idExpediente: number) => {
     try {
-      const response = await fetch(`http://localhost:3000/expedientes/${idExpediente}`, {
+      const response = await fetch(`http://localhost:3000/expedientes/solicitud/${idExpediente}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
