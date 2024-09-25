@@ -16,7 +16,10 @@ import PanelSolicitudConcesion from "./pages/PanelesAdministrativos/PanelSolicit
 import ProrrogaConcesion from './pages/ProrrogaConcesion'; 
 import PanelProrrogaConcesiones from './pages/PanelesAdministrativos/PanelProrrogaConcesion';
 import LandingPage from './pages/LandigPage';
+
 import TablaSolicitudExpediente from './pages/PanelesAdministrativos/SolicitudExpediente';
+import AppointmentsList from './pages/User/AppointmentsList';
+
 
 
 function App () {
@@ -28,6 +31,7 @@ function App () {
       <Navbar />
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path= "citas-Listas" element={<AppointmentsList/>}/>
         <Route path="/citas-audiencias" element={<CitasAudiencias />} />
         <Route path="/solicitud-expediente" element={<SolicitudExpediente />} />
         <Route path="/denuncias" element={<Denuncias />} />
