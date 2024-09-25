@@ -163,6 +163,7 @@ const TablaProrrogas: React.FC = () => {
             <th>Nombre</th>
             <th>Apellidos </th>
             <th>Archivos Adjuntos</th>
+            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>

@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
-import "../styles/SolicitudConcesion.css"
+import React, { useEffect, useState } from "react";
+import "../styles/SolicitudConcesion.css";
 import { useForm } from "react-hook-form";
-//import {}from "../assets/PROYECTOS_2024_CE.pdf"
+
 function Concesiones() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [usuarios, setUsuarios] = useState([]); // Estado para almacenar los usuarios
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
 
   // Función para obtener los usuarios del backend
   const fetchUsuarios = async () => {
     try {
-      const response = await fetch('http://localhost:3006/users'); // Ajusta la URL según tu API
+      const response = await fetch('http://localhost:3000/users'); // Ajusta la URL según tu API
       const data = await response.json();
       setUsuarios(data); // Guardar los usuarios en el estado
     } catch (error) {
@@ -23,28 +24,25 @@ function Concesiones() {
   }, []);
 
   const onSubmit = async (data: any) => {
-    console.log(data);
-  
     // Crear un objeto FormData para manejar archivos y otros datos
     const formData = new FormData();
   
     // Agregar el ID del usuario seleccionado
     formData.append('userId', data.userId);
   
-    // Verificar si existe un archivo en 'documentoPrincipal' antes de agregarlo
-    if (data.documentoPrincipal && data.documentoPrincipal.length > 0) {
-      formData.append('documentoPrincipal', data.documentoPrincipal[0]); // archivo principal
+    // Verificar si existen archivos seleccionados
+    if (selectedFiles && selectedFiles.length > 0) {
+      Array.from(selectedFiles).forEach((file) => {
+        formData.append('documentos', file); // Agregamos cada archivo al FormData
+      });
     } else {
-      console.error('No se ha seleccionado un archivo de solicitud de concesión.');
+      console.error('No se ha seleccionado ningún archivo de solicitud de concesión.');
+      return;
     }
   
-    // Verificar si existe el archivo 'otros'
-    if (data.otros && data.otros.length > 0) {
-      formData.append('otros', data.otros[0]);
-    }
-  
+    // Enviar el formulario al backend
     try {
-      const response = await fetch('http://localhost:3006/concesiones', {
+      const response = await fetch('http://localhost:3000/concesiones', {
         method: 'POST',
         body: formData,
       });
@@ -59,24 +57,29 @@ function Concesiones() {
       console.error('Error al enviar el formulario:', error);
     }
   };
-  
+
+  // Manejar la selección de múltiples archivos
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedFiles(event.target.files); // Actualizamos el estado con los archivos seleccionados
+  };
+
   return (
     <div className="container">
-    <h1 className="form-title">Solicitud de concesion</h1>
-    <p className="form-subtitle">*Descripcion de la solicitud*</p>
+      <h1 className="form-title">Solicitud de concesión</h1>
+      <p className="form-subtitle">*Descripción de la solicitud*</p>
 
-    {/* Apartado para descargar un PDF */}
-    <div className="pdf-download">
-      <a href="/assets/SolicitudConcesion.pdf" download>
-        Descargar PDF
-      </a>
-    </div>
+      {/* Apartado para descargar un PDF */}
+      <div className="pdf-download">
+        <a href="/assets/SolicitudConcesion.pdf" download>
+          Descargar PDF
+        </a>
+      </div>
 
-    <div className="form-container">
-      <h2>Favor enviar todos los documentos necesarios</h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="form">
-     {/* Combo box para seleccionar el usuario */}
-     <div className="form-field">
+      <div className="form-container">
+        <h2>Favor enviar todos los documentos necesarios</h2>
+        <form onSubmit={handleSubmit(onSubmit)} className="form">
+          {/* Combo box para seleccionar el usuario */}
+          <div className="form-field">
             <label className="form-label">Seleccionar Usuario:</label>
             <select {...register('userId', { required: true })} className="form-input">
               <option value="">Seleccione un usuario</option>
@@ -90,61 +93,46 @@ function Concesiones() {
               <p className="error-message">Debe seleccionar un usuario</p>
             )}
           </div>
-         {/* Documento de solicitud de concesión */}
+          
+          {/* Documento de solicitud de concesión (múltiples archivos) */}
           <div className="form-field">
-            <label className="form-label">Solicitud de concesión:</label>
-            <input type="file" {...register('documentoPrincipal', { required: true })} className="form-input" />
-            {errors.documentoPrincipal && <p className="error-message">Este campo es obligatorio</p>}
+            <label className="form-label">Documentos de Solicitud de Concesión:</label>
+            <input
+              type="file"
+              multiple // Permitir múltiples archivos
+              accept="application/pdf" // Solo permite archivos PDF
+              {...register('documentos', { required: true })} // Registro en react-hook-form
+              onChange={handleFileChange} // Manejador de cambio
+              className="form-input"
+            />
+            {errors.documentos && (
+              <p className="error-message">Debe subir al menos un archivo PDF</p>
+            )}
           </div>
 
-          {/* Otros campos */}
+          {/* Otros campos opcionales */}
           <div className="form-field">
             <label className="form-label">Otros (Opcional):</label>
-            <input type="text" placeholder="Especificar cuál" {...register('otrosEspecificar')} className="form-input" />
-            <input type="file" {...register('otros')} className="form-input" />
+            <input
+              type="text"
+              placeholder="Especificar cuál"
+              {...register('otrosEspecificar')}
+              className="form-input"
+            />
+            <input
+              type="file"
+              {...register('otros')}
+              className="form-input"
+            />
           </div>
 
-
-        {/* <div className="form-field">
-          <label className="form-label">Documento de Adquisición:</label>
-          <input type="file" {...register('documentoAdquisicion', { required: false })} className="form-input" />
-          {errors.documentoAdquisicion && <p className="error-message">Este campo es obligatorio</p>}
-        </div>
-
-        <div className="form-field">
-          <label className="form-label">Plano catastrado o croquis:</label>
-          <input type="file" {...register('plano', { required: false })} className="form-input" />
-          {errors.plano && <p className="error-message">Este campo es obligatorio</p>}
-        </div>
-
-        <div className="form-field">
-          <label className="form-label">Certificación migracion (Solo extranjeros):</label>
-          <input type="file" {...register('certificacion')} className="form-input" />
-        </div>
-
-        <div className="form-field">
-          <label className="form-label">Copia certificada de la constitucion (Personas juridicas):</label>
-          <input type="file" {...register('copia')} className="form-input" />
-        </div>
-
-        <div className="form-field">
-          <label className="form-label">Certificacion notarial, distribucion de capital y personeria (Personas juridicas):</label>
-          <input type="file" {...register('certiNota')} className="form-input" />
-        </div> */}
-
-        {/* <div className="form-field">
-          <label className="form-label">Otros(Opcional):</label>
-          <input type="text" placeholder="Especificar cuál" {...register('otrosEspecificar')} className="form-input" />
-          <input type="file" {...register('otros')} className="form-input" />
-        </div> */}
-
-        <button type="submit" className="submit-button">Enviar</button>
-      </form>
+          <button type="submit" className="submit-button">
+            Enviar
+          </button>
+        </form>
+      </div>
     </div>
-  </div>
-);
-};
-
-
+  );
+}
 
 export default Concesiones;

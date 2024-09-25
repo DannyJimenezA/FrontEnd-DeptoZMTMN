@@ -18,7 +18,7 @@ const LandingPage: React.FC = () => {
       <div className="quick-access">
         <h2>Accede a nuestros servicios</h2>
         <div className="services-grid">
-          <Link to="/citas-audiencias" className="service-card">
+          <Link to="/citas-listas" className="service-card">
             <h3>Citas</h3>
             <p>Solicita tus citas de manera rápida.</p>
           </Link>
