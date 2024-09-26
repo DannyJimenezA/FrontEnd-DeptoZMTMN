@@ -16,7 +16,13 @@ import PanelSolicitudConcesion from "./pages/PanelesAdministrativos/PanelSolicit
 import ProrrogaConcesion from './pages/ProrrogaConcesion'; 
 import PanelProrrogaConcesiones from './pages/PanelesAdministrativos/PanelProrrogaConcesion';
 import LandingPage from './pages/LandigPage';
+
+import TablaSolicitudExpediente from './pages/PanelesAdministrativos/SolicitudExpediente';
 import AppointmentsList from './pages/User/AppointmentsList';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import ConfirmAccount from './pages/ConfirmAccount';
+
 
 
 function App () {
@@ -43,7 +49,11 @@ function App () {
         <Route path="/Panel-Denuncias" element={<PanelDenuncia />} />
         <Route path="/Panel-Solicitud-Concesion" element={<PanelSolicitudConcesion />} />
         <Route path="/Panel-Prorroga-Concesiones" element={<PanelProrrogaConcesiones />} />
-
+        <Route path="/Panel-Solicitud-Expediente" element={<TablaSolicitudExpediente />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/users/confirm/:token" element={<ConfirmAccount />} /> {/* Ruta para la confirmación */}
+        
       </Routes>
     </Router>
   );

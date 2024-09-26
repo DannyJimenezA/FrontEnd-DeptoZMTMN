@@ -1,8 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Navbar.css';
 import logo from '../img/logo.png';
 import { useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';  // Importación nombrada
+import { IoHomeSharp } from "react-icons/io5";
+import { FaTable, FaUser } from 'react-icons/fa';
 
 interface DecodedToken {
   email?: string;  // El campo 'email' es opcional, en caso de que no siempre esté presente
@@ -12,9 +14,22 @@ interface DecodedToken {
 function Navbar() {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [userEmail, setUserEmail] = useState('');  // Estado para almacenar el email del usuario
+  const [userDropdownVisible, setUserDropdownVisible] = useState(false); // Estado para mostrar/ocultar el dropdown del usuario
+  const navigate = useNavigate(); // Hook para la navegación
 
   const handleDropdownToggle = () => {
     setDropdownVisible(!dropdownVisible);
+  };
+
+  const handleUserDropdownToggle = () => {
+    setUserDropdownVisible(!userDropdownVisible);
+  };
+
+  const handleLogout = () => {
+    // Eliminar el token del localStorage y redirigir a la página de inicio de sesión
+    localStorage.removeItem('token');
+    setUserEmail(''); // Limpiar el estado del email
+    navigate('/'); // Redirigir a la página de login
   };
 
   // Ejecuta cuando el componente se monta
@@ -24,10 +39,6 @@ function Navbar() {
     
     if (token) {
       try {
-        // Verificar si el token es una cadena válida
-        if (typeof token !== 'string' || token.trim() === '') {
-          throw new Error('Token no válido');
-        }
 
         // Decodificar el token JWT para obtener los datos del usuario
         const decodedToken = jwtDecode(token) as DecodedToken;  // Cast para indicar la estructura del token
@@ -52,24 +63,13 @@ function Navbar() {
         <img src={logo} alt="Logo" />
       </div>
       <div className="navbar__links">
-          {/* Mostrar el email del usuario si está logueado */}
-          {userEmail && (
-            <div className="navbar__welcome">
-              Bienvenido, {userEmail}
-            </div>
-        )}
-        <Link to="/">Inicio</Link>
-        <Link to="/citas-Listas">Citas</Link>
-        <Link to="/concesiones">Concesiones</Link>
-        <Link to="/prorroga-concesion">Prórroga de Concesión</Link>
-        <Link to="/solicitud-expediente">Solicitud Expediente</Link>
-        <Link to="/denuncias">Denuncias</Link>
-        <Link to="/uso-precario">Uso Precario</Link>
+      
+        <Link to="/"><IoHomeSharp /> Inicio</Link>
 
         {/* Dropdown para paneles y tablas */}
         <div className="dropdown">
           <button className="dropdown__toggle" onClick={handleDropdownToggle}>
-            Paneles y Tablas
+            <FaTable /> Paneles y Tablas
           </button>
           {dropdownVisible && (
             <div className="dropdown__menu">
@@ -77,13 +77,31 @@ function Navbar() {
               <Link to="/Panel-Solicitud-Concesion">Solicitudes Concesión</Link>
               <Link to="/Panel-Prorroga-Concesiones">Prorroga de Concesiones</Link>
               <Link to="/Panel-Citas">Tabla de citas</Link>
+              <Link to="/Panel-Solicitud-Expediente">Tabla de solicitud expediente</Link>
             </div>
           )}
         </div>
+ {/* Mostrar el email del usuario si está logueado con dropdown de opciones */}
+ {userEmail ? (
+          <div className="navbar__user">
+            <div className="navbar__user-email" onClick={handleUserDropdownToggle}>
+              {userEmail} {/* Mostrar el correo del usuario logueado */}
+            </div>
+            {userDropdownVisible && (
+              <div className="user-dropdown">
+                <Link to="/change-password">Cambiar contraseña</Link> {/* Ruta para cambiar contraseña */}
+                <div onClick={handleLogout}>Cerrar sesión</div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <Link to="/login"><FaUser /> Iniciar Sesion</Link>
+        )}
       </div>
-      
     </nav>
   );
 }
 
 export default Navbar;
+
+
