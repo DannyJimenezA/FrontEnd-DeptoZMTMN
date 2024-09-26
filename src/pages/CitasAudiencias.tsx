@@ -41,7 +41,9 @@ function CitasAudiencias() {
     const citaFechaHora = new Date(`${selectedDate}T${selectedTime}`);
   
     const token = localStorage.getItem('token');
+    console.log("Token:", token);
   const decodedToken = parseJwt(token);  // Necesitarás una función para decodificar el JWT
+  console.log("Decoded Token:", decodedToken);
   const userId = decodedToken.userId;  // Este es el ID del usuario autenticado
 
   const cita = {
