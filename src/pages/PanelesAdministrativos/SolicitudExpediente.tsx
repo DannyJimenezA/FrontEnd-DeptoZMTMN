@@ -16,7 +16,7 @@ interface CopiaExpediente {
 
 // Función para obtener las copias de expediente desde la API
 const fetchCopiasExpedientes = async (): Promise<CopiaExpediente[]> => {
-  const urlBase = 'http://localhost:3000/expedientes/';  // Nueva ruta para obtener las copias de expediente
+  const urlBase = 'http://localhost:3000/expedientes';  // Nueva ruta para obtener las copias de expediente
 
   try {
     const response = await fetch(urlBase, {
