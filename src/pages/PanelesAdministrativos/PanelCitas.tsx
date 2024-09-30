@@ -131,7 +131,7 @@ console.log(`Estado de la cita con ID: ${id} cambiado a ${nuevoEstado}`);
             <th>Descripción</th>
             <th>Fecha</th>
             <th>Hora</th>
-            <th>ID Solicitante</th>
+            <th>Cedula</th>
             <th>Nombre </th>
             <th>Estado</th>
             <th>Acciones</th>

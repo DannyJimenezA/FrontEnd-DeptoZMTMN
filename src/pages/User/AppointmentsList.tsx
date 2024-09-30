@@ -27,7 +27,7 @@ const AppointmentsList = () => {
     // Función para obtener las citas desde el backend
     const fetchAppointments = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/appointments', {
+        const response = await axios.get('http://localhost:3000/appointments/my-appointments', {
           headers: {
             Authorization: `Bearer ${token}` // Enviar el token en la cabecera
           }
