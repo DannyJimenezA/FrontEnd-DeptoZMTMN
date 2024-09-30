@@ -2,27 +2,73 @@ import { useState } from "react";
 import "../styles/Administrativos/TablaSolicitudExpediente.css"; // Asegúrate de crear el archivo CSS con los estilos apropiados
 
 function SolicitudExpediente() {
-  const [nombreSolicitante, setNombreSolicitante] = useState("");
-  const [numeroCedula, setNumeroCedula] = useState("");
+  
   const [telefonoSolicitante, setTelefonoSolicitante] = useState("");
   const [medioNotificacion, setMedioNotificacion] = useState("");
   const [numeroExpediente, setNumeroExpediente] = useState("");
   const [copiaCertificada, setCopiaCertificada] = useState<string | null>(null);
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const [errorMessage, setErrorMessage]= useState<string | null>(null);
+  const [succesMessage, setSuccesMessage] = useState<string | null>(null);
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Aquí puedes manejar el envío del formulario
+
+    // Obtener el token desde localStorage
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        console.error("Token no disponible");
+        return;
+    }
+
+    // Decodificar el token para extraer el userId
+    const decodedToken: any = parseJwt(token); // Usa parseJwt para decodificar
+    console.log("Decoded Token:", decodedToken);
+  
+
+    const userId = decodedToken.sub; // Ajustar según cómo esté estructurado el token
+
+    if (!userId) {
+        console.error("No se pudo extraer el userId del token");
+        return;
+    }
+
     const solicitud = {
-      nombreSolicitante,
-      numeroCedula,
-      telefonoSolicitante,
-      medioNotificacion,
-      numeroExpediente,
-      copiaCertificada,
+        userId,  // Incluye el userId en la solicitud
+        telefonoSolicitante,
+        medioNotificacion,
+        numeroExpediente,
+        copiaCertificada,
     };
-    console.log("Formulario enviado:", solicitud);
-    // Puedes agregar la lógica para enviar esta información al backend o procesarla según sea necesario
-  };
+
+    try {
+        const response = await fetch("http://localhost:3000/expedientes/solicitud", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(solicitud),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Error en la solicitud:", errorData);
+            return;
+        }
+
+        const responseData = await response.json();
+        console.log("Solicitud exitosa", responseData);
+    } catch (error) {
+        console.error("Error en el envío del formulario:", error);
+    }
+};
+const parseJwt = (token) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+};
 
   return (
     <div className="form-container">
