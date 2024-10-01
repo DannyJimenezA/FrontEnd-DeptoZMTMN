@@ -11,12 +11,12 @@ interface CopiaExpediente {
   medioNotificacion: string;
   numeroExpediente: string;
   copiaCertificada: boolean;
-  estado?: string; // Agregado un estado opcional para manejar el estado de aceptación
+  status?: string; // Agregado un estado opcional para manejar el estado de aceptación
 }
 
 // Función para obtener las copias de expediente desde la API
 const fetchCopiasExpedientes = async (): Promise<CopiaExpediente[]> => {
-  const urlBase = 'http://localhost:3000/expedientes/';  // Nueva ruta para obtener las copias de expediente
+  const urlBase = 'http://localhost:3000/expedientes';  // Nueva ruta para obtener las copias de expediente
 
   try {
     const response = await fetch(urlBase, {
@@ -66,25 +66,7 @@ const TablaSolicitudExpediente: React.FC = () => {
     setModalIsOpen(true);
   };
 
-  const manejarAceptar = async (idExpediente: number) => {
-    try {
-      const response = await fetch(`http://localhost:3000/expedientes/${idExpediente}/aceptar`, {
-        method: 'POST',
-      });
-      if (!response.ok) {
-        throw new Error(`Error al aceptar la copia de expediente con ID: ${idExpediente}`);
-      }
-      // Actualiza el estado local para reflejar que la copia fue aceptada
-      setCopiasExpedientes((prevCopias) =>
-        prevCopias.map((copia) =>
-          copia.idExpediente === idExpediente ? { ...copia, estado: 'aceptada' } : copia
-        )
-      );
-      console.log(`Copia de expediente con ID: ${idExpediente} aceptada`);
-    } catch (error) {
-      console.error('Error al aceptar la copia de expediente:', error);
-    }
-  };
+  
 
   const manejarEliminar = async (idExpediente: number) => {
     try {
@@ -102,15 +84,36 @@ const TablaSolicitudExpediente: React.FC = () => {
       console.error('Error al eliminar la copia de expediente:', error);
     }
   };
-
-  if (loading) {
-    return <p>Cargando copias de expediente...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
-
+  const manejarCambioEstado = async (idExpediente: number, nuevoEstado: string)=>{
+    const token = localStorage.getItem('token');
+    if (!token){
+     console.error('Token no encontrado');
+     return;
+    }
+    try{
+     const response = await fetch(`http://localhost:3000/expedientes/${idExpediente}/status`,{
+       method: 'PUT',
+       headers: {
+         'Content-Type': 'application/json',
+         'Authorization': `Bearer ${token}`,
+       },
+       body: JSON.stringify({status: nuevoEstado}),
+     });
+     if (!response.ok){
+       throw new Error(`Error al actualizar el estado de la cita con ID: ${idExpediente}`);
+     }
+     setCopiasExpedientes((prevCopias)=>
+       prevCopias.map((copia)=>
+         copia.idExpediente === idExpediente ? {...copia, status: nuevoEstado}:copia
+   )
+ );
+ console.log(`Estado de la cita con ID: ${idExpediente} cambiado a ${nuevoEstado}`);
+    }catch(error){
+     console.error('Error al cambiar el estado de la cita:', error);
+ 
+    }
+   };
+ 
   return (
     <div className="tabla-container">
       <h2>Copias de Expediente</h2>
@@ -136,10 +139,11 @@ const TablaSolicitudExpediente: React.FC = () => {
               <td>{copia.medioNotificacion}</td>
               <td>{copia.numeroExpediente}</td>
               <td>{copia.copiaCertificada ? 'Sí' : 'No'}</td>
-              <td>{copia.estado ? copia.estado : 'Pendiente'}</td> {/* Mostrar estado de la copia */}
+              <td>{copia.status}</td> {/* Mostrar estado de la copia */}
               <td>
                 <button onClick={() => manejarVer(copia)}>Ver</button>
-                <button onClick={() => manejarAceptar(copia.idExpediente)}>Aceptar</button>
+                <button onClick={()=> manejarCambioEstado(copia.idExpediente, 'aprobada')}>Aprobar</button>
+                <button onClick={()=> manejarCambioEstado(copia.idExpediente, 'denegada')}>Denegar</button>
                 <button onClick={() => manejarEliminar(copia.idExpediente)}>Eliminar</button>
               </td>
             </tr>
