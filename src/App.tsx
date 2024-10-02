@@ -1,7 +1,6 @@
 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Banner from './components/Banner';
 import CitasAudiencias from './pages/CitasAudiencias';
 import SolicitudExpediente from './pages/SolicitudExpediente';
 import Denuncias from './pages/Denuncias';
@@ -14,16 +13,28 @@ import TablaSolicitudes1 from './pages/PanelesAdministrativos/PanelSolicitudConc
 import PanelCitas from './pages/PanelesAdministrativos/PanelCitas';
 import PanelDenuncia from './pages/PanelesAdministrativos/PanelDenuncia';
 import PanelSolicitudConcesion from "./pages/PanelesAdministrativos/PanelSolicitudConcesion";
-import ProrrogaConcesion from './pages/ProrrogaConcesion'; // Importa el componente de Prórroga de Concesión
+import ProrrogaConcesion from './pages/ProrrogaConcesion'; 
 import PanelProrrogaConcesiones from './pages/PanelesAdministrativos/PanelProrrogaConcesion';
+import LandingPage from './pages/LandigPage';
+
+import TablaSolicitudExpediente from './pages/PanelesAdministrativos/SolicitudExpediente';
+import AppointmentsList from './pages/User/AppointmentsList';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import ConfirmAccount from './pages/ConfirmAccount';
+
 
 
 function App () {
   return (
+
+
+
     <Router>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Banner />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path= "citas-Listas" element={<AppointmentsList/>}/>
         <Route path="/citas-audiencias" element={<CitasAudiencias />} />
         <Route path="/solicitud-expediente" element={<SolicitudExpediente />} />
         <Route path="/denuncias" element={<Denuncias />} />
@@ -38,7 +49,11 @@ function App () {
         <Route path="/Panel-Denuncias" element={<PanelDenuncia />} />
         <Route path="/Panel-Solicitud-Concesion" element={<PanelSolicitudConcesion />} />
         <Route path="/Panel-Prorroga-Concesiones" element={<PanelProrrogaConcesiones />} />
-
+        <Route path="/Panel-Solicitud-Expediente" element={<TablaSolicitudExpediente />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/users/confirm/:token" element={<ConfirmAccount />} /> {/* Ruta para la confirmación */}
+        
       </Routes>
     </Router>
   );

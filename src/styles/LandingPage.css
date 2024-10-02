@@ -1,0 +1,89 @@
+/* Estilos generales para la landing page */
+.landing-page {
+  text-align: center;
+  padding: 40px;
+  background-color: #f4f4f4;
+}
+
+/* Banner principal */
+.banner {
+  background-color: #004080;
+  color: white;
+  padding: 100px 20px;
+  margin-bottom: 40px;
+}
+
+.banner h1 {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.banner p {
+  font-size: 18px;
+}
+
+/* Acceso rápido a los servicios */
+.quick-access {
+  margin-bottom: 60px;
+}
+
+.quick-access h2 {
+  font-size: 32px;
+  margin-bottom: 30px;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Siempre 3 columnas */
+  gap: 20px;
+}
+
+/* Ajuste responsive para pantallas más pequeñas */
+@media (max-width: 768px) {
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columnas en pantallas medianas */
+  }
+}
+
+@media (max-width: 480px) {
+  .services-grid {
+    grid-template-columns: 1fr; /* 1 columna en pantallas pequeñas */
+  }
+}
+
+.service-card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #333;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-10px);
+}
+
+.service-card h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.service-card p {
+  font-size: 16px;
+  color: #555;
+}
+
+/* Sección de autenticación */
+.info-section {
+  background-color: #004080;
+  color: white;
+  padding: 40px;
+  border-radius: 8px;
+}
+
+.info-section h2 {
+  font-size: 32px;
+  margin-bottom: 20px;
+}
