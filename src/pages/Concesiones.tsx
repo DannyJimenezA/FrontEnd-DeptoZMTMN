@@ -1,27 +1,28 @@
 import React, { useEffect, useState } from "react";
 import "../styles/SolicitudConcesion.css";
 import { useForm } from "react-hook-form";
+import { FaRegFileAlt } from "react-icons/fa";
 
 function Concesiones() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [usuarios, setUsuarios] = useState([]); // Estado para almacenar los usuarios
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
 
-  // Función para obtener los usuarios del backend
-  const fetchUsuarios = async () => {
-    try {
-      const response = await fetch('http://localhost:3000/users'); // Ajusta la URL según tu API
-      const data = await response.json();
-      setUsuarios(data); // Guardar los usuarios en el estado
-    } catch (error) {
-      console.error('Error al cargar los usuarios:', error);
-    }
-  };
+  // // Función para obtener los usuarios del backend
+  // const fetchUsuarios = async () => {
+  //   try {
+  //     const response = await fetch('http://localhost:3000/users'); // Ajusta la URL según tu API
+  //     const data = await response.json();
+  //     setUsuarios(data); // Guardar los usuarios en el estado
+  //   } catch (error) {
+  //     console.error('Error al cargar los usuarios:', error);
+  //   }
+  // };
 
-  // Obtener los usuarios cuando el componente se monta
-  useEffect(() => {
-    fetchUsuarios();
-  }, []);
+  // // Obtener los usuarios cuando el componente se monta
+  // useEffect(() => {
+  //   fetchUsuarios();
+  // }, []);
 
   const onSubmit = async (data: any) => {
     // Crear un objeto FormData para manejar archivos y otros datos
@@ -71,7 +72,7 @@ function Concesiones() {
       {/* Apartado para descargar un PDF */}
       <div className="pdf-download">
         <a href="/assets/SolicitudConcesion.pdf" download>
-          Descargar PDF
+        <FaRegFileAlt /> Descargar PDF
         </a>
       </div>
 
@@ -83,11 +84,11 @@ function Concesiones() {
             <label className="form-label">Seleccionar Usuario:</label>
             <select {...register('userId', { required: true })} className="form-input">
               <option value="">Seleccione un usuario</option>
-              {usuarios.map((usuario) => (
+              {/* {usuarios.map((usuario) => (
                 <option key={usuario.id} value={usuario.id}>
                   {usuario.nombre} {usuario.apellido1}
                 </option>
-              ))}
+              ))} */}
             </select>
             {errors.userId && (
               <p className="error-message">Debe seleccionar un usuario</p>
