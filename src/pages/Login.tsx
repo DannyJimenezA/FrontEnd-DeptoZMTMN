@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import '../styles/Login.css';
 
 function Login() {
@@ -7,6 +7,11 @@ function Login() {
   const [password, setPassword] = useState('');  // Manejar el estado del password
   const [error, setError] = useState('');  // Manejar errores
   const navigate = useNavigate();  // Usar para redirigir al usuario
+  const location = useLocation();  // Usar para obtener el estado de redirección
+
+  // Obtener el mensaje y la ruta desde el estado de la navegación
+  const { state } = location;
+  const message = state?.message || '';  // Mensaje pasado desde la redirección
 
   // Función para manejar el envío del formulario
   const handleSubmit = async (e) => {
@@ -34,6 +39,7 @@ function Login() {
       // Almacenar el token JWT en el localStorage o donde prefieras
       localStorage.setItem('token', data.access_token);
 
+      // Redirigir al usuario después de iniciar sesión correctamente
       navigate('/');
     } catch (error) {
       if (error.message === 'Usuario no encontrado' || error.message === 'Contraseña incorrecta') {
@@ -47,6 +53,10 @@ function Login() {
   return (
     <div className="login-container">
       <h2>Inicio de Sesión</h2>
+
+      {/* Mostrar el mensaje si el usuario fue redirigido desde una página protegida */}
+      {message && <p style={{ color: 'blue' }}>{message}</p>}
+
       <form className="login-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="email">Correo</label>
@@ -75,8 +85,7 @@ function Login() {
           ¿No tienes cuenta? <Link to="/register">Regístrate aquí</Link>
         </p>
         <p>
-        <Link to ="/forgot-password"> Olvidaste tu contraseña?</Link>
-
+          <Link to="/forgot-password">Olvidaste tu contraseña?</Link>
         </p>
         
         <button type="submit">Iniciar Sesión</button>  {/* Enviar el formulario */}
