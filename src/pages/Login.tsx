@@ -9,7 +9,7 @@ function Login() {
   const navigate = useNavigate();  // Usar para redirigir al usuario
 
   // Función para manejar el envío del formulario
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();  // Evitar que el formulario recargue la página
     setError('');  // Limpiar errores antes de hacer la solicitud
 
