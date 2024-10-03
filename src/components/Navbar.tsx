@@ -66,10 +66,24 @@ function Navbar() {
       
         <Link to="/"><IoHomeSharp /> Inicio</Link>
 
-        {/* Dropdown para paneles y tablas */}
+        {/* Dropdown para solicitudes usuario */}
         <div className="dropdown">
           <button className="dropdown__toggle" onClick={handleDropdownToggle}>
-            <FaTable /> Paneles y Tablas
+            <FaTable /> Usuarios
+          </button>
+          {dropdownVisible && (
+            <div className="dropdown__menu">
+              <Link to="/citas-listas">Agendar una cita</Link>
+              <Link to="/concesiones">Solicitudes Concesión</Link>
+              <Link to="/prorroga-concesion">Prorroga de Concesiones</Link>
+              <Link to="/solicitud-expediente">Solicitud de expediente</Link>
+            </div>
+          )}
+        </div>
+        {/* Dropdown para paneles y tablas admin */}
+        <div className="dropdown">
+          <button className="dropdown__toggle" onClick={handleDropdownToggle}>
+            <FaTable /> Admins
           </button>
           {dropdownVisible && (
             <div className="dropdown__menu">

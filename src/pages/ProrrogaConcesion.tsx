@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/ProrrogaConcesion.css"; // Asegúrate de que la hoja de estilos esté correctamente importada
 import { useForm } from "react-hook-form";
+import { FaRegFileAlt } from "react-icons/fa";
 
 function Prorrogas() {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -88,7 +89,7 @@ function Prorrogas() {
       {/* Apartado para descargar un PDF relacionado con la prórroga */}
       <div className="pdf-download">
         <a href="/assets/Prorroga.pdf" download>
-          Descargar PDF de Prórroga
+        <FaRegFileAlt /> Descargar PDF de Prórroga
         </a>
       </div>
 

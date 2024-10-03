@@ -10,8 +10,7 @@ const LandingPage: React.FC = () => {
       {/* Banner con mensaje principal */}
       <div className="banner">
         <h1>Bienvenido al Departamento de Zona Maritimo Terrestre de la Municipalidad de Nicoya</h1>
- 
-      <Banner/>
+        <Banner/>
       </div>
 
       {/* Sección de accesos rápidos */}
@@ -30,11 +29,11 @@ const LandingPage: React.FC = () => {
             <h3>Prórroga de Concesión</h3>
             <p>Solicita prórrogas de concesión.</p>
           </Link>
-          <Link to="/solicitud-expediente" className="service-card">
-            <h3>Solicitud de Expediente</h3>
-            <p>Realiza solicitudes de expediente.</p>
-          </Link>
-          <Link to="/denuncias" className="service-card">
+          <Link to="/mis-solicitudes-expediente" className="service-card">
+           <h3>Solicitud de Expediente</h3>
+           <p>Revisa y gestiona tus solicitudes de expediente.</p>
+           </Link>
+         <Link to="/denuncias" className="service-card">
             <h3>Denuncias</h3>
             <p>Envía denuncias .</p>
           </Link>
