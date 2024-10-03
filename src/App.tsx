@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import CitasAudiencias from './pages/CitasAudiencias';
@@ -16,25 +15,22 @@ import PanelSolicitudConcesion from "./pages/PanelesAdministrativos/PanelSolicit
 import ProrrogaConcesion from './pages/ProrrogaConcesion'; 
 import PanelProrrogaConcesiones from './pages/PanelesAdministrativos/PanelProrrogaConcesion';
 import LandingPage from './pages/LandigPage';
-
 import TablaSolicitudExpediente from './pages/PanelesAdministrativos/SolicitudExpediente';
 import AppointmentsList from './pages/User/AppointmentsList';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import ConfirmAccount from './pages/ConfirmAccount';
 
-
+// Aquí importa desde la nueva carpeta `User`
+import VistaSolicitudesExpediente from './pages/VistaSolicitudesExpedientes'; 
 
 function App () {
   return (
-
-
-
     <Router>
       <Navbar />
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path= "citas-Listas" element={<AppointmentsList/>}/>
+        <Route path="/citas-Listas" element={<AppointmentsList />} />
         <Route path="/citas-audiencias" element={<CitasAudiencias />} />
         <Route path="/solicitud-expediente" element={<SolicitudExpediente />} />
         <Route path="/denuncias" element={<Denuncias />} />
@@ -53,10 +49,13 @@ function App () {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/users/confirm/:token" element={<ConfirmAccount />} /> {/* Ruta para la confirmación */}
-        
+
+        {/* Nueva ruta para que los usuarios vean sus solicitudes de expediente */}
+        <Route path="/mis-solicitudes-expediente" element={<VistaSolicitudesExpediente />} />
       </Routes>
     </Router>
   );
 }
 
 export default App;
+
