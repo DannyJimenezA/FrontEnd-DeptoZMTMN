@@ -1,12 +1,20 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FaUser, FaLock } from 'react-icons/fa'; // Importar los íconos de react-icons
 import '../styles/Login.css';
+import { FaRegUser } from "react-icons/fa";
 
 function Login() {
   const [email, setEmail] = useState('');  // Manejar el estado del email
   const [password, setPassword] = useState('');  // Manejar el estado del password
+  const [showPassword, setShowPassword] = useState(false);  // Mostrar/ocultar contraseña
   const [error, setError] = useState('');  // Manejar errores
   const navigate = useNavigate();  // Usar para redirigir al usuario
+
+  // Alternar visibilidad de la contraseña
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   // Función para manejar el envío del formulario
   const handleSubmit = async (e: { preventDefault: () => void; }) => {
@@ -48,25 +56,38 @@ function Login() {
     <div className="login-container">
       <h2>Inicio de Sesión</h2>
       <form className="login-form" onSubmit={handleSubmit}>
+        
+        {/* Campo de correo con icono */}
         <div className="form-group">
-          <label htmlFor="email">Correo</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}  // Actualizar el estado del email
-            required
-          />
+          <div className="input-container">
+            <FaRegUser className="input-icon" /> {/* Icono del usuario */}
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}  // Actualizar el estado del email
+              placeholder="Correo"
+              required
+            />
+          </div>
         </div>
+
+        {/* Campo de contraseña con icono */}
         <div className="form-group">
-          <label htmlFor="password">Contraseña</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}  // Actualizar el estado del password
-            required
-          />
+          <div className="input-container">
+            <FaLock className="input-icon" /> {/* Icono de candado */}
+            <input
+              type={showPassword ? 'text' : 'password'}  // Cambiar entre texto y contraseña
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}  // Actualizar el estado del password
+              placeholder="Contraseña"
+              required
+            />
+            <span className="toggle-password" onClick={togglePasswordVisibility}>
+              {showPassword ? 'OCULTAR' : 'MOSTRAR'}
+            </span>
+          </div>
         </div>
 
         {error && <p style={{ color: 'red' }}>{error}</p>}  {/* Mostrar error si lo hay */}
@@ -75,8 +96,7 @@ function Login() {
           ¿No tienes cuenta? <Link to="/register">Regístrate aquí</Link>
         </p>
         <p>
-        <Link to ="/forgot-password"> Olvidaste tu contraseña?</Link>
-
+          <Link to="/forgot-password">Olvidaste tu contraseña?</Link>
         </p>
         
         <button type="submit">Iniciar Sesión</button>  {/* Enviar el formulario */}
