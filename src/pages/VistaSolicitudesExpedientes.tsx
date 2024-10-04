@@ -4,10 +4,11 @@ import "../styles/VistaSolicitudesExpedientes.css";
 
 
 interface Solicitud {
-  id: number;
+  idExpediente: number;
   nombreExpediente: string;
-  fechaSolicitud: string;
-  estado: string;
+  numeroExpediente: string;
+  copiaCertificada: boolean;
+  status: string;
 }
 
 const VistaSolicitudesExpediente: React.FC = () => {
@@ -42,16 +43,8 @@ const VistaSolicitudesExpediente: React.FC = () => {
 
   // Función para redirigir a la creación de una nueva solicitud
   const handleCrearSolicitud = () => {
-    navigate("/crear-solicitud-expediente");
+    navigate("/solicitud-expediente");
   };
-
-  if (loading) {
-    return <p>Cargando solicitudes...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
 
   return (
     <div className="vista-solicitudes-expediente">
@@ -60,13 +53,16 @@ const VistaSolicitudesExpediente: React.FC = () => {
       {solicitudes.length === 0 ? (
         <p>No tienes solicitudes de expediente.</p>
       ) : (
-        <ul>
+        <div className="solicitudes-grid">
           {solicitudes.map(solicitud => (
-            <li key={solicitud.id}>
-              <strong>{solicitud.nombreExpediente}</strong> - Fecha: {solicitud.fechaSolicitud} - Estado: {solicitud.estado}
-            </li>
+            <div key={solicitud.idExpediente} className="solicitud-card">
+              <h3>{solicitud.nombreExpediente}</h3>
+              <p><strong>Número de Expediente:</strong> {solicitud.numeroExpediente}</p>
+              <p><strong>Copia Certificada:</strong> {solicitud.copiaCertificada ? 'Sí' : 'No'}</p>
+              <p><strong>Estado:</strong> {solicitud.status}</p>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
 
       <div className="boton-crear-solicitud">
