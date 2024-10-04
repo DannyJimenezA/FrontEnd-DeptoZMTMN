@@ -122,10 +122,10 @@ const TablaSolicitudExpediente: React.FC = () => {
           <tr>
             <th>ID Expediente</th>
             <th>Nombre Solicitante</th>
-            <th>Teléfono</th>
-            <th>Medio Notificación</th>
+            {/* <th>Teléfono</th>*/}
+           {/* <th>Medio Notificación</th> */}
             <th>Número Expediente</th>
-            <th>Copia Certificada</th>
+           {/* <th>Copia Certificada</th>*/}
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
@@ -135,10 +135,10 @@ const TablaSolicitudExpediente: React.FC = () => {
             <tr key={copia.idExpediente}>
               <td>{copia.idExpediente}</td>
               <td>{copia.nombreSolicitante}</td>
-              <td>{copia.telefonoSolicitante}</td>
-              <td>{copia.medioNotificacion}</td>
+             {/* <td>{copia.telefonoSolicitante}</td>*/}
+              {/*<td>{copia.medioNotificacion}</td>*/}
               <td>{copia.numeroExpediente}</td>
-              <td>{copia.copiaCertificada ? 'Sí' : 'No'}</td>
+             {/* <td>{copia.copiaCertificada ? 'Sí' : 'No'}</td>*/}
               <td>{copia.status}</td> {/* Mostrar estado de la copia */}
               <td>
                 <button onClick={() => manejarVer(copia)}>Ver</button>
