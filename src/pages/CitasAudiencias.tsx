@@ -10,7 +10,7 @@ function CitasAudiencias() {
   const [descripcion, setDescripcion] = useState(""); // Estado para la descripción
 
   // Manejador de la fecha
-  const filterWeekdays = (date) => {
+  const filterWeekdays = (date: unknown) => {
     // Devuelve verdadero solo si la fecha es un miércoles
     return date && isWednesday(date);
   };
@@ -153,7 +153,7 @@ const parseJwt = (token) => {
           </div>
         )}
         <div className="form-group">
-          <button type="submit">Enviar</button>
+          <button type="submit" >Enviar</button>
         </div>
       </form>
     </div>

@@ -44,6 +44,8 @@ const TablaSolicitudExpediente: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [copiaSeleccionada, setCopiaSeleccionada] = useState<CopiaExpediente | null>(null);
+  const [modalVisible, setModalVisible]= useState(false);
+  const [selectedExpedienteId, setSelectedExpedienteId]= useState<number | null>(null);
 
   useEffect(() => {
     const obtenerCopiasExpedientes = async () => {
@@ -80,10 +82,20 @@ const TablaSolicitudExpediente: React.FC = () => {
         prevCopias.filter((copia) => copia.idExpediente !== idExpediente)
       );
       console.log(`Copia de expediente con ID: ${idExpediente} eliminada`);
+      setModalVisible(false);
     } catch (error) {
       console.error('Error al eliminar la copia de expediente:', error);
     }
   };
+  const abrirModalEliminar =(idExpediente)=>{
+    setSelectedExpedienteId(idExpediente);
+    setModalVisible(true);
+    
+  };
+  const cerrarModal =()=>{
+    setModalVisible(false);
+    setSelectedExpedienteId(null)
+  }
   const manejarCambioEstado = async (idExpediente: number, nuevoEstado: string)=>{
     const token = localStorage.getItem('token');
     if (!token){
@@ -122,10 +134,10 @@ const TablaSolicitudExpediente: React.FC = () => {
           <tr>
             <th>ID Expediente</th>
             <th>Nombre Solicitante</th>
-            <th>Teléfono</th>
-            <th>Medio Notificación</th>
+            {/* <th>Teléfono</th>*/}
+           {/* <th>Medio Notificación</th> */}
             <th>Número Expediente</th>
-            <th>Copia Certificada</th>
+           {/* <th>Copia Certificada</th>*/}
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
@@ -135,21 +147,34 @@ const TablaSolicitudExpediente: React.FC = () => {
             <tr key={copia.idExpediente}>
               <td>{copia.idExpediente}</td>
               <td>{copia.nombreSolicitante}</td>
-              <td>{copia.telefonoSolicitante}</td>
-              <td>{copia.medioNotificacion}</td>
+             {/* <td>{copia.telefonoSolicitante}</td>*/}
+              {/*<td>{copia.medioNotificacion}</td>*/}
               <td>{copia.numeroExpediente}</td>
-              <td>{copia.copiaCertificada ? 'Sí' : 'No'}</td>
+             {/* <td>{copia.copiaCertificada ? 'Sí' : 'No'}</td>*/}
               <td>{copia.status}</td> {/* Mostrar estado de la copia */}
               <td>
                 <button onClick={() => manejarVer(copia)}>Ver</button>
                 <button onClick={()=> manejarCambioEstado(copia.idExpediente, 'aprobada')}>Aprobar</button>
                 <button onClick={()=> manejarCambioEstado(copia.idExpediente, 'denegada')}>Denegar</button>
-                <button onClick={() => manejarEliminar(copia.idExpediente)}>Eliminar</button>
+                <button onClick={() => abrirModalEliminar(copia.idExpediente)}>Eliminar</button>
               </td>
             </tr>
           ))}
+          
         </tbody>
       </table>
+      {modalVisible && (
+  <Modal
+    isOpen={modalVisible}
+    onRequestClose={cerrarModal} // Cambiar `onClose` por `onRequestClose`
+    contentLabel="Confirmación"
+  >
+    <h2>Confirmación</h2>
+    <p>¿Estás seguro de que deseas eliminar esta copia de expediente?</p>
+    <button className='buttonConfirmar' onClick={() => manejarEliminar(selectedExpedienteId)}>Confirmar</button>
+    <button className='buttonEliminar' onClick={cerrarModal}>Cancelar</button>
+  </Modal>
+)}
 
       {/* Modal para mostrar los detalles de la solicitud */}
       {copiaSeleccionada && (
@@ -165,7 +190,7 @@ const TablaSolicitudExpediente: React.FC = () => {
           <p><strong>Medio Notificación:</strong> {copiaSeleccionada.medioNotificacion}</p>
           <p><strong>Número Expediente:</strong> {copiaSeleccionada.numeroExpediente}</p>
           <p><strong>Copia Certificada:</strong> {copiaSeleccionada.copiaCertificada ? 'Sí' : 'No'}</p>
-          <p><strong>Estado:</strong> {copiaSeleccionada.estado ? copiaSeleccionada.estado : 'Pendiente'}</p>
+          <p><strong>Estado:</strong> {copiaSeleccionada.status ? copiaSeleccionada.status : 'Pendiente'}</p>
           <button onClick={() => setModalIsOpen(false)}>Cerrar</button>
         </Modal>
       )}
