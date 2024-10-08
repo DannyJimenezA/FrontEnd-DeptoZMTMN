@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaUser, FaLock } from 'react-icons/fa'; // Importar los íconos de react-icons
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import '../styles/Login.css';
 import { FaRegUser } from "react-icons/fa";
 
@@ -10,6 +11,11 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);  // Mostrar/ocultar contraseña
   const [error, setError] = useState('');  // Manejar errores
   const navigate = useNavigate();  // Usar para redirigir al usuario
+  const location = useLocation();  // Usar para obtener el estado de redirección
+
+  // Obtener el mensaje y la ruta desde el estado de la navegación
+  const { state } = location;
+  const message = state?.message || '';  // Mensaje pasado desde la redirección
 
   // Alternar visibilidad de la contraseña
   const togglePasswordVisibility = () => {
@@ -42,6 +48,7 @@ function Login() {
       // Almacenar el token JWT en el localStorage o donde prefieras
       localStorage.setItem('token', data.access_token);
 
+      // Redirigir al usuario después de iniciar sesión correctamente
       navigate('/');
     } catch (error) {
       if (error.message === 'Usuario no encontrado' || error.message === 'Contraseña incorrecta') {
@@ -55,6 +62,10 @@ function Login() {
   return (
     <div className="login-container">
       <h2>Inicio de Sesión</h2>
+
+      {/* Mostrar el mensaje si el usuario fue redirigido desde una página protegida */}
+      {message && <p style={{ color: 'blue' }}>{message}</p>}
+
       <form className="login-form" onSubmit={handleSubmit}>
         
         {/* Campo de correo con icono */}
