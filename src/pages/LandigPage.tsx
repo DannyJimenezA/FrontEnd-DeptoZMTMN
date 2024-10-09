@@ -104,6 +104,10 @@ const LandingPage: React.FC = () => {
             <h3>Uso Precario</h3>
             <p>Realiza solicitudes de uso precario.</p>
           </div>
+          <div className="service-card" onClick={() => handleQuickAccessClick('/revision-plano')}>
+            <h3>Revisión de Planos</h3>
+            <p>Realiza una solicitud de revisión de planos.</p>
+          </div>
         </div>
       </div>
 
