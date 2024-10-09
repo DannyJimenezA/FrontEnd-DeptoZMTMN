@@ -23,6 +23,7 @@ import ConfirmAccount from './pages/ConfirmAccount';
 
 // Aquí importa desde la nueva carpeta `User`
 import VistaSolicitudesExpediente from './pages/VistaSolicitudesExpedientes'; 
+import RevisionPlanos from './pages/RevisionPlanos';
 
 function App () {
   return (
@@ -37,6 +38,7 @@ function App () {
         <Route path="/concesiones" element={<Concesiones />} />
         <Route path="/uso-precario" element={<UsoPrecario />} />
         <Route path="/prorroga-concesion" element={<ProrrogaConcesion />} /> 
+        <Route path="/revision-plano" element={<RevisionPlanos />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/TablaSolicitudes" element={<TablaSolicitudes />} />
@@ -47,7 +49,7 @@ function App () {
         <Route path="/Panel-Prorroga-Concesiones" element={<PanelProrrogaConcesiones />} />
         <Route path="/Panel-Solicitud-Expediente" element={<TablaSolicitudExpediente />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/users/reset-password" element={<ResetPassword />} />
         <Route path="/users/confirm/:token" element={<ConfirmAccount />} /> {/* Ruta para la confirmación */}
 
         {/* Nueva ruta para que los usuarios vean sus solicitudes de expediente */}

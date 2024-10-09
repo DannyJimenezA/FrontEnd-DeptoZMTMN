@@ -4,7 +4,7 @@ import "../styles/Administrativos/TablaSolicitudExpediente.css"; // Asegúrate d
 function SolicitudExpediente() {
   
   const [telefonoSolicitante, setTelefonoSolicitante] = useState("");
-  const [medioNotificacion, setMedioNotificacion] = useState("");
+  const [emailSolicitante, setEmailSolicitante] = useState("");
   const [numeroExpediente, setNumeroExpediente] = useState("");
   const [copiaCertificada, setCopiaCertificada] = useState<string | null>(null);
   const [errorMessage, setErrorMessage]= useState<string | null>(null);
@@ -35,7 +35,7 @@ function SolicitudExpediente() {
     const solicitud = {
         userId,  // Incluye el userId en la solicitud
         telefonoSolicitante,
-        medioNotificacion,
+        emailSolicitante,
         numeroExpediente,
         copiaCertificada,
     };
@@ -91,11 +91,11 @@ const parseJwt = (token: string) => {
         </div>
 
         <div className="form-group">
-          <label>Medio de notificaciones:</label>
+          <label>Correo Electronico:</label>
           <input
             type="text"
-            value={medioNotificacion}
-            onChange={(e) => setMedioNotificacion(e.target.value)}
+            value={emailSolicitante}
+            onChange={(e) => setEmailSolicitante(e.target.value)}
             required
           />
         </div>
