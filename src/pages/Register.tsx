@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Login.css';
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
 function Register() {
   const [nombre, setNombre] = useState('');
@@ -10,13 +11,26 @@ function Register() {
   const [cedula, setCedula] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState(''); // Estado para confirmación de contraseña
+  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  // Alternar visibilidad de las contraseñas
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   // Función para manejar el envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(''); // Limpiar error antes de hacer la solicitud
+
+    // Verificar que las contraseñas coincidan
+    if (password.trim() !== confirmPassword.trim()) {
+      setError('Las contraseñas no coinciden');
+      return;
+    }
 
     try {
       const response = await fetch('http://localhost:3000/users/register', {
@@ -31,7 +45,8 @@ function Register() {
           telefono,
           cedula,
           email,
-          password,
+          password: password.trim(),
+          confirmPassword: confirmPassword.trim(), // Incluir confirmación de contraseña
         }),
       });
 
@@ -93,7 +108,7 @@ function Register() {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="cedula">Cedula</label>
+          <label htmlFor="cedula">Cédula</label>
           <input
             type="text"
             id="cedula"
@@ -112,15 +127,39 @@ function Register() {
             required
           />
         </div>
+        
+        {/* Campo de contraseña */}
         <div className="form-group">
           <label htmlFor="password">Contraseña</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="password-input-container">
+            <input
+              type={showPassword ? 'text' : 'password'} // Cambiar entre "text" y "password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button type="button" className="password-toggle" onClick={togglePasswordVisibility}>
+              {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
+            </button>
+          </div>
+        </div>
+
+        {/* Campo de confirmación de contraseña */}
+        <div className="form-group">
+          <label htmlFor="confirmPassword">Confirmar Contraseña</label>
+          <div className="password-input-container">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+            <button type="button" className="password-toggle" onClick={togglePasswordVisibility}>
+              {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
+            </button>
+          </div>
         </div>
 
         {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -137,3 +176,4 @@ function Register() {
 }
 
 export default Register;
+
