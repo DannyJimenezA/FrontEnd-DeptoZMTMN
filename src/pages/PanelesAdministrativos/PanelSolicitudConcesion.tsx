@@ -1,21 +1,29 @@
-import { useEffect, useState } from 'react';
-import "../../styles/Administrativos/TablaSolicitudConcesio.css";
+import React, { useEffect, useState } from 'react';
+import "../../styles/Administrativos/TablaProrrogaConcesion.css";
+import { FaFilePdf } from 'react-icons/fa';
 
-// Interfaz para las solicitudes
-interface Solicitud {
+interface Prorroga {
   id: number;
   ArchivoAdjunto: string;
-  IdUser: {
-    id: number; 
-  };
+  Status?: string;
 }
 
-// Función para obtener las solicitudes desde la API
-const fetchSolicitudes = async (): Promise<Solicitud[]> => {
+interface Concesion {
+  id: number;
+  ArchivoAdjunto: string;
+  Status?: string; // Añadimos Status aquí también
+}
 
-  const urlBase = 'http://localhost:3006/concesiones/';  // Nueva ruta para obtener las solicitudes
+interface SolicitudesResponse {
+  concesiones: Concesion[];
+  prorrogas: Prorroga[];
+}
 
-  
+const baseUrl = 'http://localhost:3000/';
+
+const fetchSolicitudes = async (): Promise<SolicitudesResponse> => {
+  const urlBase = 'http://localhost:3000/solicitudes';
+
   try {
     const response = await fetch(urlBase, {
       method: 'GET',
@@ -28,7 +36,7 @@ const fetchSolicitudes = async (): Promise<Solicitud[]> => {
       throw new Error(`Error: ${response.status} - ${response.statusText}`);
     }
 
-    const data: Solicitud[] = await response.json();
+    const data: SolicitudesResponse = await response.json();
     return data;
   } catch (error) {
     console.error('Error fetching solicitudes:', error);
@@ -36,72 +44,227 @@ const fetchSolicitudes = async (): Promise<Solicitud[]> => {
   }
 };
 
-const TablaSolicitudes1: React.FC = () => {
-  const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
+const TablaSolicitudes: React.FC = () => {
+  const [prorrogas, setProrrogas] = useState<Prorroga[]>([]);
+  const [concesiones, setConcesiones] = useState<Concesion[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const obtenerSolicitudes = async () => {
       try {
         const solicitudesFromAPI = await fetchSolicitudes();
-        setSolicitudes(solicitudesFromAPI);
+        setProrrogas(solicitudesFromAPI.prorrogas);
+        setConcesiones(solicitudesFromAPI.concesiones);
+        setLoading(false);
       } catch (error) {
         console.error('Error al obtener las solicitudes:', error);
+        setError('Error al cargar las solicitudes.');
+        setLoading(false);
       }
     };
 
     obtenerSolicitudes();
   }, []);
 
-
-  // Función para ver el PDF
-  const manejarVer = (archivoAdjunto: string) => {
-    const baseUrl = 'http://localhost:3006/'; // Cambiar la URL base para ajustarse a la nueva ruta
-  
-    if (archivoAdjunto) {
-      const pdfUrl = baseUrl + archivoAdjunto;
-      console.log('Abriendo PDF en:', pdfUrl);  // Para depuración
-      window.open(pdfUrl, '_blank');  // Abre el PDF en una nueva pestaña
+  const manejarVer = (archivo: string) => {
+    if (archivo) {
+      window.open(`${baseUrl}${archivo}`, '_blank');
     } else {
       console.error('No hay archivo adjunto para ver.');
     }
   };
 
-  const manejarAceptar = (id: number) => {
-    console.log(`Aceptar solicitud con ID: ${id}`);
+  const manejarCambioEstado = async (id: number, nuevoEstado: string) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token no encontrado');
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:3000/Prorrogas/${id}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ Status: nuevoEstado }),
+      });
+      if (!response.ok) {
+        throw new Error(`Error al actualizar el estado de la prórroga con ID: ${id}`);
+      }
+      setProrrogas((prevProrrogas) =>
+        prevProrrogas.map((prorroga) =>
+          prorroga.id === id ? { ...prorroga, Status: nuevoEstado } : prorroga
+        )
+      );
+      console.log(`Estado de la prórroga con ID: ${id} cambiado a ${nuevoEstado}`);
+    } catch (error) {
+      console.error('Error al cambiar el estado de la prórroga:', error);
+    }
   };
 
-  const manejarDenegar = (id: number) => {
-    console.log(`Denegar solicitud con ID: ${id}`);
+  const manejarCambioEstadoConcesion = async (id: number, nuevoEstado: string) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token no encontrado');
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:3000/Concesiones/${id}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ Status: nuevoEstado }),
+      });
+      if (!response.ok) {
+        throw new Error(`Error al actualizar el estado de la concesión con ID: ${id}`);
+      }
+      setConcesiones((prevConcesiones) =>
+        prevConcesiones.map((concesion) =>
+          concesion.id === id ? { ...concesion, Status: nuevoEstado } : concesion
+        )
+      );
+      console.log(`Estado de la concesión con ID: ${id} cambiado a ${nuevoEstado}`);
+    } catch (error) {
+      console.error('Error al cambiar el estado de la concesión:', error);
+    }
   };
 
-  const manejarEliminar = (id: number) => {
-    console.log(`Eliminar solicitud con ID: ${id}`);
+  // Nueva función para eliminar una prórroga
+  const manejarEliminarProrroga = async (id: number) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token no encontrado');
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:3000/Prorrogas/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`Error al eliminar la prórroga con ID: ${id}`);
+      }
+      setProrrogas((prevProrrogas) =>
+        prevProrrogas.filter((prorroga) => prorroga.id !== id)
+      );
+      console.log(`Prórroga con ID: ${id} eliminada`);
+    } catch (error) {
+      console.error('Error al eliminar la prórroga:', error);
+    }
   };
 
+  // Nueva función para eliminar una concesión
+  const manejarEliminarConcesion = async (id: number) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token no encontrado');
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:3000/Concesiones/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`Error al eliminar la concesión con ID: ${id}`);
+      }
+      setConcesiones((prevConcesiones) =>
+        prevConcesiones.filter((concesion) => concesion.id !== id)
+      );
+      console.log(`Concesión con ID: ${id} eliminada`);
+    } catch (error) {
+      console.error('Error al eliminar la concesión:', error);
+    }
+  };
+
+  if (loading) {
+    return <p>Cargando solicitudes...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
 
   return (
     <div className="tabla-container">
-      <h2>Solicitudes Enviadas</h2>
+      <h2>Solicitudes de Concesiones y Prórrogas</h2>
+
+      {/* Tabla para Concesiones */}
+      <h3>Concesiones</h3>
       <table className="tabla-solicitudes">
         <thead>
           <tr>
             <th>ID</th>
-            <th>Archivo Adjunto</th>
-            <th>ID Usuario</th>
+            <th>Archivos Adjuntos</th>
+            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {solicitudes.map((solicitud) => (
-            <tr key={solicitud.id}>
-              <td>{solicitud.id}</td>
-              <td>{solicitud.ArchivoAdjunto}</td>
-              <td>{solicitud.IdUser ? solicitud.IdUser.id : 'ID no disponible'}</td>{/* Acceder correctamente al ID del usuario */}
+          {concesiones.map((concesion) => (
+            <tr key={concesion.id}>
+              <td>{concesion.id}</td>
               <td>
-                <button onClick={() => manejarAceptar(solicitud.id)}>Aceptar</button>
-                <button onClick={() => manejarDenegar(solicitud.id)}>Denegar</button>
-                <button onClick={() => manejarVer(solicitud.ArchivoAdjunto)}>Ver PDF</button>
-                <button onClick={() => manejarEliminar(solicitud.id)}>Eliminar</button>
+                {concesion.ArchivoAdjunto ? (
+                  <FaFilePdf
+                    style={{ cursor: 'pointer', marginRight: '5px' }}
+                    onClick={() => manejarVer(concesion.ArchivoAdjunto)}
+                    title="Ver archivo"
+                  />
+                ) : (
+                  'No disponible'
+                )}
+              </td>
+              <td>{concesion.Status}</td>
+              <td>
+                <button onClick={() => manejarCambioEstadoConcesion(concesion.id, 'aprobada')}>Aprobar</button>
+                <button onClick={() => manejarCambioEstadoConcesion(concesion.id, 'denegada')}>Denegar</button>
+                <button onClick={() => manejarEliminarConcesion(concesion.id)}>Eliminar</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Tabla para Prórrogas */}
+      <h3>Prórrogas</h3>
+      <table className="tabla-solicitudes">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Archivos Adjuntos</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {prorrogas.map((prorroga) => (
+            <tr key={prorroga.id}>
+              <td>{prorroga.id}</td>
+              <td>
+                {prorroga.ArchivoAdjunto ? (
+                  <FaFilePdf
+                    style={{ cursor: 'pointer', marginRight: '5px' }}
+                    onClick={() => manejarVer(prorroga.ArchivoAdjunto)}
+                    title="Ver archivo"
+                  />
+                ) : (
+                  'No disponible'
+                )}
+              </td>
+              <td>{prorroga.Status}</td>
+              <td>
+                <button onClick={() => manejarCambioEstado(prorroga.id, 'aprobada')}>Aprobar</button>
+                <button onClick={() => manejarCambioEstado(prorroga.id, 'denegada')}>Denegar</button>
+                <button onClick={() => manejarEliminarProrroga(prorroga.id)}>Eliminar</button>
               </td>
             </tr>
           ))}
@@ -111,4 +274,4 @@ const TablaSolicitudes1: React.FC = () => {
   );
 };
 
-export default TablaSolicitudes1;
+export default TablaSolicitudes;

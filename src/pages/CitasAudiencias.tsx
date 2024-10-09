@@ -10,7 +10,7 @@ function CitasAudiencias() {
   const [descripcion, setDescripcion] = useState(""); // Estado para la descripción
 
   // Manejador de la fecha
-  const filterWeekdays = (date) => {
+  const filterWeekdays = (date: unknown) => {
     // Devuelve verdadero solo si la fecha es un miércoles
     return date && isWednesday(date);
   };
@@ -41,7 +41,9 @@ function CitasAudiencias() {
     const citaFechaHora = new Date(`${selectedDate}T${selectedTime}`);
   
     const token = localStorage.getItem('token');
+    console.log("Token:", token);
   const decodedToken = parseJwt(token);  // Necesitarás una función para decodificar el JWT
+  console.log("Decoded Token:", decodedToken);
   const userId = decodedToken.userId;  // Este es el ID del usuario autenticado
 
   const cita = {
@@ -151,7 +153,7 @@ const parseJwt = (token) => {
           </div>
         )}
         <div className="form-group">
-          <button type="submit">Enviar</button>
+          <button type="submit" >Enviar</button>
         </div>
       </form>
     </div>
