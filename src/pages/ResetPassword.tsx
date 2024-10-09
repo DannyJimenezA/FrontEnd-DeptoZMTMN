@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -8,7 +8,21 @@ const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false); // Estado para controlar el botón de envío
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Verifica que el token esté presente en la URL
+    if (!token) {
+      setMessage('Token de restablecimiento no válido o faltante.');
+      console.warn('No se encontró un token de restablecimiento en la URL.');
+    }
+  }, [token]);
+
+  const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // Al menos 8 caracteres, una letra y un número
+    return passwordRegex.test(password);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,16 +31,28 @@ const ResetPassword = () => {
       return;
     }
 
+    if (!validatePassword(newPassword)) {
+      setMessage('La contraseña debe tener al menos 8 caracteres, incluyendo una letra y un número.');
+      return;
+    }
+
+    setIsSubmitting(true); // Desactiva el botón mientras se envía la solicitud
+
     try {
-      // Realiza la solicitud de restablecimiento de contraseña con la URL corregida
       const response = await axios.post(`http://localhost:3000/users/reset-password`, {
-        token, // Incluye el token en el cuerpo si el backend lo requiere.
+        token, // Incluye el token en el cuerpo si el backend lo requiere
         newPassword,
       });
       setMessage(response.data.message);
       navigate('/login'); // Redirigir al login después de cambiar la contraseña
     } catch (error) {
-      setMessage(error.response?.data?.message || 'Error al restablecer la contraseña');
+      if (error.response) {
+        setMessage(error.response.data.message || 'Error al restablecer la contraseña');
+      } else {
+        setMessage('No se pudo conectar con el servidor. Inténtalo más tarde.');
+      }
+    } finally {
+      setIsSubmitting(false); // Reactiva el botón al finalizar la solicitud
     }
   };
 
@@ -48,7 +74,9 @@ const ResetPassword = () => {
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
-        <button type="submit">Restablecer Contraseña</button>
+        <button type="submit" disabled={isSubmitting || !token}> 
+          {isSubmitting ? 'Procesando...' : 'Restablecer Contraseña'}
+        </button>
         {message && <p>{message}</p>}
       </form>
     </div>

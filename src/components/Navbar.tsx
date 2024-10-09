@@ -113,7 +113,6 @@ function Navbar() {
             </div>
             {userDropdownVisible && (
               <div className="user-dropdown">
-                <Link to="/change-password">Cambiar contraseña</Link> {/* Ruta para cambiar contraseña */}
                 <div onClick={handleLogout}>Cerrar sesión</div>
               </div>
             )}
