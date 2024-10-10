@@ -152,7 +152,7 @@ const parseJwt = (token) => {
           </div>
         )}
         <div className="form-group">
-          <button type="submit">Enviar</button>
+          <button type="submit" >Enviar</button>
         </div>
       </form>
     </div>
