@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import '../styles/Login.css';
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import '../styles/Register.css';
+
 
 function Register() {
   const [nombre, setNombre] = useState('');
@@ -11,8 +12,8 @@ function Register() {
   const [cedula, setCedula] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState(''); // Estado para confirmación de contraseña
-  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -24,7 +25,7 @@ function Register() {
   // Función para manejar el envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Limpiar error antes de hacer la solicitud
+    setError('');
 
     // Verificar que las contraseñas coincidan
     if (password.trim() !== confirmPassword.trim()) {
@@ -46,7 +47,7 @@ function Register() {
           cedula,
           email,
           password: password.trim(),
-          confirmPassword: confirmPassword.trim(), // Incluir confirmación de contraseña
+          confirmPassword: confirmPassword.trim(),
         }),
       });
 
@@ -127,21 +128,21 @@ function Register() {
             required
           />
         </div>
-        
+
         {/* Campo de contraseña */}
         <div className="form-group">
           <label htmlFor="password">Contraseña</label>
           <div className="password-input-container">
             <input
-              type={showPassword ? 'text' : 'password'} // Cambiar entre "text" y "password"
+              type={showPassword ? 'text' : 'password'}
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            <button type="button" className="password-toggle" onClick={togglePasswordVisibility}>
+            <span className="password-toggle" onClick={togglePasswordVisibility}>
               {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
-            </button>
+            </span>
           </div>
         </div>
 
@@ -156,9 +157,9 @@ function Register() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
-            <button type="button" className="password-toggle" onClick={togglePasswordVisibility}>
+            <span className="password-toggle" onClick={togglePasswordVisibility}>
               {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
-            </button>
+            </span>
           </div>
         </div>
 
@@ -176,4 +177,3 @@ function Register() {
 }
 
 export default Register;
-

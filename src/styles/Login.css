@@ -1,3 +1,4 @@
+/* Login.css */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -42,7 +43,7 @@ input {
   width: 100%;
 }
 
-/* Styling the button */
+/* Botón de envío (submit) */
 button[type="submit"] {
   padding: 0.7rem;
   background-color: #1976d2;
@@ -58,40 +59,18 @@ button[type="submit"]:hover {
   background-color: #1565c0;
 }
 
-/* Password visibility toggle */
-.password-input-container {
-  display: flex;
-  align-items: center;
-}
-
-.password-input-container input {
-  flex-grow: 1;
-}
-
-.password-toggle {
-  margin-left: 5px;
-  padding: 0.2rem 0.5rem;
-  background-color: #1976d2;
-  color: white;
+/* Botón de cancelación */
+button[type="button"] {
+  padding: 0.7rem;
+  background-color: #e0e0e0;
+  color: black;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: 1rem;
+  margin-top: 0.5rem;
 }
 
-.password-toggle:hover {
-  background-color: #1565c0;
-}
-
-.input-container {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 0.5rem;
-}
-
-.input-icon {
-  margin-right: 8px;
-  color: #888;
+button[type="button"]:hover {
+  background-color: #bdbdbd;
 }
