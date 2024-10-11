@@ -17,6 +17,11 @@ interface Concesion {
   ArchivoAdjunto: string;
   Status?: string;
 }
+interface Precario{
+  id: number;
+  ArchivoAdjunto: string;
+  Status?: string;
+}
 
 // Interfaz para el token decodificado
 interface DecodedToken {
@@ -27,6 +32,7 @@ interface DecodedToken {
 interface SolicitudesResponse {
   concesiones: Concesion[];
   prorrogas: Prorroga[];
+  precario: Precario[];
 }
 
 const baseUrl = "http://localhost:3000/";
@@ -57,6 +63,7 @@ const fetchSolicitudes = async (): Promise<SolicitudesResponse> => {
 const TablaSolicitudes: React.FC = () => {
   const [prorrogas, setProrrogas] = useState<Prorroga[]>([]);
   const [concesiones, setConcesiones] = useState<Concesion[]>([]);
+  const [precario, setPrecario] = useState<Precario[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate(); // Hook para la navegación
@@ -90,6 +97,7 @@ const TablaSolicitudes: React.FC = () => {
         const solicitudesFromAPI = await fetchSolicitudes();
         setProrrogas(solicitudesFromAPI.prorrogas);
         setConcesiones(solicitudesFromAPI.concesiones);
+        setPrecario(solicitudesFromAPI.precario);
         setLoading(false);
       } catch (error) {
         console.error("Error al obtener las solicitudes:", error);
@@ -146,7 +154,39 @@ const TablaSolicitudes: React.FC = () => {
       console.error("Error al cambiar el estado de la prórroga:", error);
     }
   };
+  const manejarCambioEstadoPrecario = async (id: number, nuevoEstado: string) => {
+    const confirmacion = window.confirm(`¿Estás seguro de que deseas cambiar el estado a "${nuevoEstado}"?`);
+    if (!confirmacion) return; // Salir si el usuario cancela la acción
 
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("Token no encontrado");
+      return;
+    }
+    try {
+      const response = await fetch(
+        `http://localhost:3000/Precario/${id}/status`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ Status: nuevoEstado }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`Error al actualizar el estado de la solicitud con ID: ${id}`);
+      }
+      setPrecario((prevPrecario) =>
+        prevPrecario.map((precario) =>
+          precario.id === id ? { ...precario, Status: nuevoEstado } : precario
+        )
+      );
+    } catch (error) {
+      console.error("Error al cambiar el estado de la prórroga:", error);
+    }
+  };
   const manejarCambioEstadoConcesion = async (id: number, nuevoEstado: string) => {
     const confirmacion = window.confirm(`¿Estás seguro de que deseas cambiar el estado a "${nuevoEstado}"?`);
     if (!confirmacion) return; // Salir si el usuario cancela la acción
@@ -228,7 +268,27 @@ const TablaSolicitudes: React.FC = () => {
       );
       console.log(`Concesión con ID: ${id} eliminada`);
     } catch (error) {
-      console.error('Error al eliminar la concesión:', error);
+      console.error('Error al eliminar la solicitud:', error);
+    }
+  };
+  const manejarEliminarPrecario = async (id: number) => {
+    const confirmacion = window.confirm("¿Estás seguro de que deseas eliminar esta solicitud?");
+    if (!confirmacion) return;
+    try {
+      const response = await fetch(`${baseUrl}Precario/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error al eliminar la solicitud con ID: ${id}`);
+      }
+
+      setPrecario((prevPrecario) =>
+        prevPrecario.filter((precario) => precario.id !== id)
+      );
+      console.log(`Solicitud con ID: ${id} eliminada`);
+    } catch (error) {
+      console.error('Error al eliminar la solicitud:', error);
     }
   };
 
@@ -310,6 +370,45 @@ const TablaSolicitudes: React.FC = () => {
                 <button onClick={() => manejarCambioEstado(prorroga.id, "aprobada")}>Aprobar</button>
                 <button onClick={() => manejarCambioEstado(prorroga.id, "denegada")}>Denegar</button>
                 <button onClick={() => manejarEliminar(prorroga.id)}>Eliminar</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {/* Tabla para Concesiones */}
+      <h3> Uso precario</h3>
+      <table className="tabla-solicitudes">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Archivos Adjuntos</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {concesiones.map((precario) => (
+            <tr key={precario.id}>
+              <td>{precario.id}</td>
+              <td>
+                {precario.ArchivoAdjunto ? (
+                  JSON.parse(precario.ArchivoAdjunto).map((archivo: string, index: number) => (
+                    <FaFilePdf
+                      key={index}
+                      style={{ cursor: "pointer", marginRight: "5px" }}
+                      onClick={() => manejarVer(archivo)}
+                      title="Ver archivo"
+                    />
+                  ))
+                ) : (
+                  "No disponible"
+                )}
+              </td>
+              <td>{precario.Status}</td>
+              <td>
+                <button onClick={() => manejarCambioEstadoPrecario(precario.id, "aprobada")}>Aprobar</button>
+                <button onClick={() => manejarCambioEstadoPrecario(precario.id, "denegada")}>Denegar</button>
+                <button onClick={() => manejarEliminarPrecario(precario.id)}>Eliminar</button>
               </td>
             </tr>
           ))}
