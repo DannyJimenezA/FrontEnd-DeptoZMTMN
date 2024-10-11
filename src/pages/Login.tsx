@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { FaUser, FaLock } from 'react-icons/fa'; // Importar los íconos de react-icons
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import '../styles/Login.css';
