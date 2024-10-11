@@ -51,6 +51,8 @@ const TablaSolicitudExpediente: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [copiaSeleccionada, setCopiaSeleccionada] = useState<CopiaExpediente | null>(null);
   const navigate = useNavigate(); // Hook para la navegación
+  const [modalVisible, setModalVisible]= useState(false);
+  const [selectedExpedienteId, setSelectedExpedienteId]= useState<number | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -119,14 +121,26 @@ const TablaSolicitudExpediente: React.FC = () => {
         prevCopias.filter((copia) => copia.idExpediente !== idExpediente)
       );
       console.log(`Copia de expediente con ID: ${idExpediente} eliminada`);
+      setModalVisible(false);
     } catch (error) {
       console.error('Error al eliminar la copia de expediente:', error);
     }
   };
-
   const manejarCambioEstado = async (idExpediente: number, nuevoEstado: string) => {
     const confirmacion = window.confirm(`¿Estás seguro de que deseas cambiar el estado a "${nuevoEstado}"?`);
     if (!confirmacion) return; // Salir si el usuario cancela la acción
+
+  const abrirModalEliminar =(idExpediente)=>{
+    setSelectedExpedienteId(idExpediente);
+    setModalVisible(true);
+    
+  };
+  const cerrarModal =()=>{
+    setModalVisible(false);
+    setSelectedExpedienteId(null)
+  }
+  const manejarCambioEstado = async (idExpediente: number, nuevoEstado: string)=>{
+
     const token = localStorage.getItem('token');
     if (!token) {
       console.error('Token no encontrado');
@@ -177,14 +191,28 @@ const TablaSolicitudExpediente: React.FC = () => {
               <td>{copia.status}</td> {/* Mostrar estado de la copia */}
               <td>
                 <button onClick={() => manejarVer(copia)}>Ver</button>
-                <button onClick={() => manejarCambioEstado(copia.idExpediente, 'aprobada')}>Aprobar</button>
-                <button onClick={() => manejarCambioEstado(copia.idExpediente, 'denegada')}>Denegar</button>
-                <button onClick={() => manejarEliminar(copia.idExpediente)}>Eliminar</button>
+
+                <button onClick={()=> manejarCambioEstado(copia.idExpediente, 'aprobada')}>Aprobar</button>
+                <button onClick={()=> manejarCambioEstado(copia.idExpediente, 'denegada')}>Denegar</button>
+                <button onClick={() => abrirModalEliminar(copia.idExpediente)}>Eliminar</button>
               </td>
             </tr>
           ))}
+          
         </tbody>
       </table>
+      {modalVisible && (
+  <Modal
+    isOpen={modalVisible}
+    onRequestClose={cerrarModal} // Cambiar `onClose` por `onRequestClose`
+    contentLabel="Confirmación"
+  >
+    <h2>Confirmación</h2>
+    <p>¿Estás seguro de que deseas eliminar esta copia de expediente?</p>
+    <button className='buttonConfirmar' onClick={() => manejarEliminar(selectedExpedienteId)}>Confirmar</button>
+    <button className='buttonEliminar' onClick={cerrarModal}>Cancelar</button>
+  </Modal>
+)}
 
       {/* Modal para mostrar los detalles de la solicitud */}
       {copiaSeleccionada && (
