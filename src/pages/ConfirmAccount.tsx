@@ -32,7 +32,7 @@ const ConfirmAccount = () => {
       ) : (
         <>
           <h2>{message}</h2> {/* Mostrar el mensaje de confirmación */}
-          <button onClick={() => navigate('/')}>Ir a la página principal</button> {/* Botón para regresar */}
+          <button onClick={() => navigate('/login')}>Iniciar Sesión</button> {/* Botón para regresar */}
         </>
       )}
     </div>
