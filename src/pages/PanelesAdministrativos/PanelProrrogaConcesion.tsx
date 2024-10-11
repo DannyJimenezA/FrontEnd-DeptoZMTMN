@@ -5,7 +5,7 @@ import { FaFilePdf } from 'react-icons/fa';
 // Interfaz para las prórrogas
 interface Prorroga {
   id: number;
-  ArchivoProrroga: string;
+  ArchivoAdjunto: string;
   Status?: string;
   user?: {
     id: number;
@@ -63,50 +63,34 @@ const TablaProrrogas: React.FC = () => {
     obtenerProrrogas();
   }, []);
 
-  const manejarAceptar = async (id: number) => {
-    try {
-      const response = await fetch(`${baseUrl}Prorrogas/${id}/aceptar`, {
-        method: 'POST',
-      });
-  
-      if (!response.ok) {
-        throw new Error(`Error al aceptar la prórroga con ID: ${id}`);
-      }
-  
-      // Crear una nueva referencia del estado al actualizar el estado de la prórroga
-      setProrrogas((prevProrrogas) =>
-        prevProrrogas.map((prorroga) =>
-          prorroga.id === id ? { ...prorroga, Status: 'aceptada' } : prorroga
-        )
-      );
-      console.log(`Prórroga con ID: ${id} aceptada`);
-    } catch (error) {
-      console.error('Error al aceptar la prórroga:', error);
+  const manejarCambioEstado = async (id: number, nuevoEstado: string)=>{
+    const token = localStorage.getItem('token');
+    if (!token){
+     console.error('Token no encontrado');
+     return;
+    }
+    try{
+     const response = await fetch(`http://localhost:3000/Prorrogas/${id}/status`,{
+       method: 'PUT',
+       headers: {
+         'Content-Type': 'application/json',
+         'Authorization': `Bearer ${token}`,
+       },
+       body: JSON.stringify({Status: nuevoEstado}),
+     });
+     if (!response.ok){
+       throw new Error(`Error al actualizar el estado de la cita con ID: ${id}`);
+     }
+     setProrrogas((prevProrrogas)=>
+       prevProrrogas.map((prorroga)=>
+         prorroga.id === id ? {...prorroga, Status: nuevoEstado}:prorroga
+   )
+  );
+  console.log(`Estado de la cita con ID: ${id} cambiado a ${nuevoEstado}`);
+    }catch(error){
+     console.error('Error al cambiar el estado de la cita:', error);
     }
   };
-  
-  const manejarDenegar = async (id: number) => {
-    try {
-      const response = await fetch(`${baseUrl}Prorrogas/${id}/denegar`, {
-        method: 'POST',
-      });
-  
-      if (!response.ok) {
-        throw new Error(`Error al denegar la prórroga con ID: ${id}`);
-      }
-  
-      // Crear una nueva referencia del estado al actualizar el estado de la prórroga
-      setProrrogas((prevProrrogas) =>
-        prevProrrogas.map((prorroga) =>
-          prorroga.id === id ? { ...prorroga, Status: 'denegada' } : prorroga
-        )
-      );
-      console.log(`Prórroga con ID: ${id} denegada`);
-    } catch (error) {
-      console.error('Error al denegar la prórroga:', error);
-    }
-  };
-  
 
   const manejarEliminar = async (id: number) => {
     try {
@@ -126,6 +110,7 @@ const TablaProrrogas: React.FC = () => {
       console.error('Error al eliminar la prórroga:', error);
     }
   };
+
 
   const manejarVerArchivo = (archivoUrl: string | undefined) => {
     if (archivoUrl && archivoUrl !== 'undefined') {
@@ -162,8 +147,8 @@ const TablaProrrogas: React.FC = () => {
               <td>{prorroga.user?.nombre || 'Nombre no disponible'}</td>
               <td>{prorroga.user?.apellido1 && prorroga.user?.apellido2 ? `${prorroga.user.apellido1} ${prorroga.user.apellido2}` : 'Apellidos no disponibles'}</td>
               <td>
-                {prorroga.ArchivoProrroga ? (
-                  JSON.parse(prorroga.ArchivoProrroga).map((archivo: string, index: number) => (
+                {prorroga.ArchivoAdjunto ? (
+                  JSON.parse(prorroga.ArchivoAdjunto).map((archivo: string, index: number) => (
                     <FaFilePdf
                       key={index}
                       style={{ cursor: 'pointer', marginRight: '5px' }}
@@ -177,9 +162,9 @@ const TablaProrrogas: React.FC = () => {
               </td>
               <td>{prorroga.Status || 'pendiente'}</td>
               <td>
-                <button onClick={() => manejarAceptar(prorroga.id)}>Aceptar</button>
-                <button onClick={() => manejarDenegar(prorroga.id)}>Denegar</button>
-                <button onClick={() => manejarVerArchivo(prorroga.ArchivoProrroga)}>Ver Archivo</button>
+              <button onClick={()=> manejarCambioEstado(prorroga.id, 'aprobada')}>Aprobar</button>
+              <button onClick={()=> manejarCambioEstado(prorroga.id, 'denegada')}>Denegar</button>
+                <button onClick={() => manejarVerArchivo(prorroga.ArchivoAdjunto)}>Ver Archivo</button>
                 <button onClick={() => manejarEliminar(prorroga.id)}>Eliminar</button>
               </td>
             </tr>

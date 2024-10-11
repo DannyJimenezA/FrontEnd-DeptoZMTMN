@@ -1,107 +1,38 @@
-/* Contenedor principal para las solicitudes */
-.solicitudes-container {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 20px;
-    background-color: #ffffff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    font-family: 'Arial', sans-serif;
-  }
-  
-  /* Título principal */
-  .solicitudes-container h1 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 2rem;
-    color: #333333;
-  }
-  
-  /* Lista de solicitudes */
-  .solicitudes-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  /* Elemento de la lista (cada solicitud) */
-  .solicitudes-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    margin-bottom: 15px;
-    background-color: #f9f9f9;
-    border-left: 5px solid #007bff;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease;
-  }
-  
-  /* Efecto hover en cada solicitud */
-  .solicitudes-list li:hover {
-    transform: translateY(-5px);
-    background-color: #f1f1f1;
-  }
-  
-  /* Nombre del expediente */
-  .solicitudes-list li .expediente-name {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #333333;
-  }
-  
-  /* Fecha de la solicitud */
-  .solicitudes-list li .expediente-date {
-    font-size: 0.9rem;
-    color: #888888;
-  }
-  
-  /* Estado del expediente */
-  .solicitudes-list li .expediente-status {
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 0.85rem;
-    font-weight: bold;
-    text-transform: uppercase;
-  }
-  
-  /* Estado: Pendiente */
-  .solicitudes-list li .expediente-status.pendiente {
-    background-color: #ffc107;
-    color: #ffffff;
-  }
-  
-  /* Estado: Aprobado */
-  .solicitudes-list li .expediente-status.aprobado {
-    background-color: #28a745;
-    color: #ffffff;
-  }
-  
-  /* Estado: Rechazado */
-  .solicitudes-list li .expediente-status.rechazado {
-    background-color: #dc3545;
-    color: #ffffff;
-  }
-  
-  /* Botón para crear nueva solicitud */
-  .solicitudes-container .crear-solicitud-btn {
-    display: inline-block;
-    padding: 12px 24px;
-    margin-top: 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 25px;
-    text-align: center;
-    font-size: 1rem;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-  }
-  
-  /* Efecto hover en el botón */
-  .solicitudes-container .crear-solicitud-btn:hover {
-    background-color: #0056b3;
-  }
-  
+.vista-solicitudes-expediente {
+  padding: 20px;
+}
+
+.solicitudes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.solicitud-card {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.solicitud-card h3 {
+  margin-top: 0;
+}
+
+.boton-crear-solicitud {
+  margin-top: 20px;
+}
+
+.boton-crear-solicitud button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.boton-crear-solicitud button:hover {
+  background-color: #45a049;
+}
