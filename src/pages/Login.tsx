@@ -95,7 +95,7 @@ function Login() {
               required
             />
             <span className="toggle-password" onClick={togglePasswordVisibility}>
-              {showPassword ? 'OCULTAR' : 'MOSTRAR'}
+              {showPassword ? '' : ''}
             </span>
           </div>
         </div>
