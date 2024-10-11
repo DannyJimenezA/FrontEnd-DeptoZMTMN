@@ -1,61 +1,72 @@
-/*import { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import {jwtDecode} from 'jwt-decode';
 
-interface User {
-    id: number;
-    nombre: string;
-    email: string;
-    roles: string;
-  }
-  
-  // Define el tipo del contexto
-  interface AuthContextType {
-    user: User | null;
-    setUser: React.Dispatch<React.SetStateAction<User | null>>;
-  }
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+interface AuthContextType {
+  isAuthenticated: boolean;
+  userEmail: string;
+  userRoles: string[];
+  login: (token: string) => void;
+  logout: () => void;
+}
 
-const AuthProvider = ({ children }) => {
-    const { setUser } = useContext(AuthContext);
-  
-    useEffect(() => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        // Hacer petición al backend para obtener los datos del usuario
-        const fetchUserData = async () => {
-          try {
-            const response = await fetch('/api/getUser', {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,  // Enviar el token en la cabecera
-              },
-            });
-  
-            if (response.ok) {
-              const data = await response.json();
-              // Extraer solo los datos que necesitas (nombre y email)
-              const userInfo = {
-                nombre: data.nombre,
-                email: data.email,
-              };
-              setUser(userInfo);  // Actualizar el contexto con los datos del usuario
-            } else {
-              console.log('Error al obtener datos del usuario');
-            }
-          } catch (error) {
-            console.error('Error en la petición', error);
-          }
-        };
-  
-        fetchUserData();
+interface DecodedToken {
+  email?: string;
+  roles?: string[];
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [userEmail, setUserEmail] = useState<string>('');
+  const [userRoles, setUserRoles] = useState<string[]>([]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      handleToken(token);
+    }
+  }, []);
+
+  const handleToken = (token: string) => {
+    try {
+      const decodedToken = jwtDecode<DecodedToken>(token);
+      if (decodedToken.email) {
+        setUserEmail(decodedToken.email);
       }
-    }, [setUser]);
-  
-    return (
-      <AuthContext.Provider value={{ /* valores del contexto  }}>
-        {children}
-      </AuthContext.Provider>
-    );
+      if (decodedToken.roles) {
+        setUserRoles(decodedToken.roles);
+      }
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error('Error al decodificar el token:', error);
+      logout();
+    }
   };
-  
-  export default AuthProvider;*/
+
+  const login = (token: string) => {
+    localStorage.setItem('token', token);
+    handleToken(token);
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
+    setUserEmail('');
+    setUserRoles([]);
+  };
+
+  return (
+    <AuthContext.Provider value={{ isAuthenticated, userEmail, userRoles, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
+  }
+  return context;
+};

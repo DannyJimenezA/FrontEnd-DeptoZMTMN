@@ -2,20 +2,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Navbar.css';
 import logo from '../img/logo.png';
 import { useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode';  // Importación nombrada
 import { IoHomeSharp } from "react-icons/io5";
 import { FaTable, FaUser } from 'react-icons/fa';
-
-interface DecodedToken {
-  email?: string;  // El campo 'email' es opcional, en caso de que no siempre esté presente
-  roles?: string[];  // Modificamos para manejar múltiples roles en un array
-}
+import { useAuth } from '../context/AuthContext'; // Importa el contexto de autenticación
 
 function Navbar() {
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [userEmail, setUserEmail] = useState('');  // Estado para almacenar el email del usuario
-  const [userRoles, setUserRoles] = useState<string[]>([]);  // Estado para almacenar múltiples roles
-  const [userDropdownVisible, setUserDropdownVisible] = useState(false); // Estado para mostrar/ocultar el dropdown del usuario
+  const [userDropdownVisible, setUserDropdownVisible] = useState(false);
+  const { isAuthenticated, userEmail, userRoles, logout } = useAuth(); // Desestructura la autenticación
   const navigate = useNavigate(); // Hook para la navegación
 
   const handleDropdownToggle = () => {
@@ -27,39 +21,9 @@ function Navbar() {
   };
 
   const handleLogout = () => {
-    // Eliminar el token del localStorage y redirigir a la página de inicio de sesión
-    localStorage.removeItem('token');
-    setUserEmail(''); // Limpiar el estado del email
-    navigate('/'); // Redirigir a la página de login
+    logout(); // Llama a la función logout del contexto
+    navigate('/'); // Redirigir a la página de inicio después de cerrar sesión
   };
-
-  // Ejecuta cuando el componente se monta
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const decodedToken = jwtDecode(token) as DecodedToken;
-  
-        console.log("Token decodificado:", decodedToken); // Verificar el token decodificado
-        
-        if (decodedToken.email) {
-          setUserEmail(decodedToken.email);
-        }
-
-        // Guardamos todos los roles del usuario
-        if (decodedToken.roles && decodedToken.roles.length > 0) {
-          setUserRoles(decodedToken.roles);  // Asignar todos los roles
-        } else {
-          console.warn("No se encontraron roles en el token.");
-        }
-  
-      } catch (error) {
-        console.error('Error decodificando el token:', error);
-      }
-    } else {
-      console.warn("No se encontró un token en el localStorage.");
-    }
-  }, []);
 
   return (
     <nav className="navbar">
@@ -67,11 +31,10 @@ function Navbar() {
         <img src={logo} alt="Logo" />
       </div>
       <div className="navbar__links">
-      
         <Link to="/"><IoHomeSharp /> Inicio</Link>
 
         {/* Mostrar dropdown de usuarios si el usuario tiene el rol 'user' */}
-        {userRoles.includes('user') && (
+        {isAuthenticated && userRoles.includes('user') && (
           <div className="dropdown">
             <button className="dropdown__toggle" onClick={handleDropdownToggle}>
               <FaTable /> Usuarios
@@ -88,7 +51,7 @@ function Navbar() {
         )}
 
         {/* Mostrar dropdown de admin si el usuario tiene el rol 'admin' */}
-        {userRoles.includes('admin') && (
+        {isAuthenticated && userRoles.includes('admin') && (
           <div className="dropdown">
             <button className="dropdown__toggle" onClick={handleDropdownToggle}>
               <FaTable /> Admins
@@ -97,16 +60,16 @@ function Navbar() {
               <div className="dropdown__menu">
                 <Link to="/TablaSolicitudes">Tabla de usuarios</Link>
                 <Link to="/Panel-Solicitud-Concesion">Solicitudes Concesión</Link>
-                <Link to="/Panel-Prorroga-Concesiones">Prorroga de Concesiones</Link>
+                {/* <Link to="/Panel-Prorroga-Concesiones">Prorroga de Concesiones</Link> */}
                 <Link to="/Panel-Citas">Tabla de citas</Link>
                 <Link to="/Panel-Solicitud-Expediente">Tabla de solicitud expediente</Link>
               </div>
             )}
           </div>
         )}
-        
+
         {/* Mostrar el email del usuario si está logueado con dropdown de opciones */}
-        {userEmail ? (
+        {isAuthenticated ? (
           <div className="navbar__user">
             <div className="navbar__user-email" onClick={handleUserDropdownToggle}>
               {userEmail} {/* Mostrar el correo del usuario logueado */}
@@ -124,5 +87,6 @@ function Navbar() {
     </nav>
   );
 }
+
 
 export default Navbar;
