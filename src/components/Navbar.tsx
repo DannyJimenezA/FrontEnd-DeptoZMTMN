@@ -2,20 +2,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Navbar.css';
 import logo from '../img/logo.png';
 import { useState, useEffect } from 'react';
-import {jwtDecode} from 'jwt-decode';  // Importación nombrada
 import { IoHomeSharp } from "react-icons/io5";
 import { FaTable, FaUser } from 'react-icons/fa';
-
-interface DecodedToken {
-  email?: string;  // El campo 'email' es opcional, en caso de que no siempre esté presente
-  roles?: string[];  // Modificamos para manejar múltiples roles en un array
-}
+import { useAuth } from '../context/AuthContext'; // Importa el contexto de autenticación
 
 function Navbar() {
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [userEmail, setUserEmail] = useState('');  // Estado para almacenar el email del usuario
-  const [userRoles, setUserRoles] = useState<string[]>([]);  // Estado para almacenar múltiples roles
-  const [userDropdownVisible, setUserDropdownVisible] = useState(false); // Estado para mostrar/ocultar el dropdown del usuario
+  const [userDropdownVisible, setUserDropdownVisible] = useState(false);
+  const { isAuthenticated, userEmail, userRoles, logout } = useAuth(); // Desestructura la autenticación
   const navigate = useNavigate(); // Hook para la navegación
 
   const handleDropdownToggle = () => {
@@ -27,58 +21,9 @@ function Navbar() {
   };
 
   const handleLogout = () => {
-    // Eliminar el token del localStorage y redirigir a la página de inicio de sesión
-    localStorage.removeItem('token');
-    setUserEmail(''); // Limpiar el estado del email
-    setUserRoles([]); // Limpiar los roles del usuario
-    navigate('/'); // Redirigir a la página de login
-    window.dispatchEvent(new Event('authChanged')); // Disparar el evento para actualizar el navbar
+    logout(); // Llama a la función logout del contexto
+    navigate('/'); // Redirigir a la página de inicio después de cerrar sesión
   };
-
-  const updateNavbarState = () => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const decodedToken = jwtDecode(token) as DecodedToken;
-        console.log("Token decodificado:", decodedToken); // Verificar el token decodificado
-
-        if (decodedToken.email) {
-          setUserEmail(decodedToken.email);
-        }
-
-        // Guardamos todos los roles del usuario
-        if (decodedToken.roles && decodedToken.roles.length > 0) {
-          setUserRoles(decodedToken.roles);  // Asignar todos los roles
-        } else {
-          console.warn("No se encontraron roles en el token.");
-        }
-
-      } catch (error) {
-        console.error('Error decodificando el token:', error);
-      }
-    } else {
-      setUserEmail(''); // Limpiar el estado del email si no hay token
-      setUserRoles([]); // Limpiar los roles si no hay token
-      console.warn("No se encontró un token en el localStorage.");
-    }
-  };
-
-  // Escucha los cambios de autenticación cada vez que se emita el evento 'authChanged'
-  useEffect(() => {
-    updateNavbarState(); // Llamada inicial para verificar el estado del usuario
-
-    // Escucha el evento personalizado para cambios en la autenticación
-    const handleAuthChange = () => {
-      updateNavbarState();
-    };
-
-    window.addEventListener('authChanged', handleAuthChange);
-
-    // Limpiar el evento cuando se desmonte el componente
-    return () => {
-      window.removeEventListener('authChanged', handleAuthChange);
-    };
-  }, []);
 
   return (
     <nav className="navbar">
@@ -86,11 +31,10 @@ function Navbar() {
         <img src={logo} alt="Logo" />
       </div>
       <div className="navbar__links">
-      
         <Link to="/"><IoHomeSharp /> Inicio</Link>
 
         {/* Mostrar dropdown de usuarios si el usuario tiene el rol 'user' */}
-        {userRoles.includes('user') && (
+        {isAuthenticated && userRoles.includes('user') && (
           <div className="dropdown">
             <button className="dropdown__toggle" onClick={handleDropdownToggle}>
               <FaTable /> Usuarios
@@ -107,7 +51,7 @@ function Navbar() {
         )}
 
         {/* Mostrar dropdown de admin si el usuario tiene el rol 'admin' */}
-        {userRoles.includes('admin') && (
+        {isAuthenticated && userRoles.includes('admin') && (
           <div className="dropdown">
             <button className="dropdown__toggle" onClick={handleDropdownToggle}>
               <FaTable /> Admins
@@ -123,9 +67,9 @@ function Navbar() {
             )}
           </div>
         )}
-        
+
         {/* Mostrar el email del usuario si está logueado con dropdown de opciones */}
-        {userEmail ? (
+        {isAuthenticated ? (
           <div className="navbar__user">
             <div className="navbar__user-email" onClick={handleUserDropdownToggle}>
               {userEmail} {/* Mostrar el correo del usuario logueado */}
