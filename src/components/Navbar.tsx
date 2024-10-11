@@ -2,9 +2,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Navbar.css';
 import logo from '../img/logo.png';
 import { useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode';  // Importación nombrada
 import { IoHomeSharp } from "react-icons/io5";
 import { FaTable, FaUser } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext'; // Importa el contexto de autenticación
+
+function Navbar() {
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [userDropdownVisible, setUserDropdownVisible] = useState(false);
+  const { isAuthenticated, userEmail, userRoles, logout } = useAuth(); // Desestructura la autenticación
+=======
 
 // El token decodificado debería incluir un array de roles
 interface DecodedToken {
@@ -36,6 +42,10 @@ function Navbar() {
   };
 
   const handleLogout = () => {
+    logout(); // Llama a la función logout del contexto
+    navigate('/'); // Redirigir a la página de inicio después de cerrar sesión
+  };
+
     // Eliminar el token del localStorage y redirigir a la página de inicio de sesión
     localStorage.removeItem('token');
     setUserEmail(''); // Limpiar el estado del email
@@ -97,12 +107,11 @@ function Navbar() {
         <img src={logo} alt="Logo" />
       </div>
       <div className="navbar__links">
-      
         <Link to="/"><IoHomeSharp /> Inicio</Link>
 
 
         {/* Mostrar dropdown de usuarios si el usuario tiene el rol 'user' */}
-        {userRoles.includes('user') && (
+        {isAuthenticated && userRoles.includes('user') && (
           <div className="dropdown">
             <button className="dropdown__toggle" onClick={handleDropdownToggle}>
               <FaTable /> Usuarios
@@ -119,7 +128,7 @@ function Navbar() {
         )}
 
         {/* Mostrar dropdown de admin si el usuario tiene el rol 'admin' */}
-        {userRoles.includes('admin') && (
+        {isAuthenticated && userRoles.includes('admin') && (
           <div className="dropdown">
             <button className="dropdown__toggle" onClick={handleDropdownToggle}>
               <FaTable /> Admins
@@ -128,7 +137,7 @@ function Navbar() {
               <div className="dropdown__menu">
                 <Link to="/TablaSolicitudes">Tabla de usuarios</Link>
                 <Link to="/Panel-Solicitud-Concesion">Solicitudes Concesión</Link>
-                <Link to="/Panel-Prorroga-Concesiones">Prorroga de Concesiones</Link>
+                {/* <Link to="/Panel-Prorroga-Concesiones">Prorroga de Concesiones</Link> */}
                 <Link to="/Panel-Citas">Tabla de citas</Link>
                 <Link to="/Panel-Solicitud-Expediente">Tabla de solicitud expediente</Link>
               </div>
@@ -136,7 +145,6 @@ function Navbar() {
           </div>
         )}
         
-
         {/* Mostrar los dropdowns si el usuario está logueado */}
         {userEmail && (
           <>
@@ -178,7 +186,7 @@ function Navbar() {
         )}
 
         {/* Mostrar el email del usuario si está logueado con dropdown de opciones */}
-        {userEmail ? (
+        {isAuthenticated ? (
           <div className="navbar__user">
             <div className="navbar__user-email" onClick={handleUserDropdownToggle}>
               {userEmail} {/* Mostrar el correo del usuario logueado */}
@@ -196,5 +204,6 @@ function Navbar() {
     </nav>
   );
 }
+
 
 export default Navbar;

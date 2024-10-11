@@ -56,6 +56,10 @@ function Register() {
         throw new Error(data.message || 'Error al registrar');
       }
 
+
+      // Mostrar alerta de confirmación de registro exitoso
+      window.alert('Usuario registrado exitosamente. Por favor, revisa tu correo electrónico para verificar tu cuenta.');
+
       // Redirigir al usuario a la página de inicio de sesión
       navigate('/login');
     } catch (error) {
