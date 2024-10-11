@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Importa useNavigate para redirección
+import {jwtDecode} from 'jwt-decode'; // Asegúrate de que jwt-decode esté instalado
 import "../../styles/Administrativos/TablaSolicitudConcesio.css";
 
 // Interfaz para las solicitudes
@@ -9,6 +11,11 @@ interface Solicitud {
   apellido2: string;
   email: string;
   telefono: number;
+}
+
+// Interfaz para el token decodificado
+interface DecodedToken {
+  roles: string[];
 }
 
 // Interfaz para los roles
@@ -107,8 +114,32 @@ const TablaSolicitudes: React.FC = () => {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [selectedUserName, setSelectedUserName] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const navigate = useNavigate(); // Hook para la navegación
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      try {
+        const decodedToken = jwtDecode<DecodedToken>(token); // Decodificar el token para obtener roles
+
+        if (!decodedToken.roles.includes('admin')) {
+          window.alert('No tienes permiso para acceder a esta página.'); // Mostrar alerta al usuario
+          navigate('/'); // Redirige a una página de acceso denegado o inicio
+          return;
+        }
+      } catch (error) {
+        console.error('Error al decodificar el token:', error);
+        window.alert('Ha ocurrido un error. Por favor, inicie sesión nuevamente.');
+        navigate('/login'); // Redirige a login si hay un problema con el token
+        return;
+      }
+    } else {
+      window.alert('No se ha encontrado un token de acceso. Por favor, inicie sesión.');
+      navigate('/login'); // Redirige a login si no hay un token
+      return;
+    }
+
     const obtenerSolicitudes = async () => {
       try {
         const solicitudesFromAPI = await fetchSolicitudes();
@@ -119,7 +150,7 @@ const TablaSolicitudes: React.FC = () => {
     };
 
     obtenerSolicitudes();
-  }, []);
+  }, [navigate]);
 
   const handleViewUser = async (userId: number, userName: string) => {
     setSelectedUserId(userId);
@@ -168,7 +199,7 @@ const TablaSolicitudes: React.FC = () => {
 
   return (
     <div className="tabla-container">
-      <h2>Solicitudes Enviadas</h2>
+      <h2>Usuarios Registrados</h2>
       <table className="tabla-solicitudes">
         <thead>
           <tr>
@@ -204,7 +235,7 @@ const TablaSolicitudes: React.FC = () => {
                 <li key={role.id}>{role.name}</li>
               ))}
             </ul>
-            <button onClick={handleAssignRoles1And2}>Asignar Rol de Amdin</button>
+            <button onClick={handleAssignRoles1And2}>Asignar Rol de Admin</button>
             <button onClick={handleAssignOnlyUserRole}>Quitar Rol de Admin</button>
             <button onClick={handleCloseModal}>Cerrar</button>
           </div>
