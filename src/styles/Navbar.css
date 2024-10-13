@@ -6,7 +6,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0px 0px;
+  padding: 0 20px; /* Ajustar el padding para dar algo de espacio */
   background-color: #004080;
   border-bottom: 0px solid #ccc;
   z-index: 1000;
@@ -19,8 +19,9 @@
 .navbar__links {
   display: flex;
   flex-grow: 1;
-  justify-content: center;
+  justify-content: center; /* Centra los elementos del navbar */
   align-items: center;
+  gap: 20px; /* Añade espacio uniforme entre los elementos */
 }
 
 .navbar__links a {
@@ -31,7 +32,6 @@
 
 .dropdown {
   position: relative;
-  margin-left: auto;
 }
 
 .dropdown__toggle {
@@ -70,10 +70,14 @@
   display: flex;
 }
 
-/* Estilo existente */
+/* Ajuste para los elementos del usuario */
 .navbar__user {
+  margin-left: auto; /* Alinea el usuario al extremo derecho */
   position: relative;
   cursor: pointer;
+  color: rgb(255, 255, 255);
+  display: flex;
+  align-items: center;
 }
 
 /* Mostrar el user-dropdown al hacer hover sobre el navbar__user */
@@ -81,7 +85,7 @@
   display: block; /* Cambiar a display block al hacer hover */
 }
 
-/* Ocultar el dropdown por defecto */
+/* Ocultar el dropdown del usuario por defecto */
 .user-dropdown {
   display: none; /* Ocultar el dropdown inicialmente */
   position: absolute;

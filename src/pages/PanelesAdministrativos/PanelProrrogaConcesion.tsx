@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 import "../../styles/Administrativos/TablaProrrogaConcesion.css";
 import { FaFilePdf } from 'react-icons/fa';
 
@@ -15,9 +17,13 @@ interface Prorroga {
   };
 }
 
+// Interfaz para el token decodificado
+interface DecodedToken {
+  roles: string[];
+}
+
 const baseUrl = 'http://localhost:3000/'; // URL base del servidor
 
-// Función para obtener las prórrogas desde la API
 const fetchProrrogas = async (): Promise<Prorroga[]> => {
   const urlBase = `${baseUrl}Prorrogas/`;
 
@@ -34,7 +40,6 @@ const fetchProrrogas = async (): Promise<Prorroga[]> => {
     }
 
     const data: Prorroga[] = await response.json();
-    console.log('Datos de prórrogas recibidos:', data);
     return data;
   } catch (error) {
     console.error('Error fetching prorrogas:', error);
@@ -46,8 +51,32 @@ const TablaProrrogas: React.FC = () => {
   const [prorrogas, setProrrogas] = useState<Prorroga[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      try {
+        const decodedToken = jwtDecode<DecodedToken>(token);
+
+        if (!decodedToken.roles.includes('admin')) {
+          window.alert('No tienes permiso para acceder a esta página.');
+          navigate('/');
+          return;
+        }
+      } catch (error) {
+        console.error('Error al decodificar el token:', error);
+        window.alert('Ha ocurrido un error. Por favor, inicie sesión nuevamente.');
+        navigate('/login');
+        return;
+      }
+    } else {
+      window.alert('No se ha encontrado un token de acceso. Por favor, inicie sesión.');
+      navigate('/login');
+      return;
+    }
+
     const obtenerProrrogas = async () => {
       try {
         const prorrogasFromAPI = await fetchProrrogas();
@@ -61,38 +90,45 @@ const TablaProrrogas: React.FC = () => {
     };
 
     obtenerProrrogas();
-  }, []);
+  }, [navigate]);
 
-  const manejarCambioEstado = async (id: number, nuevoEstado: string)=>{
+  const manejarCambioEstado = async (id: number, nuevoEstado: string) => {
+    const confirmacion = window.confirm(`¿Estás seguro de que deseas cambiar el estado a "${nuevoEstado}"?`);
+    if (!confirmacion) return; // Salir si el usuario cancela la acción
+
     const token = localStorage.getItem('token');
-    if (!token){
-     console.error('Token no encontrado');
-     return;
+    if (!token) {
+      console.error('Token no encontrado');
+      return;
     }
-    try{
-     const response = await fetch(`http://localhost:3000/Prorrogas/${id}/status`,{
-       method: 'PUT',
-       headers: {
-         'Content-Type': 'application/json',
-         'Authorization': `Bearer ${token}`,
-       },
-       body: JSON.stringify({Status: nuevoEstado}),
-     });
-     if (!response.ok){
-       throw new Error(`Error al actualizar el estado de la cita con ID: ${id}`);
-     }
-     setProrrogas((prevProrrogas)=>
-       prevProrrogas.map((prorroga)=>
-         prorroga.id === id ? {...prorroga, Status: nuevoEstado}:prorroga
-   )
-  );
-  console.log(`Estado de la cita con ID: ${id} cambiado a ${nuevoEstado}`);
-    }catch(error){
-     console.error('Error al cambiar el estado de la cita:', error);
+
+    try {
+      const response = await fetch(`http://localhost:3000/Prorrogas/${id}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ Status: nuevoEstado }),
+      });
+      if (!response.ok) {
+        throw new Error(`Error al actualizar el estado de la prórroga con ID: ${id}`);
+      }
+      setProrrogas((prevProrrogas) =>
+        prevProrrogas.map((prorroga) =>
+          prorroga.id === id ? { ...prorroga, Status: nuevoEstado } : prorroga
+        )
+      );
+      window.alert(`Estado de la prórroga con ID: ${id} cambiado a "${nuevoEstado}".`);
+    } catch (error) {
+      console.error('Error al cambiar el estado de la prórroga:', error);
     }
   };
 
   const manejarEliminar = async (id: number) => {
+    const confirmacion = window.confirm('¿Estás seguro de que deseas eliminar esta prórroga?');
+    if (!confirmacion) return; // Salir si el usuario cancela la acción
+
     try {
       const response = await fetch(`${baseUrl}Prorrogas/${id}`, {
         method: 'DELETE',
@@ -105,12 +141,11 @@ const TablaProrrogas: React.FC = () => {
       setProrrogas((prevProrrogas) =>
         prevProrrogas.filter((prorroga) => prorroga.id !== id)
       );
-      console.log(`Prórroga con ID: ${id} eliminada`);
+      window.alert(`Prórroga con ID: ${id} eliminada exitosamente.`);
     } catch (error) {
       console.error('Error al eliminar la prórroga:', error);
     }
   };
-
 
   const manejarVerArchivo = (archivoUrl: string | undefined) => {
     if (archivoUrl && archivoUrl !== 'undefined') {
@@ -162,9 +197,8 @@ const TablaProrrogas: React.FC = () => {
               </td>
               <td>{prorroga.Status || 'pendiente'}</td>
               <td>
-              <button onClick={()=> manejarCambioEstado(prorroga.id, 'aprobada')}>Aprobar</button>
-              <button onClick={()=> manejarCambioEstado(prorroga.id, 'denegada')}>Denegar</button>
-                <button onClick={() => manejarVerArchivo(prorroga.ArchivoAdjunto)}>Ver Archivo</button>
+                <button onClick={() => manejarCambioEstado(prorroga.id, 'aprobada')}>Aprobar</button>
+                <button onClick={() => manejarCambioEstado(prorroga.id, 'denegada')}>Denegar</button>
                 <button onClick={() => manejarEliminar(prorroga.id)}>Eliminar</button>
               </td>
             </tr>

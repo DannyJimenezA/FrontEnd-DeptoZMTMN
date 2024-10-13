@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
-import "../styles/SolicitudConcesion.css"; // Asegúrate de que la hoja de estilos esté correctamente importada
+import React, { useState } from "react";
+import "../styles/SolicitudConcesion.css";
 import { useForm } from "react-hook-form";
 import { FaRegFileAlt } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom'; // Importa useNavigate para la redirección
 
 function Concesiones() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const navigate = useNavigate(); // Usar para redirigir al usuario
 
   const onSubmit = async (data: any) => {
     // Crear un objeto FormData para manejar archivos y otros datos
@@ -32,11 +34,6 @@ function Concesiones() {
     // Agregar el userId a los datos del formulario
     formData.append('userId', userId.toString());
 
-    // Mostrar en consola los datos enviados
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
-
     // Enviar el formulario al backend
     try {
       const response = await fetch('http://localhost:3000/concesiones', {
@@ -55,8 +52,14 @@ function Concesiones() {
 
       const result = await response.json();
       console.log('Resultado del servidor:', result);
+      
+      // Mostrar alerta al usuario y redirigir al inicio
+      window.alert('La concesión ha sido creada exitosamente.');
+      navigate('/'); // Redirigir a la página de inicio
+
     } catch (error) {
       console.error('Error al enviar el formulario:', error);
+      window.alert('Hubo un error al crear la concesión. Inténtalo nuevamente.');
     }
   };
 

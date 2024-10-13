@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { FaUser, FaLock } from 'react-icons/fa'; // Importar los íconos de react-icons
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import '../styles/Login.css';
@@ -96,7 +95,7 @@ function Login() {
               required
             />
             <span className="toggle-password" onClick={togglePasswordVisibility}>
-              {showPassword ? 'OCULTAR' : 'MOSTRAR'}
+              {showPassword ? '' : ''}
             </span>
           </div>
         </div>
