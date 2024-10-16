@@ -20,20 +20,33 @@ function RevisionPlanos() {
       return;
     }
 
-    formData.append('expediente', data.expediente);
-    formData.append('numeroPlano', data.numeroPlano);
-    formData.append('comentarios', data.comentarios);
-
     const token = localStorage.getItem('token');
     const decodedToken = parseJwt(token);
     const userId = decodedToken?.sub;
+
     if (!userId) {
       console.error("User ID is missing from the token.");
       return;
     }
 
-    formData.append('userId', userId.toString());
+    // Estructura para la solicitud que se envía al backend
+    const revisionData = {
+      userId,
+      NumeroExpediente: data.expediente,    // Se obtiene del formulario
+      NumeroPlano: data.numeroPlano,        // Se obtiene del formulario
+      Comentario: data.comentarios || "",   // Comentarios opcionales
+      ArchivosAdjuntos: Array.from(selectedFiles).map(file => ({
+        nombre: file.name,
+        ruta: `/uploads/${file.name}` // Aquí puedes manejar la ruta dependiendo de tu servidor de almacenamiento
+      })),
+    };
 
+    formData.append('userId', revisionData.userId.toString());
+    formData.append('NumeroExpediente', revisionData.NumeroExpediente);
+    formData.append('NumeroPlano', revisionData.NumeroPlano);
+    formData.append('Comentario', revisionData.Comentario);
+    formData.append('ArchivosAdjuntos', JSON.stringify(revisionData.ArchivosAdjuntos));
+     // Convertimos a JSON
     try {
       const response = await fetch('http://localhost:3000/revision-plano', {
         method: 'POST',
@@ -56,7 +69,7 @@ function RevisionPlanos() {
     }
   };
 
-  const parseJwt = (token) => {
+  const parseJwt = (token: string | null) => {
     if (!token) {
       console.error('Token no disponible');
       return null;
