@@ -5,15 +5,7 @@ import { useState, useEffect } from 'react';
 import { IoHomeSharp } from "react-icons/io5";
 import { FaTable, FaUser } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext'; // Importa el contexto de autenticación
-
-function Navbar() {
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [userDropdownVisible, setUserDropdownVisible] = useState(false);
-  const { isAuthenticated, userEmail, userRoles, logout } = useAuth(); // Desestructura la autenticación
-
-import { jwtDecode }from 'jwt-decode'; // Importación nombrada corregida
-import { IoHomeSharp } from "react-icons/io5";
-import { FaTable, FaUser } from 'react-icons/fa';
+import { jwtDecode } from 'jwt-decode'; // Importación corregida
 
 // El token decodificado debería incluir un array de roles
 interface DecodedToken {
@@ -26,6 +18,7 @@ function Navbar() {
   const [userEmail, setUserEmail] = useState('');  // Estado para almacenar el email del usuario
   const [userRoles, setUserRoles] = useState<{ id: number; name: string }[]>([]);  // Estado para almacenar los roles del usuario
   const [userDropdownVisible, setUserDropdownVisible] = useState(false); // Estado para mostrar/ocultar el dropdown del usuario
+  const { isAuthenticated, logout } = useAuth(); // Desestructura la autenticación
   const navigate = useNavigate(); // Hook para la navegación
 
   const handleDropdownToggle = () => {
@@ -38,12 +31,10 @@ function Navbar() {
 
   const handleLogout = () => {
     logout(); // Llama a la función logout del contexto
-    navigate('/'); // Redirigir a la página de inicio después de cerrar sesión
-    // Eliminar el token del localStorage y redirigir a la página de inicio de sesión
-    localStorage.removeItem('token');
+    localStorage.removeItem('token'); // Eliminar el token del localStorage
     setUserEmail(''); // Limpiar el estado del email
     setUserRoles([]);  // Limpiar el estado de los roles
-    navigate('/'); // Redirigir a la página de login
+    navigate('/'); // Redirigir a la página de inicio
   };
 
   // Ejecuta cuando el componente se monta
@@ -87,8 +78,7 @@ function Navbar() {
         <Link to="/"><IoHomeSharp /> Inicio</Link>
 
         {/* Mostrar dropdown de usuarios si el usuario tiene el rol 'user' */}
-        {isAuthenticated && userRoles.includes('user') && (
-        {hasRole('user') && (
+        {isAuthenticated && hasRole('user') && (
           <div className="dropdown">
             <button className="dropdown__toggle" onClick={handleDropdownToggle}>
               <FaTable /> Usuarios
@@ -105,10 +95,7 @@ function Navbar() {
         )}
 
         {/* Mostrar dropdown de admin si el usuario tiene el rol 'admin' */}
-
-        {isAuthenticated && userRoles.includes('admin') && (
-
-        {hasRole('admin') && (
+        {isAuthenticated && hasRole('admin') && (
           <div className="dropdown">
             <button className="dropdown__toggle" onClick={handleDropdownToggle}>
               <FaTable /> Admins
