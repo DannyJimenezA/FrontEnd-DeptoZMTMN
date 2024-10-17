@@ -312,7 +312,7 @@ const TablaSolicitudes: React.FC = () => {
 
   return (
     <div className="tabla-container">
-      <h2>Solicitudes de Concesiones y Prórrogas</h2>
+      <h2>Solicitudes</h2>
 
       {/* Tabla para Concesiones */}
       <h3>Concesiones</h3>
