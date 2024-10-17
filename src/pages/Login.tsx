@@ -1,7 +1,15 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaRegUser, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import image from "../img/WhatsApp Image 2024-09-13 at 6.05.23 PM.jpeg";
+
+import { useState } from 'react';
+
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { FaLock, FaRegUser } from 'react-icons/fa'; // Combina los íconos de react-icons
+import '../styles/Login.css';
+
 
 function Login() {
   const [email, setEmail] = useState('');

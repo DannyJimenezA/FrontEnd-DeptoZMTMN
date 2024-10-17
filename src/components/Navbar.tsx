@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { IoHomeSharp } from "react-icons/io5";
+
 import { FaTable, FaUser, FaUserCircle } from 'react-icons/fa';
 import logo from '../img/logo.png';
 
@@ -55,6 +56,25 @@ function Navbar() {
     };
   }, []);
 
+import { FaTable, FaUser } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext'; // Importa el contexto de autenticación
+import { jwtDecode } from 'jwt-decode'; // Importación corregida
+
+// El token decodificado debería incluir un array de roles
+interface DecodedToken {
+  email?: string;  // El campo 'email' es opcional
+  roles?: { id: number; name: string }[];  // Array de roles, cada uno con id y nombre
+}
+
+function Navbar() {
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [userEmail, setUserEmail] = useState('');  // Estado para almacenar el email del usuario
+  const [userRoles, setUserRoles] = useState<{ id: number; name: string }[]>([]);  // Estado para almacenar los roles del usuario
+  const [userDropdownVisible, setUserDropdownVisible] = useState(false); // Estado para mostrar/ocultar el dropdown del usuario
+  const { isAuthenticated, logout } = useAuth(); // Desestructura la autenticación
+  const navigate = useNavigate(); // Hook para la navegación
+
+
   const handleDropdownToggle = () => {
     setDropdownVisible(!dropdownVisible);
   };
@@ -64,11 +84,51 @@ function Navbar() {
   };
 
   const handleLogout = () => {
+
     localStorage.removeItem('token');
     setIsAuthenticated(false);
     setUserEmail('');
     setUserRoles([]);
     navigate('/');
+
+    logout(); // Llama a la función logout del contexto
+    localStorage.removeItem('token'); // Eliminar el token del localStorage
+    setUserEmail(''); // Limpiar el estado del email
+    setUserRoles([]);  // Limpiar el estado de los roles
+    navigate('/'); // Redirigir a la página de inicio
+  };
+
+  // Ejecuta cuando el componente se monta
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token) as DecodedToken;
+        console.log("Token decodificado:", decodedToken); // Verificar el token decodificado
+
+        // Establecer el email en el estado si está presente en el token
+        if (decodedToken.email) {
+          setUserEmail(decodedToken.email);
+        }
+
+        // Establecer los roles en el estado si están presentes en el token
+        if (decodedToken.roles && decodedToken.roles.length > 0) {
+          setUserRoles(decodedToken.roles); // Asignar todos los roles
+        } else {
+          console.warn("No se encontraron roles en el token.");
+        }
+      } catch (error) {
+        console.error('Error decodificando el token:', error);
+      }
+    } else {
+      console.warn("No se encontró un token en el localStorage.");
+    }
+  }, []);
+
+  // Verificar si el usuario tiene un rol específico
+  const hasRole = (roleName: string) => {
+    return userRoles.some(role => role.name === roleName);
+
   };
 
   return (
@@ -80,6 +140,7 @@ function Navbar() {
           <span>Inicio</span>
         </Link>
       </div>
+
 
       <div className="flex items-center space-x-6">
         {isAuthenticated && userRoles.includes('user') && (
@@ -97,10 +158,25 @@ function Navbar() {
                 <Link to="/concesiones" className="block px-4 py-2 hover:bg-gray-200">Solicitudes Concesión</Link>
                 <Link to="/prorroga-concesion" className="block px-4 py-2 hover:bg-gray-200">Prorroga de Concesiones</Link>
                 <Link to="/solicitud-expediente" className="block px-4 py-2 hover:bg-gray-200">Solicitud de expediente</Link>
+
+        {/* Mostrar dropdown de usuarios si el usuario tiene el rol 'user' */}
+        {isAuthenticated && hasRole('user') && (
+          <div className="dropdown">
+            <button className="dropdown__toggle" onClick={handleDropdownToggle}>
+              <FaTable /> Usuarios
+            </button>
+            {dropdownVisible && (
+              <div className="dropdown__menu">
+                <Link to="/citas-listas">Agendar una cita</Link>
+                <Link to="/concesiones">Solicitudes Concesión</Link>
+                <Link to="/prorroga-concesion">Prórroga de Concesiones</Link>
+                <Link to="/solicitud-expediente">Solicitud de expediente</Link>
+
               </div>
             )}
           </div>
         )}
+
 
         {isAuthenticated && userRoles.includes('admin') && (
           <div className="relative">
@@ -118,6 +194,21 @@ function Navbar() {
                 <Link to="/Panel-Prorroga-Concesiones" className="block px-4 py-2 hover:bg-gray-200">Prorroga de Concesiones</Link>
                 <Link to="/Panel-Citas" className="block px-4 py-2 hover:bg-gray-200">Tabla de citas</Link>
                 <Link to="/Panel-Solicitud-Expediente" className="block px-4 py-2 hover:bg-gray-200">Tabla de solicitud expediente</Link>
+
+        {/* Mostrar dropdown de admin si el usuario tiene el rol 'admin' */}
+        {isAuthenticated && hasRole('admin') && (
+          <div className="dropdown">
+            <button className="dropdown__toggle" onClick={handleDropdownToggle}>
+              <FaTable /> Admins
+            </button>
+            {dropdownVisible && (
+              <div className="dropdown__menu">
+                <Link to="/TablaSolicitudes">Tabla de usuarios</Link>
+                <Link to="/Panel-Solicitud-Concesion">Solicitudes Concesión</Link>
+                <Link to="/Panel-Prorroga-Concesiones">Prórroga de Concesiones</Link>
+                <Link to="/Panel-Citas">Tabla de citas</Link>
+                <Link to="/Panel-Solicitud-Expediente">Tabla de solicitud expediente</Link>
+
               </div>
             )}
           </div>
@@ -142,10 +233,14 @@ function Navbar() {
             )}
           </div>
         ) : (
+
           <Link to="/login" className="flex items-center space-x-1 hover:text-gray-200">
             <FaUser />
             <span>Iniciar Sesión</span>
           </Link>
+
+          <Link to="/login"><FaUser /> Iniciar Sesión</Link>
+
         )}
       </div>
     </nav>
