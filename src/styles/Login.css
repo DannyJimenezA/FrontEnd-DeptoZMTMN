@@ -1,3 +1,4 @@
+/* Login.css */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -5,7 +6,7 @@ body {
 }
 
 .login-container {
-  width: 300px;
+  width: 350px;
   margin: 100px auto;
   padding: 2rem;
   background-color: #fff;
@@ -16,7 +17,7 @@ body {
 h2 {
   text-align: center;
   margin-bottom: 1rem;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
 }
 
 .login-form {
@@ -25,7 +26,7 @@ h2 {
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 }
 
 label {
@@ -35,53 +36,41 @@ label {
 }
 
 input {
-  padding: 0.5rem;
+  padding: 0.7rem;
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   width: 100%;
 }
 
-/* Botón de enviar */
-.submit-btn {
-  padding: 0.5rem;
-  background-color: #4CAF50;
+/* Botón de envío (submit) */
+button[type="submit"] {
+  padding: 0.7rem;
+  background-color: #1976d2;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
+  margin-top: 1rem;
 }
 
-.submit-btn:hover {
-  background-color: #f7f7f7;
+button[type="submit"]:hover {
+  background-color: #1565c0;
 }
 
-/* Contenedor para el input y el botón de mostrar/ocultar */
-.password-input-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* Espacio entre input y botón */
-}
-
-.password-input-container input {
-  flex-grow: 1; /* El input ocupa todo el espacio disponible */
-  padding-right: 10px;
-}
-
-.password-toggle {
-  margin-left: 5px; /* Espacio entre el botón y el input */
-  padding: 0.005rem 0.3rem; /* Reducir padding para hacerlo más pequeño */
-  background-color: #b0b4b0;
-  color: white;
+/* Botón de cancelación */
+button[type="button"] {
+  padding: 0.7rem;
+  background-color: #e0e0e0;
+  color: black;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.05rem; /* Reducir aún más el tamaño del texto */
-  width: auto;
-  white-space: nowrap; /* Asegura que el texto no se corte */
+  font-size: 1rem;
+  margin-top: 0.5rem;
 }
 
-.password-toggle:hover {
-  background-color: #7a7d7a;
+button[type="button"]:hover {
+  background-color: #bdbdbd;
 }
