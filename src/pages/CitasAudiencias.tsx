@@ -18,7 +18,7 @@ function CitasAudiencias() {
   };
 
   // Manejador para el envío del formulario
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: { preventDefault: () => void; }) => {
     event.preventDefault();
   
     // Validar que la fecha y hora estén seleccionadas
@@ -40,7 +40,6 @@ function CitasAudiencias() {
     }
   
     // Crear la fecha y hora combinadas
-    const citaFechaHora = new Date(`${selectedDate}T${selectedTime}`);
   
     const token = localStorage.getItem('token');
     const decodedToken = parseJwt(token);  // Necesitarás una función para decodificar el JWT

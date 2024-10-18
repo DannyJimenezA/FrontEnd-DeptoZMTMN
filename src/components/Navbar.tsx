@@ -1,10 +1,19 @@
 import { Link, useNavigate } from 'react-router-dom';
+
 import { useState, useEffect } from 'react';
 import { IoHomeSharp } from 'react-icons/io5';
 import { FaTable, FaUser, FaUserCircle } from 'react-icons/fa';
 import logo from '../img/logo.png';
 import {jwtDecode} from 'jwt-decode'; // Importación corregida
 import { useAuth } from '../context/AuthContext'; // Uso de contexto de autenticación
+
+import '../styles/Navbar.css';
+import logo from '../img/logo.png';
+import { useState } from 'react';
+import { IoHomeSharp } from "react-icons/io5";
+import { FaTable, FaUser } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext'; // Importa el contexto de autenticación
+
 
 // Definición de la interfaz para el token decodificado
 interface DecodedToken {
@@ -104,12 +113,25 @@ const Navbar: React.FC = () => {
               <span>Admins</span>
             </button>
             {dropdownVisible && (
+
               <div className="absolute bg-white text-black rounded shadow-lg mt-2">
                 <Link to="/TablaSolicitudes" className="block px-4 py-2 hover:bg-gray-200">Tabla de usuarios</Link>
                 <Link to="/Panel-Solicitud-Concesion" className="block px-4 py-2 hover:bg-gray-200">Solicitudes Concesión</Link>
                 <Link to="/Panel-Prorroga-Concesiones" className="block px-4 py-2 hover:bg-gray-200">Prórroga de Concesiones</Link>
                 <Link to="/Panel-Citas" className="block px-4 py-2 hover:bg-gray-200">Tabla de citas</Link>
                 <Link to="/Panel-Solicitud-Expediente" className="block px-4 py-2 hover:bg-gray-200">Tabla de solicitud expediente</Link>
+
+              <div className="dropdown__menu">
+                <Link to="/TablaSolicitudes">Tabla de usuarios</Link>
+                <Link to="/Panel-Solicitud-Concesion">Solicitudes Concesión</Link>
+                <Link to="/Panel-Prorroga-Concesiones">Prorroga de Concesiones</Link>
+                <Link to="/Panel-Citas">Tabla de citas</Link>
+                <Link to="/Panel-Solicitud-Expediente">Tabla de solicitud expediente</Link>
+                {/* Añadir la nueva opción de Denuncias */}
+                <Link to="/admin/denuncias">Gestión de Denuncias</Link> {/* Nueva opción */}
+                {/* Añadir la nueva opción de Revisión de Plano */}
+                <Link to="/admin/revision-plano">Gestión de Revisión de Plano</Link> {/* Nueva opción */}
+
               </div>
             )}
           </div>
@@ -145,3 +167,4 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
+
