@@ -1,134 +1,70 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { IoHomeSharp } from "react-icons/io5";
-
+import { IoHomeSharp } from 'react-icons/io5';
 import { FaTable, FaUser, FaUserCircle } from 'react-icons/fa';
 import logo from '../img/logo.png';
+import {jwtDecode} from 'jwt-decode'; // Importación corregida
+import { useAuth } from '../context/AuthContext'; // Uso de contexto de autenticación
 
-function Navbar() {
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [userDropdownVisible, setUserDropdownVisible] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userEmail, setUserEmail] = useState('');
-  const [userRoles, setUserRoles] = useState([]);
-  const navigate = useNavigate();
-
-  // Función para decodificar el token JWT
-  const parseJwt = (token) => {
-    try {
-      return JSON.parse(atob(token.split('.')[1]));
-    } catch (e) {
-      console.error('Invalid token:', e);
-      return null;
-    }
-  };
-
-  // Función para cargar el usuario desde el token
-  const loadUserFromToken = () => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decoded = parseJwt(token);
-      if (decoded) {
-        setIsAuthenticated(true);
-        setUserEmail(decoded.email);
-        setUserRoles(decoded.roles || []);
-      } else {
-        setIsAuthenticated(false);
-      }
-    } else {
-      setIsAuthenticated(false);
-    }
-  };
-
-  // useEffect para cargar el usuario y manejar cambios en el localStorage
-  useEffect(() => {
-    loadUserFromToken();
-
-    const handleStorageChange = (event) => {
-      if (event.key === 'token') {
-        loadUserFromToken();
-      }
-    };
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
-
-import { FaTable, FaUser } from 'react-icons/fa';
-import { useAuth } from '../context/AuthContext'; // Importa el contexto de autenticación
-import { jwtDecode } from 'jwt-decode'; // Importación corregida
-
-// El token decodificado debería incluir un array de roles
+// Definición de la interfaz para el token decodificado
 interface DecodedToken {
-  email?: string;  // El campo 'email' es opcional
-  roles?: { id: number; name: string }[];  // Array de roles, cada uno con id y nombre
+  email?: string;
+  roles?: { id: number; name: string }[];
 }
 
-function Navbar() {
+const Navbar: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [userEmail, setUserEmail] = useState('');  // Estado para almacenar el email del usuario
-  const [userRoles, setUserRoles] = useState<{ id: number; name: string }[]>([]);  // Estado para almacenar los roles del usuario
-  const [userDropdownVisible, setUserDropdownVisible] = useState(false); // Estado para mostrar/ocultar el dropdown del usuario
-  const { isAuthenticated, logout } = useAuth(); // Desestructura la autenticación
-  const navigate = useNavigate(); // Hook para la navegación
+  const [userDropdownVisible, setUserDropdownVisible] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [userRoles, setUserRoles] = useState<{ id: number; name: string }[]>([]);
+  const { isAuthenticated, logout } = useAuth(); // Usar autenticación desde el contexto
+  const navigate = useNavigate();
 
-
+  // Función para alternar la visibilidad del dropdown de roles
   const handleDropdownToggle = () => {
     setDropdownVisible(!dropdownVisible);
   };
 
+  // Función para alternar la visibilidad del dropdown de usuario
   const handleUserDropdownToggle = () => {
     setUserDropdownVisible(!userDropdownVisible);
   };
 
+  // Función de cierre de sesión
   const handleLogout = () => {
-
-    localStorage.removeItem('token');
-    setIsAuthenticated(false);
-    setUserEmail('');
-    setUserRoles([]);
-    navigate('/');
-
     logout(); // Llama a la función logout del contexto
     localStorage.removeItem('token'); // Eliminar el token del localStorage
     setUserEmail(''); // Limpiar el estado del email
-    setUserRoles([]);  // Limpiar el estado de los roles
+    setUserRoles([]); // Limpiar el estado de los roles
     navigate('/'); // Redirigir a la página de inicio
   };
 
-  // Ejecuta cuando el componente se monta
+  // useEffect para cargar los datos del usuario desde el token JWT
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       try {
         const decodedToken = jwtDecode(token) as DecodedToken;
-        console.log("Token decodificado:", decodedToken); // Verificar el token decodificado
+        console.log('Token decodificado:', decodedToken);
 
-        // Establecer el email en el estado si está presente en el token
-        if (decodedToken.email) {
-          setUserEmail(decodedToken.email);
-        }
-
-        // Establecer los roles en el estado si están presentes en el token
+        // Establecer el email y roles si están presentes en el token
+        if (decodedToken.email) setUserEmail(decodedToken.email);
         if (decodedToken.roles && decodedToken.roles.length > 0) {
-          setUserRoles(decodedToken.roles); // Asignar todos los roles
+          setUserRoles(decodedToken.roles);
         } else {
-          console.warn("No se encontraron roles en el token.");
+          console.warn('No se encontraron roles en el token.');
         }
       } catch (error) {
         console.error('Error decodificando el token:', error);
       }
     } else {
-      console.warn("No se encontró un token en el localStorage.");
+      console.warn('No se encontró un token en el localStorage.');
     }
   }, []);
 
   // Verificar si el usuario tiene un rol específico
   const hasRole = (roleName: string) => {
     return userRoles.some(role => role.name === roleName);
-
   };
 
   return (
@@ -141,14 +77,11 @@ function Navbar() {
         </Link>
       </div>
 
-
       <div className="flex items-center space-x-6">
-        {isAuthenticated && userRoles.includes('user') && (
+        {/* Mostrar dropdown de usuarios si el usuario tiene el rol 'user' */}
+        {isAuthenticated && hasRole('user') && (
           <div className="relative">
-            <button
-              className="flex items-center space-x-1 hover:text-gray-200"
-              onClick={handleDropdownToggle}
-            >
+            <button className="flex items-center space-x-1 hover:text-gray-200" onClick={handleDropdownToggle}>
               <FaTable />
               <span>Usuarios</span>
             </button>
@@ -156,59 +89,27 @@ function Navbar() {
               <div className="absolute bg-white text-black rounded shadow-lg mt-2">
                 <Link to="/citas-listas" className="block px-4 py-2 hover:bg-gray-200">Agendar una cita</Link>
                 <Link to="/concesiones" className="block px-4 py-2 hover:bg-gray-200">Solicitudes Concesión</Link>
-                <Link to="/prorroga-concesion" className="block px-4 py-2 hover:bg-gray-200">Prorroga de Concesiones</Link>
+                <Link to="/prorroga-concesion" className="block px-4 py-2 hover:bg-gray-200">Prórroga de Concesiones</Link>
                 <Link to="/solicitud-expediente" className="block px-4 py-2 hover:bg-gray-200">Solicitud de expediente</Link>
-
-        {/* Mostrar dropdown de usuarios si el usuario tiene el rol 'user' */}
-        {isAuthenticated && hasRole('user') && (
-          <div className="dropdown">
-            <button className="dropdown__toggle" onClick={handleDropdownToggle}>
-              <FaTable /> Usuarios
-            </button>
-            {dropdownVisible && (
-              <div className="dropdown__menu">
-                <Link to="/citas-listas">Agendar una cita</Link>
-                <Link to="/concesiones">Solicitudes Concesión</Link>
-                <Link to="/prorroga-concesion">Prórroga de Concesiones</Link>
-                <Link to="/solicitud-expediente">Solicitud de expediente</Link>
-
               </div>
             )}
           </div>
         )}
 
-
-        {isAuthenticated && userRoles.includes('admin') && (
+        {/* Mostrar dropdown de admin si el usuario tiene el rol 'admin' */}
+        {isAuthenticated && hasRole('admin') && (
           <div className="relative">
-            <button
-              className="flex items-center space-x-1 hover:text-gray-200"
-              onClick={handleDropdownToggle}
-            >
+            <button className="flex items-center space-x-1 hover:text-gray-200" onClick={handleDropdownToggle}>
               <FaTable />
               <span>Admins</span>
             </button>
             {dropdownVisible && (
               <div className="absolute bg-white text-black rounded shadow-lg mt-2">
                 <Link to="/TablaSolicitudes" className="block px-4 py-2 hover:bg-gray-200">Tabla de usuarios</Link>
-                <Link to="/Panel-Solicitud-Concesion" className="block px-4 py-2 hover:bg-gray-200">Solicitudes</Link>
-                <Link to="/Panel-Prorroga-Concesiones" className="block px-4 py-2 hover:bg-gray-200">Prorroga de Concesiones</Link>
+                <Link to="/Panel-Solicitud-Concesion" className="block px-4 py-2 hover:bg-gray-200">Solicitudes Concesión</Link>
+                <Link to="/Panel-Prorroga-Concesiones" className="block px-4 py-2 hover:bg-gray-200">Prórroga de Concesiones</Link>
                 <Link to="/Panel-Citas" className="block px-4 py-2 hover:bg-gray-200">Tabla de citas</Link>
                 <Link to="/Panel-Solicitud-Expediente" className="block px-4 py-2 hover:bg-gray-200">Tabla de solicitud expediente</Link>
-
-        {/* Mostrar dropdown de admin si el usuario tiene el rol 'admin' */}
-        {isAuthenticated && hasRole('admin') && (
-          <div className="dropdown">
-            <button className="dropdown__toggle" onClick={handleDropdownToggle}>
-              <FaTable /> Admins
-            </button>
-            {dropdownVisible && (
-              <div className="dropdown__menu">
-                <Link to="/TablaSolicitudes">Tabla de usuarios</Link>
-                <Link to="/Panel-Solicitud-Concesion">Solicitudes Concesión</Link>
-                <Link to="/Panel-Prorroga-Concesiones">Prórroga de Concesiones</Link>
-                <Link to="/Panel-Citas">Tabla de citas</Link>
-                <Link to="/Panel-Solicitud-Expediente">Tabla de solicitud expediente</Link>
-
               </div>
             )}
           </div>
@@ -233,18 +134,14 @@ function Navbar() {
             )}
           </div>
         ) : (
-
           <Link to="/login" className="flex items-center space-x-1 hover:text-gray-200">
             <FaUser />
             <span>Iniciar Sesión</span>
           </Link>
-
-          <Link to="/login"><FaUser /> Iniciar Sesión</Link>
-
         )}
       </div>
     </nav>
   );
-}
+};
 
 export default Navbar;
