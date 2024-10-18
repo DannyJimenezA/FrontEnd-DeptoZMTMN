@@ -81,22 +81,22 @@ function UsoPrecario() {
 
   return (
     <div className="container">
-      <h1 className="form-title">Solicitud de Prórroga</h1>
-      <p className="form-subtitle">*Descripción de la solicitud de prórroga*</p>
+      <h1 className="form-title">Solicitud de Uso Precario</h1>
+      <p className="form-subtitle">*Descripción de la solicitud de uso precario*</p>
 
       {/* Apartado para descargar un PDF relacionado con la prórroga */}
       <div className="pdf-download">
-        <a href="/assets/Precario.pdf" download>
-          <FaRegFileAlt /> Descargar PDF de Prórroga
+        <a href="/assets/UsoPrecario.pdf" download>
+          <FaRegFileAlt /> Descargar PDF de uso precario
         </a>
       </div>
 
       <div className="form-container">
-        <h2>Favor enviar todos los documentos necesarios para la prórroga</h2>
+        <h2>Favor enviar todos los documentos necesarios para la slicitud</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="form">
           {/* Documentos de prórroga (múltiples archivos) */}
           <div className="form-field">
-            <label className="form-label">Documentos de Prórroga:</label>
+            <label className="form-label">Documentos de uso precario:</label>
             <input
               type="file"
               multiple // Permitir múltiples archivos

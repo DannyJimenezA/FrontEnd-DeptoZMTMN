@@ -1,0 +1,148 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f6f9;
+  color: #333;
+}
+
+/* Estilos globales para las tablas solo dentro del dashboard */
+.dashboard table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.dashboard th, .dashboard td {
+  padding: 12px 15px;
+  text-align: left;
+}
+
+.dashboard th {
+  background-color: #007bff;
+  color: #fff;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.dashboard td {
+  background-color: #fff;
+  border-bottom: 1px solid #ddd;
+  color: #555;
+}
+
+/* Estilo alternado para filas de las tablas */
+.dashboard tr:nth-child(even) td {
+  background-color: #f9f9f9;
+}
+
+/* Hover effect para filas de la tabla */
+.dashboard tr:hover td {
+  background-color: #f1f1f1;
+}
+
+/* Estilos para los botones en las tablas */
+.dashboard button {
+  padding: 6px 12px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.dashboard button:hover {
+  background-color: #0056b3;
+}
+
+.dashboard button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.dashboard button:focus {
+  outline: none;
+}
+
+/* Iconos de archivos PDF */
+.dashboard .fa-file-pdf {
+  color: #d9534f;
+  cursor: pointer;
+  font-size: 18px;
+  transition: color 0.3s;
+}
+
+.dashboard .fa-file-pdf:hover {
+  color: #c9302c;
+}
+
+/* Estilos generales para contenedores de las tablas */
+.dashboard .tabla-container {
+  background-color: #fff;
+  padding: 20px;
+  margin: 20px auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard h2 {
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 24px;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 10px;
+}
+
+/* Estilos para los botones de acción en las tablas */
+.dashboard td button {
+  margin-right: 8px;
+}
+
+/* Botones específicos de acción */
+.dashboard button.aprobar {
+  background-color: #28a745;
+}
+
+.dashboard button.aprobar:hover {
+  background-color: #218838;
+}
+
+.dashboard button.denegar {
+  background-color: #dc3545;
+}
+
+.dashboard button.denegar:hover {
+  background-color: #c82333;
+}
+
+.dashboard button.eliminar {
+  background-color: #ffc107;
+  color: #333;
+}
+
+.dashboard button.eliminar:hover {
+  background-color: #e0a800;
+}
+
+/* Responsividad para tablas */
+@media (max-width: 768px) {
+  .dashboard table {
+    font-size: 14px;
+  }
+
+  .dashboard th, .dashboard td {
+    padding: 10px;
+  }
+
+  .dashboard button {
+    padding: 4px 8px;
+  }
+}
