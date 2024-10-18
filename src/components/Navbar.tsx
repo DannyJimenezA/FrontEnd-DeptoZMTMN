@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Navbar.css';
 import logo from '../img/logo.png';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { IoHomeSharp } from "react-icons/io5";
 import { FaTable, FaUser } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext'; // Importa el contexto de autenticación
@@ -63,6 +63,10 @@ function Navbar() {
                 <Link to="/Panel-Prorroga-Concesiones">Prorroga de Concesiones</Link>
                 <Link to="/Panel-Citas">Tabla de citas</Link>
                 <Link to="/Panel-Solicitud-Expediente">Tabla de solicitud expediente</Link>
+                {/* Añadir la nueva opción de Denuncias */}
+                <Link to="/admin/denuncias">Gestión de Denuncias</Link> {/* Nueva opción */}
+                {/* Añadir la nueva opción de Revisión de Plano */}
+                <Link to="/admin/revision-plano">Gestión de Revisión de Plano</Link> {/* Nueva opción */}
               </div>
             )}
           </div>
@@ -89,3 +93,4 @@ function Navbar() {
 }
 
 export default Navbar;
+
