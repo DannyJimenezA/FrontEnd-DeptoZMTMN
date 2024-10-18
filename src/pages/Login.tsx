@@ -1,6 +1,11 @@
 import { useState } from 'react';
+ Frander-Centeno
+import { FaUser, FaLock } from 'react-icons/fa'; // Importar los íconos de react-icons
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+
 import { Link, useNavigate, useLocation } from 'react-router-dom'; // Combina todas las importaciones de react-router-dom aquí
 import { FaLock, FaRegUser } from 'react-icons/fa'; // Combina los íconos de react-icons
+ Cambios-Frontend
 import '../styles/Login.css';
 
 function Login() {
@@ -94,7 +99,7 @@ function Login() {
               required
             />
             <span className="toggle-password" onClick={togglePasswordVisibility}>
-              {showPassword ? 'OCULTAR' : 'MOSTRAR'}
+              {showPassword ? '' : ''}
             </span>
           </div>
         </div>
