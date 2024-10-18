@@ -363,8 +363,11 @@ function Register() {
   );
 }
 
- Frander-Centeno
-export default Register;
+
 
 export default Register;
- Cambios-Frontend
+
+
+
+
+

@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import './App.css'
 import Navbar from './components/Navbar';
 import CitasAudiencias from './pages/CitasAudiencias';
 import SolicitudExpediente from './pages/SolicitudExpediente';
@@ -24,6 +25,7 @@ import ConfirmAccount from './pages/ConfirmAccount';
 // Aquí importa desde la nueva carpeta `User`
 import VistaSolicitudesExpediente from './pages/VistaSolicitudesExpedientes'; 
 import RevisionPlanos from './pages/RevisionPlanos';
+import AdminDashboard from './Dashboard/Dashboard';
 
 function App () {
   return (
@@ -51,6 +53,7 @@ function App () {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/users/reset-password" element={<ResetPassword />} />
         <Route path="/users/confirm/:token" element={<ConfirmAccount />} /> {/* Ruta para la confirmación */}
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
 
         {/* Nueva ruta para que los usuarios vean sus solicitudes de expediente */}
         <Route path="/mis-solicitudes-expediente" element={<VistaSolicitudesExpediente />} />

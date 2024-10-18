@@ -1,23 +1,29 @@
- Frander-Centeno
+
 import { Link, useNavigate } from 'react-router-dom';
- Cambios-Frontend
+ 
 import React, { useState, useEffect } from 'react';
 import '../styles/LandingPage.css';
 import Footer from '../components/Footer';
 import Banner from '../components/Banner';
- Frander-Centeno
+
+import { jwtDecode } from 'jwt-decode'; // Importación correcta
+
+
 import {jwtDecode} from 'jwt-decode';
+
 
 const LandingPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Estado de autenticación
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Solo una vez es suficiente
+
 
 import { jwtDecode } from 'jwt-decode';
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);  // Estado de autenticación
- Cambios-Frontend
+ 
+
 
   // useEffect para manejar la autenticación
   useEffect(() => {
@@ -33,23 +39,19 @@ const LandingPage: React.FC = () => {
     }
   }, []);
 
-  // Función para manejar la navegación basada en autenticación
- Frander-Centeno
-  const handleQuickAccessClick = (path: string) => {
-    if (isAuthenticated) {
-      // Si el usuario está autenticado, navegar a la ruta deseada
-      navigate(path);
-    } else {
-      // Si el usuario no está autenticado, redirigir a login
-      navigate('/login');
-    }
-  };
 
-  // Función para manejar clic en un servicio
-  const handleServiceClick = (path: string) => {
-    if (!isAuthenticated) {
-      // Redirigir a la página de login y pasar la ruta solicitada y un mensaje
+  // Función para manejar la navegación
+  const handleNavigation = (path: string) => {
+
+  // Función para manejar la navegación basada en autenticación
+
+  const handleQuickAccessClick = (path: string) => {
+
+    if (isAuthenticated) {
+      navigate(path); // Navegar a la ruta deseada si está autenticado
+    } else {
       navigate('/login', { state: { from: path, message: 'Por favor, inicia sesión para acceder a este servicio.' } });
+
     } else {
       navigate(path); // Si está autenticado, permitir la navegación
 
@@ -58,7 +60,7 @@ const LandingPage: React.FC = () => {
       navigate(path); // Navegar a la ruta deseada si está autenticado
     } else {
       navigate('/login', { state: { from: path, message: 'Por favor, inicia sesión para acceder a este servicio.' } });
- Cambios-Frontend
+
     }
   };
 
@@ -90,7 +92,13 @@ const LandingPage: React.FC = () => {
             <h3>Solicitud de Expediente</h3>
             <p>Revisa y gestiona tus solicitudes de expediente.</p>
           </div>
- Frander-Centeno
+
+          <div className="service-card" onClick={() => handleNavigation('/denuncias')}>
+            <h3>Denuncias</h3>
+            <p>Envía denuncias.</p>
+          </div>
+          <div className="service-card" onClick={() => handleNavigation('/uso-precario')}>
+
           <div className="service-card" onClick={() => handleQuickAccessClick('/denuncias')}>
             <h3>Denuncias</h3>
             <p>Envía denuncias.</p>
@@ -102,7 +110,7 @@ const LandingPage: React.FC = () => {
             <p>Envía denuncias.</p>
           </div>
           <div className="service-card" onClick={() => handleNavigation('/uso-precario')}>
- Cambios-Frontend
+ 
             <h3>Uso Precario</h3>
             <p>Realiza solicitudes de uso precario.</p>
           </div>
