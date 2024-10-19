@@ -88,14 +88,7 @@ function Denuncias () {
                     <label>Detalles:</label>
                     <textarea></textarea>
                 </div>
-                <div className="form-group">
-                    <label>FIRMA:</label>
-                    <input type="text" />
-                </div>
-                <div className="form-group">
-                    <label>Fecha:</label>
-                    <input type="date" />
-                </div>
+
 
                 {/* Botón de enviar */}
                 <div className="form-group">

@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import './App.css'
 import Navbar from './components/Navbar';
 import CitasAudiencias from './pages/CitasAudiencias';
 import SolicitudExpediente from './pages/SolicitudExpediente';
@@ -10,7 +11,7 @@ import Register from './pages/Register';
 import TablaSolicitudes from './pages/PanelesAdministrativos/PanelControlUsuario';
 import TablaSolicitudes1 from './pages/PanelesAdministrativos/PanelSolicitudConcesion';
 import PanelCitas from './pages/PanelesAdministrativos/PanelCitas';
-// Se ha eliminado: import PanelDenuncia from './pages/PanelesAdministrativos/PanelDenuncia';
+
 import PanelSolicitudConcesion from "./pages/PanelesAdministrativos/PanelSolicitudConcesion";
 import ProrrogaConcesion from './pages/ProrrogaConcesion'; 
 import PanelProrrogaConcesiones from './pages/PanelesAdministrativos/PanelProrrogaConcesion';
@@ -24,8 +25,13 @@ import ConfirmAccount from './pages/ConfirmAccount';
 // Importar los componentes necesarios
 import VistaSolicitudesExpediente from './pages/VistaSolicitudesExpedientes';
 import RevisionPlanos from './pages/RevisionPlanos';
+
 import PanelDenunciasAdmin from './pages/PanelesAdministrativos/PanelDenunciasAdmin'; // Importar el panel de denuncias admin
 import PanelRevisionPlano from './pages/PanelesAdministrativos/PanelRevisionPlano';   // Importar el panel de revisión de plano
+import AdminDashboard from './Dashboard/Dashboard';
+
+
+
 
 function App () {
   return (
@@ -53,6 +59,7 @@ function App () {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/users/reset-password" element={<ResetPassword />} />
         <Route path="/users/confirm/:token" element={<ConfirmAccount />} /> {/* Ruta para la confirmación */}
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
 
         {/* Nueva ruta para que los usuarios vean sus solicitudes de expediente */}
         <Route path="/mis-solicitudes-expediente" element={<VistaSolicitudesExpediente />} />

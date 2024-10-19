@@ -9,6 +9,12 @@ interface Prorroga {
   id: number;
   ArchivoAdjunto: string;
   Status?: string;
+  user?:{
+    cedula: number;
+    nombre: string;
+    apellido1: string;
+
+  }
 }
 
 // Interfaz para las concesiones
@@ -16,11 +22,23 @@ interface Concesion {
   id: number;
   ArchivoAdjunto: string;
   Status?: string;
+  user?:{
+    cedula: number;
+    nombre: string;
+    apellido1: string;
+
+  }
 }
 interface Precario{
   id: number;
   ArchivoAdjunto: string;
   Status?: string;
+  user?:{
+    cedula: number;
+    nombre: string;
+    apellido1: string;
+
+  }
 }
 
 // Interfaz para el token decodificado
@@ -63,7 +81,7 @@ const fetchSolicitudes = async (): Promise<SolicitudesResponse> => {
 const TablaSolicitudes: React.FC = () => {
   const [prorrogas, setProrrogas] = useState<Prorroga[]>([]);
   const [concesiones, setConcesiones] = useState<Concesion[]>([]);
-  const [precario, setPrecario] = useState<Precario[]>([]);
+  const [precarios, setPrecario] = useState<Precario[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate(); // Hook para la navegación
@@ -178,13 +196,13 @@ const TablaSolicitudes: React.FC = () => {
       if (!response.ok) {
         throw new Error(`Error al actualizar el estado de la solicitud con ID: ${id}`);
       }
-      setPrecario((prevPrecario) =>
-        prevPrecario.map((precario) =>
+      setPrecario((prevPrecarios) =>
+        prevPrecarios.map((precario) =>
           precario.id === id ? { ...precario, Status: nuevoEstado } : precario
         )
       );
     } catch (error) {
-      console.error("Error al cambiar el estado de la prórroga:", error);
+      console.error("Error al cambiar el estado de la solicitud:", error);
     }
   };
   const manejarCambioEstadoConcesion = async (id: number, nuevoEstado: string) => {
@@ -283,8 +301,8 @@ const TablaSolicitudes: React.FC = () => {
         throw new Error(`Error al eliminar la solicitud con ID: ${id}`);
       }
 
-      setPrecario((prevPrecario) =>
-        prevPrecario.filter((precario) => precario.id !== id)
+      setPrecario((prevPrecarios) =>
+        prevPrecarios.filter((precario) => precario.id !== id)
       );
       console.log(`Solicitud con ID: ${id} eliminada`);
     } catch (error) {
@@ -294,7 +312,7 @@ const TablaSolicitudes: React.FC = () => {
 
   return (
     <div className="tabla-container">
-      <h2>Solicitudes de Concesiones y Prórrogas</h2>
+      <h2>Solicitudes</h2>
 
       {/* Tabla para Concesiones */}
       <h3>Concesiones</h3>
@@ -302,6 +320,9 @@ const TablaSolicitudes: React.FC = () => {
         <thead>
           <tr>
             <th>ID</th>
+            <th>Cedula</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
             <th>Archivos Adjuntos</th>
             <th>Estado</th>
             <th>Acciones</th>
@@ -311,6 +332,9 @@ const TablaSolicitudes: React.FC = () => {
           {concesiones.map((concesion) => (
             <tr key={concesion.id}>
               <td>{concesion.id}</td>
+              <td>{concesion.user?.cedula}</td>
+              <td>{concesion.user?.nombre}</td>
+              <td>{concesion.user?.apellido1}</td>
               <td>
                 {concesion.ArchivoAdjunto ? (
                   JSON.parse(concesion.ArchivoAdjunto).map((archivo: string, index: number) => (
@@ -342,6 +366,9 @@ const TablaSolicitudes: React.FC = () => {
         <thead>
           <tr>
             <th>ID</th>
+            <th>Cedula</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
             <th>Archivos Adjuntos</th>
             <th>Estado</th>
             <th>Acciones</th>
@@ -351,6 +378,9 @@ const TablaSolicitudes: React.FC = () => {
           {prorrogas.map((prorroga) => (
             <tr key={prorroga.id}>
               <td>{prorroga.id}</td>
+              <td>{prorroga.user?.cedula}</td>
+              <td>{prorroga.user?.nombre}</td>
+              <td>{prorroga.user?.apellido1}</td>
               <td>
                 {prorroga.ArchivoAdjunto ? (
                   JSON.parse(prorroga.ArchivoAdjunto).map((archivo: string, index: number) => (
@@ -381,15 +411,21 @@ const TablaSolicitudes: React.FC = () => {
         <thead>
           <tr>
             <th>ID</th>
+            <th>Cedula</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
             <th>Archivos Adjuntos</th>
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {concesiones.map((precario) => (
+          {precarios.map((precario) => (
             <tr key={precario.id}>
               <td>{precario.id}</td>
+              <td>{precario.user?.cedula}</td>
+              <td>{precario.user?.nombre}</td>
+              <td>{precario.user?.apellido1}</td>
               <td>
                 {precario.ArchivoAdjunto ? (
                   JSON.parse(precario.ArchivoAdjunto).map((archivo: string, index: number) => (
