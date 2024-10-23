@@ -1,0 +1,39 @@
+.pagination {
+  display: flex;
+  justify-content: space-between; /* Espacio entre el control de paginación y el selector */
+  align-items: center;
+  margin-top: 20px;
+  width: 100%; /* Asegura que la paginación ocupe todo el ancho disponible */
+}
+
+.pagination-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin: 0 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.pagination-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+button.active {
+  background-color: #0069d9;
+  color: white;
+}
+
+.items-per-page {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Añade un pequeño espacio entre el texto y el selector */
+}
+
+.items-per-page select {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}

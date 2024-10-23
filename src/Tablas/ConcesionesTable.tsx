@@ -1,0 +1,121 @@
+import React, { useState, useEffect } from 'react';
+import { Concesion } from '../Types/Types';
+import Paginacion from '../components/Paginacion';
+import { eliminarEntidad } from '../Helpers/eliminarEntidad';  // Importar el helper
+import '../styles/Botones.css'
+
+interface ConcesionesTableProps {
+  onVerConcesion: (concesion: Concesion) => void;
+}
+
+const fetchConcesiones = async (): Promise<Concesion[]> => {
+  const urlBase = 'http://localhost:3000/Concesiones'; // Ajusta la URL de tu API
+
+  try {
+    const response = await fetch(urlBase, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status} - ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching concesiones:', error);
+    throw error;
+  }
+};
+
+const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) => {
+  const [concesiones, setConcesiones] = useState<Concesion[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1); // Página actual
+  const [itemsPerPage, setItemsPerPage] = useState(5); // Número de concesiones por página
+
+  useEffect(() => {
+    const obtenerConcesiones = async () => {
+      try {
+        const concesionesFromAPI = await fetchConcesiones();
+        setConcesiones(concesionesFromAPI);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error al obtener las concesiones:', error);
+        setError('Error al cargar las concesiones.');
+        setLoading(false);
+      }
+    };
+
+    obtenerConcesiones();
+  }, []);
+
+  // Cálculo de las concesiones que se mostrarán en la página actual
+  const indexUltimaConcesion = currentPage * itemsPerPage;
+  const indexPrimeraConcesion = indexUltimaConcesion - itemsPerPage;
+  const concesionesActuales = concesiones.slice(indexPrimeraConcesion, indexUltimaConcesion);
+
+  const numeroPaginas = Math.ceil(concesiones.length / itemsPerPage);
+
+  // Función para eliminar una concesión usando el helper
+  const manejarEliminarConcesion = async (id: number) => {
+    await eliminarEntidad<Concesion>('Concesiones', id, setConcesiones);  // Usamos el helper para eliminar
+  };
+
+  if (loading) {
+    return <p>Cargando concesiones...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
+
+  return (
+    <div>
+      <div className="tabla-container">
+        <h2>Solicitudes de Concesión</h2>
+        <table className="tabla-solicitudes">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Apellidos</th>
+              <th>Cédula</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {concesionesActuales.map((concesion) => (
+              <tr key={concesion.id}>
+                <td>{concesion.id}</td>
+                <td>{concesion.user?.nombre}</td>
+                <td>{concesion.user?.apellido1}</td>
+                <td>{concesion.user?.cedula}</td>
+                <td>{concesion.Status || 'Pendiente'}</td>
+                <td>
+                  <button className="boton-ver"onClick={() => onVerConcesion(concesion)}>Ver</button>
+                  <button onClick={() => manejarEliminarConcesion(concesion.id)}>Eliminar</button> {/* Botón para eliminar */}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Componente de Paginación */}
+        <Paginacion
+          currentPage={currentPage}
+          totalPages={numeroPaginas}
+          itemsPerPage={itemsPerPage}
+          onPageChange={setCurrentPage}
+          onItemsPerPageChange={setItemsPerPage}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default ConcesionesTable;
