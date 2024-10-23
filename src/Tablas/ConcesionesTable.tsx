@@ -3,6 +3,7 @@ import { Concesion } from '../Types/Types';
 import Paginacion from '../components/Paginacion';
 import { eliminarEntidad } from '../Helpers/eliminarEntidad';  // Importar el helper
 import '../styles/Botones.css'
+import { FaEye, FaTrash } from 'react-icons/fa';
 
 interface ConcesionesTableProps {
   onVerConcesion: (concesion: Concesion) => void;
@@ -81,9 +82,9 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
           <thead>
             <tr>
               <th>ID</th>
-              <th>Nombre</th>
-              <th>Apellidos</th>
-              <th>Cédula</th>
+              <th>Nombre Solicitante</th>
+              <th>Apellidos Solicitante</th>
+              <th>Cédula Solicitante</th>
               <th>Estado</th>
               <th>Acciones</th>
             </tr>
@@ -97,8 +98,8 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
                 <td>{concesion.user?.cedula}</td>
                 <td>{concesion.Status || 'Pendiente'}</td>
                 <td>
-                  <button className="boton-ver"onClick={() => onVerConcesion(concesion)}>Ver</button>
-                  <button onClick={() => manejarEliminarConcesion(concesion.id)}>Eliminar</button> {/* Botón para eliminar */}
+                  <button className="boton-ver"onClick={() => onVerConcesion(concesion)}><FaEye />Ver</button>
+                  <button onClick={() => manejarEliminarConcesion(concesion.id)}><FaTrash />Eliminar</button> {/* Botón para eliminar */}
                 </td>
               </tr>
             ))}

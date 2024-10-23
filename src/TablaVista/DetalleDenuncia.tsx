@@ -9,14 +9,6 @@ interface DetalleDenunciaProps {
 
 const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver }) => {
 
-  // Manejador para eliminar la denuncia
-  // const manejarEliminar = async () => {
-  //   await eliminarEntidad<Denuncia>('denuncia', denuncia.id, () => {});
-  //   onEliminar(denuncia.id); // Llamamos al callback para actualizar la lista de denuncias
-  //   onVolver(); // Volver a la lista después de eliminar
-  // };
-
-  // Procesar los archivos de evidencia en caso de ser un string, un JSON o un array
   const procesarArchivos = (archivosEvidencia: string | string[] | undefined) => {
     let archivos: string[] = [];
 
@@ -75,10 +67,7 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver })
         Volver a la lista de denuncias
       </button>
 
-      {/* Botón de Eliminar
-      <button className="eliminar-btn" onClick={manejarEliminar}>
-        Eliminar Denuncia
-      </button> */}
+
     </div>
   );
 };

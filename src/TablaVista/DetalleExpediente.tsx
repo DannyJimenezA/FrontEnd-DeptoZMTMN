@@ -4,9 +4,16 @@ import { CopiaExpediente } from '../Types/Types';  // Importa la interfaz si est
 interface DetalleExpedienteProps {
   expediente: CopiaExpediente;
   onVolver: () => void;  // Función para volver a la lista de expedientes
+  onEstadoCambiado: (id: number, nuevoEstado: string) => void; // Función para cambiar el estado
 }
 
-const DetalleExpediente: React.FC<DetalleExpedienteProps> = ({ expediente, onVolver }) => {
+const DetalleExpediente: React.FC<DetalleExpedienteProps> = ({ expediente, onVolver, onEstadoCambiado }) => {
+
+  // Función para manejar el cambio de estado
+  const manejarCambioEstado = (nuevoEstado: string) => {
+    onEstadoCambiado(expediente.idExpediente, nuevoEstado); // Llamar a la función del componente padre para cambiar el estado
+  };
+
   return (
     <div className="detalle-expediente">
       <h3>Detalles de la Solicitud de Expediente</h3>
@@ -23,8 +30,20 @@ const DetalleExpediente: React.FC<DetalleExpedienteProps> = ({ expediente, onVol
         </div>
       </div>
 
+      {/* Botones para cambiar el estado del expediente */}
+      <div className="estado-botones">
+        <button className="btn-aprobar" onClick={() => manejarCambioEstado('aprobada')}>
+          Aprobar Expediente
+        </button>
+        <button className="btn-denegar" onClick={() => manejarCambioEstado('denegada')}>
+          Denegar Expediente
+        </button>
+      </div>
+
       {/* Botón para volver a la lista de expedientes */}
-      <button className="volver-btn" onClick={onVolver}>Volver a la lista de expedientes</button>
+      <button className="volver-btn" onClick={onVolver}>
+        Volver a la lista de expedientes
+      </button>
     </div>
   );
 };

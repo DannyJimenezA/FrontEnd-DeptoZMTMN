@@ -1,25 +1,22 @@
 import React from 'react';
 
-interface CambioEstadoEntidadProps {
-  id: number;
-  estadoActual: string;
-  nuevoEstado: string;
-  onChangeEstado: (id: number, nuevoEstado: string) => void;
+interface EstadoCambioButtonProps {
+  id: number; // ID de la cita
+  nuevoEstado: string; // El nuevo estado que se asignará
+  onEstadoCambiado: (id: number, nuevoEstado: string) => void; // Función para cambiar el estado
+  label: string; // Texto del botón (Aprobar, Denegar, etc.)
 }
 
-const CambioEstadoEntidad: React.FC<CambioEstadoEntidadProps> = ({ id, estadoActual, nuevoEstado, onChangeEstado }) => {
-  const manejarCambioEstado = () => {
-    const confirmacion = window.confirm(`¿Estás seguro de que deseas cambiar el estado a "${nuevoEstado}"?`);
-    if (confirmacion) {
-      onChangeEstado(id, nuevoEstado);
-    }
+const EstadoCambioButton: React.FC<EstadoCambioButtonProps> = ({ id, nuevoEstado, onEstadoCambiado, label }) => {
+  const manejarClick = () => {
+    onEstadoCambiado(id, nuevoEstado); // Llamamos a la función que cambiará el estado
   };
 
   return (
-    <button onClick={manejarCambioEstado}>
-      {estadoActual === nuevoEstado ? 'Estado Actual' : `Cambiar a ${nuevoEstado}`}
+    <button onClick={manejarClick}>
+      {label}
     </button>
   );
 };
 
-export default CambioEstadoEntidad;
+export default EstadoCambioButton;
