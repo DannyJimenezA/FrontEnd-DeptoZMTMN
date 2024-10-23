@@ -1,40 +1,113 @@
 .navbar {
-  position: fixed;
+  position: sticky;
   top: 0;
   left: 0;
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0px 0px;
-  background-color: #fff;
+  padding: 0 20px; /* Ajustar el padding para dar algo de espacio */
+  background-color: #004080;
   border-bottom: 0px solid #ccc;
   z-index: 1000;
-  
 }
-  
-  .navbar__logo img {
-    height: 50px;
-  }
-  
-  .navbar__links a {
-    margin: 0 10px;
-    text-decoration: none;
-    color: #333;
-  }
-  
-  .navbar__search input {
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-  }
-  
-  .navbar__search button {
-    padding: 5px 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-  }
-  
+
+.navbar__logo img {
+  height: 35px;
+}
+
+.navbar__links {
+  display: flex;
+  flex-grow: 1;
+  justify-content: center; /* Centra los elementos del navbar */
+  align-items: center;
+  gap: 20px; /* Añade espacio uniforme entre los elementos */
+}
+
+.navbar__links a {
+  margin: 0 10px;
+  text-decoration: none;
+  color: #ffffff;
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown__toggle {
+  background: none;
+  border: none;
+  color: #a3a3a3;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.dropdown__menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #f9f9f9;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  display: none; /* Oculto por defecto */
+}
+
+.dropdown__menu a {
+  color: #333;
+  text-decoration: none;
+  padding: 8px 0;
+}
+
+.dropdown__menu a:hover {
+  background-color: #ddd;
+}
+
+/* Mostrar dropdown al hacer hover */
+.dropdown:hover .dropdown__menu {
+  display: flex;
+}
+
+/* Ajuste para los elementos del usuario */
+.navbar__user {
+  margin-left: auto; /* Alinea el usuario al extremo derecho */
+  position: relative;
+  cursor: pointer;
+  color: rgb(255, 255, 255);
+  display: flex;
+  align-items: center;
+}
+
+/* Mostrar el user-dropdown al hacer hover sobre el navbar__user */
+.navbar__user:hover .user-dropdown {
+  display: block; /* Cambiar a display block al hacer hover */
+}
+
+/* Ocultar el dropdown del usuario por defecto */
+.user-dropdown {
+  display: none; /* Ocultar el dropdown inicialmente */
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.user-dropdown a,
+.user-dropdown div {
+  display: block;
+  padding: 8px 16px;
+  cursor: pointer;
+  text-decoration: none;
+  color: black;
+}
+
+.user-dropdown a:hover,
+.user-dropdown div:hover {
+  background-color: #f0f0f0;
+}
