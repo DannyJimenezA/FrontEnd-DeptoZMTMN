@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { RevisionPlano } from '../Types/Types';
 import Paginacion from '../components/Paginacion';
 import { eliminarEntidad } from '../Helpers/eliminarEntidad';  // Importar el helper
+import { FaEye, FaTrash } from 'react-icons/fa';
 
 interface RevisionplanoTableProps {
   onVerRevisionPlano: (RevisionPlano: RevisionPlano) => void;
@@ -80,9 +81,9 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
           <thead>
             <tr>
               <th>ID</th>
-              <th>Nombre</th>
-              <th>Apellidos</th>
-              <th>Cédula</th>
+              <th>Nombre Solicitante</th>
+              <th>Apellidos Solicitante</th>
+              <th>Cédula Solicitante</th>
               <th>Estado</th>
               <th>Acciones</th>
             </tr>
@@ -96,8 +97,8 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
                 <td>{RevisionPlano.user?.cedula}</td>
                 <td>{RevisionPlano.Status || 'Pendiente'}</td>
                 <td>
-                  <button onClick={() => onVerRevisionPlano(RevisionPlano)}>Ver</button>
-                  <button onClick={() => manejarEliminarRevisionPlano(RevisionPlano.id)}>Eliminar</button> {/* Botón para eliminar */}
+                  <button onClick={() => onVerRevisionPlano(RevisionPlano)}><FaEye />Ver</button>
+                  <button onClick={() => manejarEliminarRevisionPlano(RevisionPlano.id)}><FaTrash />Eliminar</button> {/* Botón para eliminar */}
                 </td>
               </tr>
             ))}

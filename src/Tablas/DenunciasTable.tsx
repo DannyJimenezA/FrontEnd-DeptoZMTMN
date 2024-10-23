@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Paginacion from '../components/Paginacion';  // Importamos el componente actualizado de paginación
 import { Denuncia } from '../Types/Types';
 import { eliminarEntidad } from '../Helpers/eliminarEntidad';  // Importamos el helper
+import { FaEye, FaTrash } from 'react-icons/fa';
 
 const fetchDenuncias = async (): Promise<Denuncia[]> => {
   const urlBase = 'http://localhost:3000/denuncia';
@@ -111,8 +112,8 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
               <td>{denuncia.lugarDenuncia?.descripcion || 'Lugar no disponible'}</td>
               
               <td>
-                <button onClick={() => manejarVer(denuncia)}>Ver</button>
-                <button onClick={() => manejarEliminarDenuncia(denuncia.id)}>Eliminar</button>
+                <button onClick={() => manejarVer(denuncia)}><FaEye />Ver</button>
+                <button onClick={() => manejarEliminarDenuncia(denuncia.id)}><FaTrash />Eliminar</button>
               </td>
             </tr>
           ))}

@@ -46,12 +46,12 @@ const Navbar: React.FC = () => {
                 onClick={handleDropdownToggle}
               >
                 <FaTable />
-                <span>Opciones</span>
+                <span>Admin Dashboard</span>
               </button>
               {dropdownVisible && (
                 <div className="absolute bg-white text-black rounded shadow-lg mt-2">
-                  <Link to="/citas-listas" className="block px-4 py-2 hover:bg-gray-200">
-                    Agendar una cita
+                  <Link to="/admin-dashboard" className="block px-4 py-2 hover:bg-gray-200">
+                    Ir a Admin Dashboard
                   </Link>
                   {/* Otras opciones del menú */}
                 </div>

@@ -94,3 +94,36 @@ export interface Prorroga {
     cedula: string;
   };
 }
+
+
+// Interfaz para las citas
+export interface Cita {
+  id: number;
+  description: string;
+  date: string; // Fecha como string (ISO)
+  time: string;
+  user: {
+    id: number;
+    nombre: string;
+    cedula: string;
+  };
+  status: string;
+}
+
+
+// Interfaz para los usuarios
+export interface Usuario {
+  id: number;
+  nombre: string;
+  apellido1: string;
+  apellido2: string;
+  email: string;
+  telefono: number;
+}
+
+
+// Interfaz para los roles
+export interface Role {
+  id: number;
+  name: string;
+}
