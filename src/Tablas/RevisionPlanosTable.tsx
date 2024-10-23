@@ -1,33 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode'; // Para decodificar el token JWT
-// import "../../styles/Administrativos/TablaRevisionPlanos.css"; // Asegúrate de tener el archivo CSS correcto
+import React, { useState, useEffect } from 'react';
+import { RevisionPlano } from '../Types/Types';
+import Paginacion from '../components/Paginacion';
+import { eliminarEntidad } from '../Helpers/eliminarEntidad';  // Importar el helper
 
-// Interfaz para la revisión de planos
-interface RevisionPlano {
-  id: number;
-  NumeroExpediente: string;
-  NumeroPlano: string;
-  ArchivosAdjuntos: string;
-  Status?: string;
-  user?: {
-    id: number;
-    nombre: string;
-    apellido1: string;
-    apellido2: string;
-  };
+interface RevisionplanoTableProps {
+  onVerRevisionPlano: (RevisionPlano: RevisionPlano) => void;
 }
 
-// Interfaz para el token decodificado
-interface DecodedToken {
-  roles: string[];
-}
-
-const baseUrl = 'http://localhost:3000/'; // URL base del servidor
-
-// Función para obtener los datos de revisión de planos desde la API
-const fetchRevisiones = async (): Promise<RevisionPlano[]> => {
-  const urlBase = `${baseUrl}revision-plano/`;
+const fetchRevisionplano = async (): Promise<RevisionPlano[]> => {
+  const urlBase = 'http://localhost:3000/Revision-Plano'; // Ajusta la URL de tu API
 
   try {
     const response = await fetch(urlBase, {
@@ -41,124 +22,50 @@ const fetchRevisiones = async (): Promise<RevisionPlano[]> => {
       throw new Error(`Error: ${response.status} - ${response.statusText}`);
     }
 
-    const data: RevisionPlano[] = await response.json();
-    return data;
+    return await response.json();
   } catch (error) {
-    console.error('Error fetching revisiones:', error);
+    console.error('Error fetching Revisionplano:', error);
     throw error;
   }
 };
 
-const TablaRevisionPlanos: React.FC = () => {
-  const [revisiones, setRevisiones] = useState<RevisionPlano[]>([]);
+const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPlano }) => {
+  const [Revisionplano, setRevisionplano] = useState<RevisionPlano[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1); // Página actual
+  const [itemsPerPage, setItemsPerPage] = useState(5); // Número de Revisionplano por página
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-
-    if (token) {
+    const obtenerRevisionplano = async () => {
       try {
-        const decodedToken = jwtDecode<DecodedToken>(token);
-
-        if (!decodedToken.roles.includes('admin')) {
-          window.alert('No tienes permiso para acceder a esta página.');
-          navigate('/');
-          return;
-        }
-      } catch (error) {
-        console.error('Error al decodificar el token:', error);
-        window.alert('Ha ocurrido un error. Por favor, inicie sesión nuevamente.');
-        navigate('/login');
-        return;
-      }
-    } else {
-      window.alert('No se ha encontrado un token de acceso. Por favor, inicie sesión.');
-      navigate('/login');
-      return;
-    }
-
-    const obtenerRevisiones = async () => {
-      try {
-        const revisionesFromAPI = await fetchRevisiones();
-        setRevisiones(revisionesFromAPI);
+        const RevisionplanoFromAPI = await fetchRevisionplano();
+        setRevisionplano(RevisionplanoFromAPI);
         setLoading(false);
       } catch (error) {
-        console.error('Error al obtener las revisiones:', error);
-        setError('Error al cargar las revisiones.');
+        console.error('Error al obtener las Revisionplano:', error);
+        setError('Error al cargar las Revisionplano.');
         setLoading(false);
       }
     };
 
-    obtenerRevisiones();
-  }, [navigate]);
+    obtenerRevisionplano();
+  }, []);
 
-  const manejarCambioEstado = async (id: number, nuevoEstado: string) => {
-    const confirmacion = window.confirm(`¿Estás seguro de que deseas cambiar el estado a "${nuevoEstado}"?`);
-    if (!confirmacion) return;
+  // Cálculo de las Revisionplano que se mostrarán en la página actual
+  const indexUltimaRevisionPlano = currentPage * itemsPerPage;
+  const indexPrimeraRevisionPlano = indexUltimaRevisionPlano - itemsPerPage;
+  const RevisionplanoActuales = Revisionplano.slice(indexPrimeraRevisionPlano, indexUltimaRevisionPlano);
 
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.error('Token no encontrado');
-      return;
-    }
+  const numeroPaginas = Math.ceil(Revisionplano.length / itemsPerPage);
 
-    try {
-      const response = await fetch(`${baseUrl}revision-plano/${id}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ Status: nuevoEstado }),
-      });
-      if (!response.ok) {
-        throw new Error(`Error al actualizar el estado de la revisión con ID: ${id}`);
-      }
-      setRevisiones((prevRevisiones) =>
-        prevRevisiones.map((revision) =>
-          revision.id === id ? { ...revision, Status: nuevoEstado } : revision
-        )
-      );
-      window.alert(`Estado de la revisión con ID: ${id} cambiado a "${nuevoEstado}".`);
-    } catch (error) {
-      console.error('Error al cambiar el estado de la revisión:', error);
-    }
-  };
-
-  const manejarEliminar = async (id: number) => {
-    const confirmacion = window.confirm('¿Estás seguro de que deseas eliminar esta revisión?');
-    if (!confirmacion) return;
-
-    try {
-      const response = await fetch(`${baseUrl}revision-plano/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error al eliminar la revisión con ID: ${id}`);
-      }
-
-      setRevisiones((prevRevisiones) =>
-        prevRevisiones.filter((revision) => revision.id !== id)
-      );
-      window.alert(`Revisión con ID: ${id} eliminada exitosamente.`);
-    } catch (error) {
-      console.error('Error al eliminar la revisión:', error);
-    }
-  };
-
-  const manejarVerArchivo = (archivoUrl: string | undefined) => {
-    if (archivoUrl && archivoUrl !== 'undefined') {
-      window.open(`${baseUrl}${archivoUrl}`, '_blank');
-    } else {
-      alert('El archivo no está disponible.');
-    }
+  // Función para eliminar una concesión usando el helper
+  const manejarEliminarRevisionPlano = async (id: number) => {
+    await eliminarEntidad<RevisionPlano>('Revisionplano', id, setRevisionplano);  // Usamos el helper para eliminar
   };
 
   if (loading) {
-    return <p>Cargando revisiones...</p>;
+    return <p>Cargando Revisionplano...</p>;
   }
 
   if (error) {
@@ -166,50 +73,48 @@ const TablaRevisionPlanos: React.FC = () => {
   }
 
   return (
-    <div className="tabla-container">
-      <h2>Revisiones de Planos</h2>
-      <table className="tabla-revisiones">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Apellidos</th>
-            <th>Número de Expediente</th>
-            <th>Número de Plano</th>
-            <th>Archivos Adjuntos</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {revisiones.map((revision) => (
-            <tr key={revision.id}>
-              <td>{revision.user?.nombre || 'Nombre no disponible'}</td>
-              <td>{revision.user?.apellido1 && revision.user?.apellido2 ? `${revision.user.apellido1} ${revision.user.apellido2}` : 'Apellidos no disponibles'}</td>
-              <td>{revision.NumeroExpediente}</td>
-              <td>{revision.NumeroPlano}</td>
-              <td>
-                {revision.ArchivosAdjuntos ? (
-                  JSON.parse(revision.ArchivosAdjuntos).map((archivo: string, index: number) => (
-                    <button key={index} onClick={() => manejarVerArchivo(archivo)}>
-                      Ver archivo {index + 1}
-                    </button>
-                  ))
-                ) : (
-                  'No disponible'
-                )}
-              </td>
-              <td>{revision.Status || 'pendiente'}</td>
-              <td>
-                <button onClick={() => manejarCambioEstado(revision.id, 'aprobada')}>Aprobar</button>
-                <button onClick={() => manejarCambioEstado(revision.id, 'denegada')}>Denegar</button>
-                <button onClick={() => manejarEliminar(revision.id)}>Eliminar</button>
-              </td>
+    <div>
+      <div className="tabla-container">
+        <h2>Solicitudes de Revisión de Planos</h2>
+        <table className="tabla-solicitudes">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Apellidos</th>
+              <th>Cédula</th>
+              <th>Estado</th>
+              <th>Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {RevisionplanoActuales.map((RevisionPlano) => (
+              <tr key={RevisionPlano.id}>
+                <td>{RevisionPlano.id}</td>
+                <td>{RevisionPlano.user?.nombre}</td>
+                <td>{RevisionPlano.user?.apellido1}</td>
+                <td>{RevisionPlano.user?.cedula}</td>
+                <td>{RevisionPlano.Status || 'Pendiente'}</td>
+                <td>
+                  <button onClick={() => onVerRevisionPlano(RevisionPlano)}>Ver</button>
+                  <button onClick={() => manejarEliminarRevisionPlano(RevisionPlano.id)}>Eliminar</button> {/* Botón para eliminar */}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Componente de Paginación */}
+        <Paginacion
+          currentPage={currentPage}
+          totalPages={numeroPaginas}
+          itemsPerPage={itemsPerPage}
+          onPageChange={setCurrentPage}
+          onItemsPerPageChange={setItemsPerPage}
+        />
+      </div>
     </div>
   );
 };
 
-export default TablaRevisionPlanos;
+export default RevisionplanoTable;

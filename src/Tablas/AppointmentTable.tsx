@@ -161,7 +161,6 @@ const TablaCitas: React.FC = () => {
         <thead>
           <tr>
             <th>ID Cita</th>
-            <th>Descripción</th>
             <th>Fecha</th>
             <th>Hora</th>
             <th>Cédula</th>
@@ -174,16 +173,16 @@ const TablaCitas: React.FC = () => {
           {citas.map((cita) => (
             <tr key={cita.id}>
               <td>{cita.id}</td>
-              <td>{cita.description}</td>
               <td>{new Date(cita.date).toLocaleDateString()}</td>
               <td>{cita.time}</td>
               <td>{cita.user ? `${cita.user.cedula}` : 'ID no disponible'}</td>
               <td>{cita.user ? cita.user.nombre : 'Nombre no disponible'}</td>
               <td>{cita.status}</td>
               <td>
-                <button onClick={() => manejarCambioEstado(cita.id, 'aprobada')}>Aprobar</button>
-                <button onClick={() => manejarCambioEstado(cita.id, 'denegada')}>Denegar</button>
-                <button onClick={() => manejarEliminar(cita.id)}>Eliminar</button>
+                {/* <button onClick={() => manejarCambioEstado(cita.id, 'aprobada')}>Aprobar</button>
+                <button onClick={() => manejarCambioEstado(cita.id, 'denegada')}>Denegar</button> */}
+                <button>Ver</button>
+                <button className='first-child'onClick={() => manejarEliminar(cita.id)}>Eliminar</button>
               </td>
             </tr>
           ))}

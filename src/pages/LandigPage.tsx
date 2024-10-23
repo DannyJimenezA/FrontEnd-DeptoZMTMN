@@ -3,11 +3,11 @@ import React, { useState, useEffect } from 'react';
 import '../styles/LandingPage.css';
 import Footer from '../components/Footer';
 import Banner from '../components/Banner';
-import { jwtDecode } from 'jwt-decode'; // Importación correcta
+import {jwtDecode} from 'jwt-decode'; // Importación corregida
 
 const LandingPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Estado de autenticación
-  const navigate = useNavigate(); // Solo una vez es suficiente
+  const navigate = useNavigate(); // Navegación para redireccionar
 
   // useEffect para manejar la autenticación
   useEffect(() => {
@@ -23,7 +23,7 @@ const LandingPage: React.FC = () => {
     }
   }, []);
 
-  // Función para manejar la navegación
+  // Función para manejar la navegación basada en autenticación
   const handleNavigation = (path: string) => {
     if (isAuthenticated) {
       navigate(path); // Navegar a la ruta deseada si está autenticado

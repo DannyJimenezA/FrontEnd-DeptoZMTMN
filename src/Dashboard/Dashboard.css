@@ -1,145 +1,220 @@
 .dashboard {
-    display: flex;
-    height: 100vh;
-    font-family: Arial, sans-serif;
-  }
-  
-  .sidebar {
-    width: 250px;
-    background-color: #2c3e50;
-    color: white;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .logo {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 40px;
-  }
-  
-  .nav {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
-  
-  .nav-item {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    color: white;
-    text-decoration: none;
-    margin-bottom: 10px;
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-  }
-  
-  .nav-item.active {
-    background-color: #34495e;
-    border-radius: 5px;
-  }
-  
-  .logout-button {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    color: white;
-    text-decoration: none;
-    margin-top: auto;
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-  }
-  
-  .main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    background-color: #ecf0f1;
-  }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    background-color: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  .search-bar {
-    display: flex;
-    align-items: center;
-    background-color: #ecf0f1;
-    border-radius: 20px;
-    padding: 5px 15px;
-  }
-  
-  .search-input {
-    border: none;
-    background-color: transparent;
-    margin-left: 10px;
-    outline: none;
-  }
-  
-  .user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-  
-  .content {
-    padding: 20px;
-    overflow-y: auto;
-  }
-  
-  .title {
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-  
-  .subtitle {
-    font-size: 20px;
-    margin-top: 30px;
-    margin-bottom: 15px;
-  }
-  
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-  }
-  
-  .stat-card {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  .stat-value {
-    font-size: 24px;
-    font-weight: bold;
-    margin-top: 10px;
-  }
-  
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  .table th, .table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ecf0f1;
-  }
-  
-  .table th {
-    background-color: #f8f9fa;
-    font-weight: bold;
-  }
+  display: flex;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #2c3e50;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 40px;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  color: white;
+  text-decoration: none;
+  margin-bottom: 10px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.nav-item.active {
+  background-color: #34495e;
+  border-radius: 5px;
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  color: white;
+  text-decoration: none;
+  margin-top: auto;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background-color: #d32f2f;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #ecf0f1;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: #ecf0f1;
+  border-radius: 20px;
+  padding: 5px 15px;
+}
+
+.search-input {
+  border: none;
+  background-color: transparent;
+  margin-left: 10px;
+  outline: none;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.content {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.subtitle {
+  font-size: 20px;
+  margin-top: 30px;
+  margin-bottom: 15px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.stat-card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.table th, .table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.table th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+
+/* Estilo para la vista de detalles de la denuncia */
+.detalle-tabla {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.detalle-contenido {
+  display: flex;
+  justify-content: space-between;
+}
+
+.detalle-info {
+  flex: 1;
+  padding-right: 20px;
+}
+
+.detalle-archivos {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detalle-archivos p {
+  margin-bottom: 10px;
+}
+
+.detalle-denuncia strong {
+  color: #333;
+}
+
+.detalle-denuncia p {
+  margin: 5px 0;
+  font-size: 16px;
+}
+
+/* Botón para volver a la tabla de denuncias */
+.volver-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.volver-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Hover para el botón de cerrar sesión */
+.logout-button {
+  margin-top: 20px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background-color: #d32f2f;
+}
