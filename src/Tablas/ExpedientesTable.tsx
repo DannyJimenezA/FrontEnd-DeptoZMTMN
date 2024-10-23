@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { CopiaExpediente } from '../Types/Types';
 import Paginacion from '../components/Paginacion';
 import { eliminarEntidad } from '../Helpers/eliminarEntidad'; // Helper para eliminación
+import { FaEye, FaTrash } from 'react-icons/fa';
 
 interface ExpedientesTableProps {
   onVerExpediente: (expediente: CopiaExpediente) => void;
@@ -87,7 +88,7 @@ const ExpedientesTable: React.FC<ExpedientesTableProps> = ({ onVerExpediente }) 
         <table className="tabla-solicitudes">
           <thead>
             <tr>
-              <th>ID Expediente</th>
+              <th>ID</th>
               <th>Nombre Solicitante</th>
               <th>Número Expediente</th>
               <th>Estado</th>
@@ -102,8 +103,8 @@ const ExpedientesTable: React.FC<ExpedientesTableProps> = ({ onVerExpediente }) 
                 <td>{expediente.numeroExpediente}</td>
                 <td>{expediente.status || 'Pendiente'}</td>
                 <td>
-                  <button onClick={() => onVerExpediente((expediente))}>Ver</button>
-                  <button onClick={() => manejarEliminarExpediente(expediente.idExpediente)}>Eliminar</button>
+                  <button onClick={() => onVerExpediente((expediente))}><FaEye />Ver</button>
+                  <button onClick={() => manejarEliminarExpediente(expediente.idExpediente)}><FaTrash />Eliminar</button>
                 </td>
               </tr>
             ))}

@@ -5,9 +5,16 @@ import { Precario } from '../Types/Types'; // Asegúrate de importar correctamen
 interface DetallePrecarioProps {
   precario: Precario;
   onVolver: () => void;   // Función para volver a la lista de uso precario
+  onEstadoCambiado: (id: number, nuevoEstado: string) => void; // Función para manejar el cambio de estado
 }
 
-const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver }) => {
+const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver, onEstadoCambiado }) => {
+
+  // Función para manejar el cambio de estado
+  const manejarCambioEstado = (nuevoEstado: string) => {
+    onEstadoCambiado(precario.id, nuevoEstado); // Llamar a la función del componente padre para cambiar el estado
+  };
+
 
   const manejarVerArchivo = (archivo: string) => {
     const archivoFinal = archivo.replace(/[\[\]"]/g, '');  // Limpiar si es necesario
@@ -46,9 +53,18 @@ const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver })
         </div>
       </div>
 
+      {/* Botones para cambiar el estado del uso precario */}
+      <div className="estado-botones">
+        <button className="btn-aprobar" onClick={() => manejarCambioEstado('aprobada')}>
+          Aprobar Uso Precario
+        </button>
+        <button className="btn-denegar" onClick={() => manejarCambioEstado('denegada')}>
+          Denegar Uso Precario
+        </button>
+      </div>
+
       {/* Botón para volver a la lista */}
       <button className="volver-btn" onClick={onVolver}>Volver a la lista de uso precario</button>
-
     </div>
   );
 };

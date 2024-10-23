@@ -4,6 +4,7 @@ import {jwtDecode} from 'jwt-decode'; // Importación correcta
 import { DecodedToken, Prorroga } from '../Types/Types';
 import { eliminarEntidad } from '../Helpers/eliminarEntidad';  // Importa el helper de eliminar
 import Paginacion from '../components/Paginacion';
+import { FaEye, FaTrash } from 'react-icons/fa';
 
 interface ProrrogasTableProps {
   onVerProrroga: (prorroga: Prorroga) => void;
@@ -112,9 +113,9 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Nombre</th>
-            <th>Apellidos</th>
-            <th>Cédula</th>
+            <th>Nombre Solicitante</th>
+            <th>Apellidos Solicitante</th>
+            <th>Cédula Solicitante</th>
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
@@ -128,8 +129,8 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
               <td>{prorroga.user?.cedula}</td>
               <td>{prorroga.Status || 'Pendiente'}</td>
               <td>
-                <button onClick={() => onVerProrroga(prorroga)}>Ver</button>
-                <button onClick={() => manejarEliminarProrroga(prorroga.id)}>Eliminar</button> {/* Usamos la función del helper */}
+                <button onClick={() => onVerProrroga(prorroga)}><FaEye />Ver</button>
+                <button onClick={() => manejarEliminarProrroga(prorroga.id)}><FaTrash />Eliminar</button> {/* Usamos la función del helper */}
               </td>
             </tr>
           ))}

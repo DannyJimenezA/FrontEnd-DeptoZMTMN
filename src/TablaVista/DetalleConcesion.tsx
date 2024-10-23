@@ -4,17 +4,24 @@ import { Concesion } from '../Types/Types';
 
 interface DetalleConcesionProps {
   concesion: Concesion;
-  onVolver: () => void;   // Función para volver a la lista de concesiones
+  onVolver: () => void; // Función para volver a la lista de concesiones
+  onEstadoCambiado: (id: number, nuevoEstado: string) => void; // Función para cambiar el estado
 }
 
-const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver }) => {
+const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver, onEstadoCambiado }) => {
 
+  // Manejar la visualización de los archivos adjuntos
   const manejarVerArchivo = (archivo: string) => {
-    const archivoFinal = archivo.replace(/[\[\]"]/g, '');  // Limpiar si es necesario
+    const archivoFinal = archivo.replace(/[\[\]"]/g, ''); // Limpiar si es necesario
     if (archivoFinal) {
       const fileUrl = `http://localhost:3000/${archivoFinal}`;
       window.open(fileUrl, '_blank');
     }
+  };
+
+  // Manejar el cambio de estado
+  const manejarCambioEstado = (nuevoEstado: string) => {
+    onEstadoCambiado(concesion.id, nuevoEstado); // Llamar la función del componente padre para cambiar el estado
   };
 
   return (
@@ -40,13 +47,25 @@ const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver
               />
             ))
           ) : (
-            "No disponible"
+            'No disponible'
           )}
         </div>
       </div>
 
+      {/* Botones para cambiar el estado de la concesión */}
+      <div className="estado-botones">
+        <button className="btn-aprobar" onClick={() => manejarCambioEstado('aprobada')}>
+          Aprobar Concesión
+        </button>
+        <button className="btn-denegar" onClick={() => manejarCambioEstado('denegada')}>
+          Denegar Concesión
+        </button>
+      </div>
+
       {/* Botón para volver a la lista */}
-      <button className="volver-btn" onClick={onVolver}>Volver a la lista de concesiones</button>
+      <button className="volver-btn" onClick={onVolver}>
+        Volver a la lista de concesiones
+      </button>
     </div>
   );
 };

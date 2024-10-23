@@ -1,225 +1,72 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';
-// import "../../styles/Administrativos/TablaUsuarios.css";
-
-// Interfaz para los usuarios
-interface Usuario {
-  id: number;
-  nombre: string;
-  apellido1: string;
-  apellido2: string;
-  email: string;
-  telefono: number;
-}
-
-// Interfaz para el token decodificado
-interface DecodedToken {
-  roles: string[];
-}
-
-// Interfaz para los roles
-interface Role {
-  id: number;
-  name: string;
-}
-
-// Función para obtener los usuarios desde la API
-const fetchUsuarios = async (): Promise<Usuario[]> => {
-  const urlBase = 'http://localhost:3000/users';
-
-  try {
-    const response = await fetch(urlBase, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status} - ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data.map((item: any) => ({
-      id: item.id,
-      nombre: item.nombre,
-      apellido1: item.apellido1,
-      apellido2: item.apellido2,
-      email: item.email,
-      telefono: item.telefono,
-    }));
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    throw error;
-  }
-};
-
-// Función para obtener los roles de un usuario
-const fetchUserRoles = async (userId: number): Promise<Role[]> => {
-  const urlBase = `http://localhost:3000/users/${userId}/roles`;
-
-  try {
-    const response = await fetch(urlBase, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status} - ${response.statusText}`);
-    }
-
-    const roles = await response.json();
-    return roles;
-  } catch (error) {
-    console.error('Error al obtener los roles del usuario:', error);
-    throw error;
-  }
-};
-
-// Función para asignar roles a un usuario utilizando PATCH
-const assignRolesToUser = async (userId: number, roles: number[]) => {
-  const urlBase = `http://localhost:3000/users/${userId}/roles`;
-
-  try {
-    const response = await fetch(urlBase, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ roles }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status} - ${response.statusText}`);
-    }
-
-    console.log('Roles asignados correctamente.');
-  } catch (error) {
-    console.error('Error al asignar roles:', error);
-  }
-};
+import React, { useState, useEffect } from 'react';
+import DetalleUsuario from '../TablaVista/DetalleUsuario'; // Importar DetalleUsuario
+import { Usuario } from '../Types/Types';  // Importar la interfaz User
 
 const TablaUsuarios: React.FC = () => {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
-  const [userRoles, setUserRoles] = useState<Role[]>([]);
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-  const [selectedUserName, setSelectedUserName] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const navigate = useNavigate();
+  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<Usuario | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-
-    if (token) {
+    const fetchUsuarios = async () => {
       try {
-        const decodedToken = jwtDecode<DecodedToken>(token);
+        const response = await fetch('http://localhost:3000/users', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
 
-        if (!decodedToken.roles.includes('admin')) {
-          window.alert('No tienes permiso para acceder a esta página.');
-          navigate('/');
-          return;
+        if (!response.ok) {
+          throw new Error('Error al cargar los usuarios');
         }
-      } catch (error) {
-        console.error('Error al decodificar el token:', error);
-        window.alert('Ha ocurrido un error. Por favor, inicie sesión nuevamente.');
-        navigate('/login');
-        return;
-      }
-    } else {
-      window.alert('No se ha encontrado un token de acceso. Por favor, inicie sesión.');
-      navigate('/login');
-      return;
-    }
 
-    const obtenerUsuarios = async () => {
-      try {
-        const usuariosFromAPI = await fetchUsuarios();
-        setUsuarios(usuariosFromAPI);
+        const data = await response.json();
+        setUsuarios(data);
+        setLoading(false);
       } catch (error) {
-        console.error('Error al obtener los usuarios:', error);
+        console.error('Error fetching users:', error);
+        setError('Error al cargar los usuarios');
+        setLoading(false);
       }
     };
 
-    obtenerUsuarios();
-  }, [navigate]);
+    fetchUsuarios();
+  }, []);
 
-  const handleViewUser = async (userId: number, userName: string) => {
-    setSelectedUserId(userId);
-    setSelectedUserName(userName);
-    try {
-      const rolesDelUsuario = await fetchUserRoles(userId);
-      setUserRoles(rolesDelUsuario);
-      setIsModalOpen(true);
-    } catch (error) {
-      console.error('Error al obtener los roles del usuario:', error);
-    }
-  };
-
-  const handleAssignRoles = async (roleIds: number[]) => {
-    if (selectedUserId !== null) {
-      try {
-        await assignRolesToUser(selectedUserId, roleIds);
-        const updatedRoles = await fetchUserRoles(selectedUserId);
-        setUserRoles(updatedRoles);
-        console.log('Roles asignados correctamente.');
-      } catch (error) {
-        console.error('Error al asignar roles:', error);
-      }
-    }
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedUserId(null);
-    setSelectedUserName(null);
-    setUserRoles([]);
-  };
+  if (loading) return <p>Cargando usuarios...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
-    <div className="tabla-container">
-      <h2>Usuarios Registrados</h2>
-      <table className="tabla-usuarios">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Apellidos</th>
-            <th>Correo</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {usuarios.map((usuario) => (
-            <tr key={usuario.id}>
-              <td>{usuario.nombre}</td>
-              <td>{`${usuario.apellido1} ${usuario.apellido2}`}</td>
-              <td>{usuario.email}</td>
-              <td>
-                <button onClick={() => handleViewUser(usuario.id, usuario.nombre)}>
-                  Ver
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {isModalOpen && (
-        <div className="modal">
-          <div className="modal-content">
-            <h3>Roles del Usuario: {selectedUserName}</h3>
-            <h4>Roles Actuales:</h4>
-            <ul>
-              {userRoles.map((role) => (
-                <li key={role.id}>{role.name}</li>
+    <div>
+      {usuarioSeleccionado ? (
+        <DetalleUsuario usuario={usuarioSeleccionado} onVolver={() => setUsuarioSeleccionado(null)} />
+      ) : (
+        <div className="tabla-container">
+          <h2>Lista de Usuarios</h2>
+          <table className="tabla-usuarios">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {usuarios.map((usuario) => (
+                <tr key={usuario.id}>
+                  <td>{usuario.id}</td>
+                  <td>{usuario.nombre}</td>
+                  <td>{usuario.email}</td>
+                  <td>
+                    <button onClick={() => setUsuarioSeleccionado(usuario)}>Ver</button>
+                  </td>
+                </tr>
               ))}
-            </ul>
-            <button onClick={() => handleAssignRoles([1, 2])}>Asignar Rol de Admin</button>
-            <button onClick={() => handleAssignRoles([1])}>Quitar Rol de Admin</button>
-            <button onClick={handleCloseModal}>Cerrar</button>
-          </div>
+            </tbody>
+          </table>
         </div>
       )}
     </div>

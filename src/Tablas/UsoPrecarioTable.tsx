@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Precario } from '../Types/Types'; // Asegúrate de tener el tipo Precario definido en tus tipos
 import Paginacion from '../components/Paginacion';
 import { eliminarEntidad } from '../Helpers/eliminarEntidad';  // Importar el helper
+import { FaEye, FaTrash } from 'react-icons/fa';
 
 interface PrecarioTableProps {
   onVerPrecario: (precario: Precario) => void;
@@ -82,8 +83,8 @@ const TablaUsoPrecario: React.FC<PrecarioTableProps> = ({ onVerPrecario }) => {
           <thead>
             <tr>
               <th>ID</th>
-              <th>Cédula</th>
-              <th>Nombre</th>
+              <th>Cédula Solicitante</th>
+              <th>Nombre Solicitante</th>
               <th>Apellido</th>
               <th>Estado</th>
               <th>Acciones</th>
@@ -98,8 +99,8 @@ const TablaUsoPrecario: React.FC<PrecarioTableProps> = ({ onVerPrecario }) => {
                 <td>{precario.user?.apellido1}</td>
                 <td>{precario.Status || 'Pendiente'}</td>
                 <td>
-                  <button onClick={() => onVerPrecario(precario)}>Ver</button>
-                  <button onClick={() => manejarEliminarPrecario(precario.id)}>Eliminar</button> {/* Botón para eliminar */}
+                  <button onClick={() => onVerPrecario(precario)}><FaEye />Ver</button>
+                  <button onClick={() => manejarEliminarPrecario(precario.id)}><FaTrash />Eliminar</button> {/* Botón para eliminar */}
                 </td>
               </tr>
             ))}
