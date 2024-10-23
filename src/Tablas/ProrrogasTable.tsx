@@ -1,25 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';
-// import "../../styles/Administrativos/TablaProrrogaConcesion.css";
-import { FaFilePdf } from 'react-icons/fa';
+import {jwtDecode} from 'jwt-decode'; // Importación correcta
+import { DecodedToken, Prorroga } from '../Types/Types';
+import { eliminarEntidad } from '../Helpers/eliminarEntidad';  // Importa el helper de eliminar
+import Paginacion from '../components/Paginacion';
 
-// Interfaz para las prórrogas
-interface Prorroga {
-  id: number;
-  ArchivoAdjunto: string;
-  Status?: string;
-  user?: {
-    id: number;
-    nombre: string;
-    apellido1: string;
-    apellido2: string;
-  };
-}
-
-// Interfaz para el token decodificado
-interface DecodedToken {
-  roles: string[];
+interface ProrrogasTableProps {
+  onVerProrroga: (prorroga: Prorroga) => void;
 }
 
 const baseUrl = 'http://localhost:3000/'; // URL base del servidor
@@ -48,10 +35,12 @@ const fetchProrrogas = async (): Promise<Prorroga[]> => {
   }
 };
 
-const TablaProrrogas: React.FC = () => {
+const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
   const [prorrogas, setProrrogas] = useState<Prorroga[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1); 
+  const [itemsPerPage, setItemsPerPage] = useState(5);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -93,70 +82,17 @@ const TablaProrrogas: React.FC = () => {
     obtenerProrrogas();
   }, [navigate]);
 
-  // Manejar el cambio de estado
-  const manejarCambioEstado = async (id: number, nuevoEstado: string) => {
-    const confirmacion = window.confirm(`¿Estás seguro de que deseas cambiar el estado a "${nuevoEstado}"?`);
-    if (!confirmacion) return;
+    // Cálculo de las prorrogas que se mostrarán en la página actual
+    const indexUltimaProrroga = currentPage * itemsPerPage;
+    const indexPrimeraProrroga = indexUltimaProrroga - itemsPerPage;
+    const prorrogasActuales = prorrogas.slice(indexPrimeraProrroga, indexUltimaProrroga);
+  
+    const numeroPaginas = Math.ceil(prorrogas.length / itemsPerPage);
 
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.error('Token no encontrado');
-      return;
-    }
 
-    try {
-      const response = await fetch(`${baseUrl}Prorrogas/${id}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ Status: nuevoEstado }),
-      });
-      if (!response.ok) {
-        throw new Error(`Error al actualizar el estado de la prórroga con ID: ${id}`);
-      }
-      setProrrogas((prevProrrogas) =>
-        prevProrrogas.map((prorroga) =>
-          prorroga.id === id ? { ...prorroga, Status: nuevoEstado } : prorroga
-        )
-      );
-      window.alert(`Estado de la prórroga con ID: ${id} cambiado a "${nuevoEstado}".`);
-    } catch (error) {
-      console.error('Error al cambiar el estado de la prórroga:', error);
-    }
-  };
-
-  // Manejar la eliminación de una prórroga
-  const manejarEliminar = async (id: number) => {
-    const confirmacion = window.confirm('¿Estás seguro de que deseas eliminar esta prórroga?');
-    if (!confirmacion) return;
-
-    try {
-      const response = await fetch(`${baseUrl}Prorrogas/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error al eliminar la prórroga con ID: ${id}`);
-      }
-
-      setProrrogas((prevProrrogas) =>
-        prevProrrogas.filter((prorroga) => prorroga.id !== id)
-      );
-      window.alert(`Prórroga con ID: ${id} eliminada exitosamente.`);
-    } catch (error) {
-      console.error('Error al eliminar la prórroga:', error);
-    }
-  };
-
-  // Manejar la visualización del archivo
-  const manejarVerArchivo = (archivoUrl: string | undefined) => {
-    if (archivoUrl && archivoUrl !== 'undefined') {
-      window.open(`${baseUrl}${archivoUrl}`, '_blank');
-    } else {
-      alert('El archivo no está disponible.');
-    }
+  // Función para eliminar una prórroga usando el helper eliminarEntidad
+  const manejarEliminarProrroga = async (id: number) => {
+    await eliminarEntidad<Prorroga>('Prorrogas', id, setProrrogas); // Usamos el helper para eliminar
   };
 
   // Mostrar pantalla de carga
@@ -172,12 +108,13 @@ const TablaProrrogas: React.FC = () => {
   return (
     <div className="tabla-container">
       <h2>Prórrogas de Concesiones</h2>
-      <table className="tabla-prorrogas">
+      <table className="tabla-solicitudes">
         <thead>
           <tr>
+            <th>ID</th>
             <th>Nombre</th>
             <th>Apellidos</th>
-            <th>Archivos Adjuntos</th>
+            <th>Cédula</th>
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
@@ -185,32 +122,28 @@ const TablaProrrogas: React.FC = () => {
         <tbody>
           {prorrogas.map((prorroga) => (
             <tr key={prorroga.id}>
+              <td>{prorroga.id}</td>
               <td>{prorroga.user?.nombre || 'Nombre no disponible'}</td>
               <td>{prorroga.user?.apellido1 && prorroga.user?.apellido2 ? `${prorroga.user.apellido1} ${prorroga.user.apellido2}` : 'Apellidos no disponibles'}</td>
+              <td>{prorroga.user?.cedula}</td>
+              <td>{prorroga.Status || 'Pendiente'}</td>
               <td>
-                {prorroga.ArchivoAdjunto ? (
-                  JSON.parse(prorroga.ArchivoAdjunto).map((archivo: string, index: number) => (
-                    <FaFilePdf
-                      key={index}
-                      style={{ cursor: 'pointer', marginRight: '5px' }}
-                      onClick={() => manejarVerArchivo(archivo)}
-                      title="Ver archivo"
-                    />
-                  ))
-                ) : (
-                  'No disponible'
-                )}
-              </td>
-              <td>{prorroga.Status || 'pendiente'}</td>
-              <td>
-                <button onClick={() => manejarCambioEstado(prorroga.id, 'aprobada')}>Aprobar</button>
-                <button onClick={() => manejarCambioEstado(prorroga.id, 'denegada')}>Denegar</button>
-                <button onClick={() => manejarEliminar(prorroga.id)}>Eliminar</button>
+                <button onClick={() => onVerProrroga(prorroga)}>Ver</button>
+                <button onClick={() => manejarEliminarProrroga(prorroga.id)}>Eliminar</button> {/* Usamos la función del helper */}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+
+      <Paginacion
+          currentPage={currentPage}
+          totalPages={numeroPaginas}
+          itemsPerPage={itemsPerPage}
+          onPageChange={setCurrentPage}
+          onItemsPerPageChange={setItemsPerPage}
+        />
     </div>
   );
 };

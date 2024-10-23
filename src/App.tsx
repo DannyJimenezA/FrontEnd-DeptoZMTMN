@@ -26,9 +26,12 @@ import ConfirmAccount from './pages/ConfirmAccount';
 import VistaSolicitudesExpediente from './pages/VistaSolicitudesExpedientes'; 
 import RevisionPlanos from './pages/RevisionPlanos';
 import AdminDashboard from './Dashboard/Dashboard';
+import { AuthProvider } from './context/AuthContext';
 
 function App () {
   return (
+    <AuthProvider>
+
     <Router>
       <Navbar />
       <Routes>
@@ -59,6 +62,7 @@ function App () {
         <Route path="/mis-solicitudes-expediente" element={<VistaSolicitudesExpediente />} />
       </Routes>
     </Router>
+    </AuthProvider>
   );
 }
 
