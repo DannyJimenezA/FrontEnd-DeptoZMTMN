@@ -1,27 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { FaTrash, FaEye } from 'react-icons/fa';  // Iconos para ver y eliminar
-import { useNavigate } from 'react-router-dom';   // Para la navegación
-import CrearRolForm from './CrearRolForm';        // Importar el componente para crear roles
-import '../styles/Global.css';                    // Asegúrate de tener estilos globales
+import { FaTrash, FaEye, FaPlus } from 'react-icons/fa';  // Iconos para ver, eliminar, y agregar
+import AsignarPermisosForm from '../TablaVista/AsignarPermisosForm';  // Importa el componente para asignar permisos
+import '../styles/Global.css';  // Estilos
+import { Role, User } from '../Types/Types';  // Asegúrate de importar los tipos correctos
 
-// Interfaz para Role
-interface Permission {
-  id: number;
-  name: string;
+interface RolesTableProps {
+  onCrearRol: () => void; // Prop para manejar la creación de un nuevo rol
 }
-
-interface User {
-  id: number;
-  nombre: string;
-}
-
-interface Role {
-  id: number;
-  name: string;
-  users: User[];
-  permissions: Permission[];
-}
-
 const fetchRoles = async (): Promise<Role[]> => {
   const urlBase = 'http://localhost:3000/roles';  // Ajusta a la ruta de tu API
   const token = localStorage.getItem('token');
@@ -40,12 +25,10 @@ const fetchRoles = async (): Promise<Role[]> => {
     }
 
     const data: Role[] = await response.json();
-
-    // Asegúrate de que `permissions` y `users` siempre sean arrays
     return data.map((role) => ({
       ...role,
-      users: role.users || [],
-      permissions: role.permissions || []
+      users: role.users || [], // Asegúrate de que siempre sea un array
+      permissions: role.permissions || [] // Asegúrate de que siempre sea un array
     }));
   } catch (error) {
     console.error('Error fetching roles:', error);
@@ -53,36 +36,35 @@ const fetchRoles = async (): Promise<Role[]> => {
   }
 };
 
-const RolesTable: React.FC = () => {
+// El resto de la implementación...
+
+const RolesTable: React.FC<RolesTableProps> = ({ onCrearRol }) => {
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
-
-  // Función para actualizar la lista de roles después de crear uno nuevo
-  const actualizarRoles = async () => {
-    setLoading(true);
-    try {
-      const rolesFromAPI = await fetchRoles();
-      setRoles(rolesFromAPI);
-      setLoading(false);
-    } catch (error) {
-      setError('Error al cargar los roles.');
-      setLoading(false);
-    }
-  };
+  const [rolSeleccionado, setRolSeleccionado] = useState<Role | null>(null); // Estado para el rol seleccionado
 
   useEffect(() => {
-    actualizarRoles(); // Cargar roles al cargar el componente
+    const cargarRoles = async () => {
+      setLoading(true);
+      try {
+        const rolesFromAPI = await fetchRoles();
+        setRoles(rolesFromAPI);
+        setLoading(false);
+      } catch (error) {
+        setError('Error al cargar los roles.');
+        setLoading(false);
+      }
+    };
+    cargarRoles();
   }, []);
+
+  const manejarVerDetalles = (rol: Role) => {
+    setRolSeleccionado(rol);  // Establecer el rol seleccionado
+  };
 
   const manejarEliminar = async (id: number) => {
     const token = localStorage.getItem('token');
-    if (!token) {
-      console.error('Token no encontrado');
-      return;
-    }
-
     const confirmacion = window.confirm('¿Estás seguro de eliminar este rol?');
     if (!confirmacion) return;
 
@@ -96,29 +78,37 @@ const RolesTable: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Error al eliminar el rol con ID: ${id}`);
+        throw new Error('Error al eliminar el rol');
       }
 
-      setRoles((prevRoles) => prevRoles.filter((rol) => rol.id !== id));
-      console.log(`Rol con ID: ${id} eliminado`);
+      setRoles(roles.filter((rol) => rol.id !== id));
     } catch (error) {
       console.error('Error al eliminar el rol:', error);
     }
   };
 
-  const manejarVerDetalles = (id: number) => {
-    navigate(`/roles/${id}`);
+  const manejarVolverAListaRoles = () => {
+    setRolSeleccionado(null); // Volver a la lista de roles
   };
 
   if (loading) return <p>Cargando roles...</p>;
   if (error) return <p>{error}</p>;
 
+  // Si hay un rol seleccionado, muestra el formulario de asignar permisos
+  if (rolSeleccionado) {
+    return (
+      <AsignarPermisosForm rol={rolSeleccionado} onCancelar={manejarVolverAListaRoles} />
+    );
+  }
+
+  // Si no hay rol seleccionado, muestra la tabla de roles
   return (
     <div className="tabla-container">
       <h2>Lista de Roles</h2>
-      
-      {/* Formulario para crear un nuevo rol */}
-      <CrearRolForm onRolCreado={actualizarRoles} />
+      {/* Botón para crear nuevo rol */}
+      <button className="crear-rol-btn" onClick={onCrearRol}>
+        <FaPlus /> Crear Nuevo Rol
+      </button>
 
       {/* Tabla de roles */}
       <table className="tabla-roles">
@@ -151,7 +141,7 @@ const RolesTable: React.FC = () => {
                 {rol.permissions.length > 0 ? (
                   <ul>
                     {rol.permissions.map((permiso) => (
-                      <li key={permiso.id}>{permiso.name}</li>
+                      <li key={permiso.id}>{permiso.resource}</li>
                     ))}
                   </ul>
                 ) : (
@@ -159,7 +149,7 @@ const RolesTable: React.FC = () => {
                 )}
               </td>
               <td>
-                <button onClick={() => manejarVerDetalles(rol.id)}>
+                <button onClick={() => manejarVerDetalles(rol)}>
                   <FaEye /> Ver
                 </button>
                 <button onClick={() => manejarEliminar(rol.id)} className="eliminar-btn">
