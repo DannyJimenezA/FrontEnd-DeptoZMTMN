@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 // Interfaz para el nuevo rol
 interface CrearRolFormProps {
   onRolCreado: () => void; // Callback para actualizar la lista de roles después de la creación
+  onCancelar: () => void;  // Callback para volver a la tabla de roles sin crear
 }
 
 interface Permission {
@@ -11,7 +12,7 @@ interface Permission {
   resource: string;
 }
 
-const CrearRolForm: React.FC<CrearRolFormProps> = ({ onRolCreado }) => {
+const CrearRolForm: React.FC<CrearRolFormProps> = ({ onRolCreado, onCancelar }) => {
   const [nombreRol, setNombreRol] = useState('');
   const [permisos, setPermisos] = useState<Permission[]>([]);
   const [permisosSeleccionados, setPermisosSeleccionados] = useState<number[]>([]);
@@ -85,7 +86,7 @@ const CrearRolForm: React.FC<CrearRolFormProps> = ({ onRolCreado }) => {
   };
 
   return (
-    <div className="crear-rol-form">
+    <div className="detalle-tabla">
       <h3>Crear nuevo Rol</h3>
       <form onSubmit={handleCrearRol}>
         <div>
@@ -121,9 +122,16 @@ const CrearRolForm: React.FC<CrearRolFormProps> = ({ onRolCreado }) => {
         </div>
 
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit" disabled={loading}>
-          {loading ? 'Creando...' : 'Crear Rol'}
-        </button>
+
+        {/* Botones para crear rol y cancelar */}
+        <div className="botones-formulario">
+          <button type="submit" disabled={loading}>
+            {loading ? 'Creando...' : 'Crear Rol'}
+          </button>
+          <button type="button" onClick={onCancelar} className="cancelar-btn">
+            Cancelar
+          </button>
+        </div>
       </form>
     </div>
   );

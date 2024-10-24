@@ -1,5 +1,3 @@
-// src/types/types.ts
-
 // Interfaz para DecodedToken
 export interface DecodedToken {
   roles: string[];
@@ -112,7 +110,7 @@ export interface Cita {
 
 
 // Interfaz para los usuarios
-export interface Usuario {
+export interface User {
   id: number;
   nombre: string;
   apellido1: string;
@@ -122,8 +120,15 @@ export interface Usuario {
 }
 
 
-// Interfaz para los roles
-export interface Role {
+export interface Permission {
+  id: number;
+  action: string;
+  resource: string;
+}
+
+ export interface Role {
   id: number;
   name: string;
+  users: User[];
+  permissions: Permission[];
 }
