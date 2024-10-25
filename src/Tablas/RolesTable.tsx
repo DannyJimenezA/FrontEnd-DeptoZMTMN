@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { FaTrash, FaEye, FaPlus } from 'react-icons/fa';  // Iconos para ver, eliminar, y agregar
 import AsignarPermisosForm from '../TablaVista/AsignarPermisosForm';  // Importa el componente para asignar permisos
-import '../styles/Global.css';  // Estilos
 import { Role, User } from '../Types/Types';  // Asegúrate de importar los tipos correctos
 
 interface RolesTableProps {
   onCrearRol: () => void; // Prop para manejar la creación de un nuevo rol
 }
+
 const fetchRoles = async (): Promise<Role[]> => {
   const urlBase = 'http://localhost:3000/roles';  // Ajusta a la ruta de tu API
   const token = localStorage.getItem('token');
@@ -35,8 +35,6 @@ const fetchRoles = async (): Promise<Role[]> => {
     throw error;
   }
 };
-
-// El resto de la implementación...
 
 const RolesTable: React.FC<RolesTableProps> = ({ onCrearRol }) => {
   const [roles, setRoles] = useState<Role[]>([]);
@@ -91,8 +89,8 @@ const RolesTable: React.FC<RolesTableProps> = ({ onCrearRol }) => {
     setRolSeleccionado(null); // Volver a la lista de roles
   };
 
-  if (loading) return <p>Cargando roles...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) return <p className="text-center">Cargando roles...</p>;
+  if (error) return <p className="text-red-500 text-center">{error}</p>;
 
   // Si hay un rol seleccionado, muestra el formulario de asignar permisos
   if (rolSeleccionado) {
@@ -103,30 +101,30 @@ const RolesTable: React.FC<RolesTableProps> = ({ onCrearRol }) => {
 
   // Si no hay rol seleccionado, muestra la tabla de roles
   return (
-    <div className="tabla-container">
-      <h2>Lista de Roles</h2>
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Lista de Roles</h2>
       {/* Botón para crear nuevo rol */}
-      <button className="crear-rol-btn" onClick={onCrearRol}>
-        <FaPlus /> Crear Nuevo Rol
+      <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4 flex items-center" onClick={onCrearRol}>
+        <FaPlus className="mr-2" /> Crear Nuevo Rol
       </button>
 
       {/* Tabla de roles */}
-      <table className="tabla-roles">
+      <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-lg">
         <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nombre del Rol</th>
-            <th>Usuarios</th>
-            <th>Permisos</th>
-            <th>Acciones</th>
+          <tr className="bg-gray-200">
+            <th className="py-2 px-4 border-b">ID</th>
+            <th className="py-2 px-4 border-b">Nombre del Rol</th>
+            <th className="py-2 px-4 border-b">Usuarios</th>
+            <th className="py-2 px-4 border-b">Permisos</th>
+            <th className="py-2 px-4 border-b">Acciones</th>
           </tr>
         </thead>
         <tbody>
           {roles.map((rol) => (
-            <tr key={rol.id}>
-              <td>{rol.id}</td>
-              <td>{rol.name}</td>
-              <td>
+            <tr key={rol.id} className="hover:bg-gray-100">
+              <td className="py-2 px-4 border-b">{rol.id}</td>
+              <td className="py-2 px-4 border-b">{rol.name}</td>
+              <td className="py-2 px-4 border-b">
                 {rol.users.length > 0 ? (
                   <ul>
                     {rol.users.map((user) => (
@@ -137,7 +135,7 @@ const RolesTable: React.FC<RolesTableProps> = ({ onCrearRol }) => {
                   'No asignado'
                 )}
               </td>
-              <td>
+              <td className="py-2 px-4 border-b">
                 {rol.permissions.length > 0 ? (
                   <ul>
                     {rol.permissions.map((permiso) => (
@@ -148,11 +146,11 @@ const RolesTable: React.FC<RolesTableProps> = ({ onCrearRol }) => {
                   'Sin permisos'
                 )}
               </td>
-              <td>
-                <button onClick={() => manejarVerDetalles(rol)}>
+              <td className="py-2 px-4 border-b flex space-x-2">
+                <button onClick={() => manejarVerDetalles(rol)} className="text-blue-500 hover:underline">
                   <FaEye /> Ver
                 </button>
-                <button onClick={() => manejarEliminar(rol.id)} className="eliminar-btn">
+                <button onClick={() => manejarEliminar(rol.id)} className="text-red-500 hover:underline">
                   <FaTrash /> Eliminar
                 </button>
               </td>
