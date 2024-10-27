@@ -1,23 +1,50 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaFilePdf } from 'react-icons/fa';
-import { Precario } from '../Types/Types'; // Asegúrate de importar correctamente la interfaz Precario
+import { Precario } from '../Types/Types';
 
 interface DetallePrecarioProps {
   precario: Precario;
-  onVolver: () => void;   // Función para volver a la lista de uso precario
-  onEstadoCambiado: (id: number, nuevoEstado: string) => void; // Función para manejar el cambio de estado
+  onVolver: () => void;
+  onEstadoCambiado: (id: number, nuevoEstado: string) => void;
 }
 
 const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver, onEstadoCambiado }) => {
+  const [mensaje, setMensaje] = useState<string>('');
+  const [estado, setEstado] = useState<string>(precario.Status || 'Pendiente'); // Estado local para el status
 
-  // Función para manejar el cambio de estado
-  const manejarCambioEstado = (nuevoEstado: string) => {
-    onEstadoCambiado(precario.id, nuevoEstado); // Llamar a la función del componente padre para cambiar el estado
+  const enviarCorreo = async () => {
+    if (!precario.user?.email || !mensaje) {
+      alert('Por favor, asegúrate de que el usuario tiene un correo y escribe un mensaje.');
+      return;
+    }
+    try {
+      const response = await fetch('http://localhost:3000/mailer/send-custom-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: precario.user.email, message: mensaje }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        alert('Mensaje enviado exitosamente.');
+        setMensaje('');
+      } else {
+        alert('Error al enviar el mensaje.');
+      }
+    } catch (error) {
+      console.error('Error al enviar el correo:', error);
+      alert('Hubo un error al intentar enviar el mensaje.');
+    }
   };
 
+  const manejarCambioEstado = (nuevoEstado: string) => {
+    onEstadoCambiado(precario.id, nuevoEstado);
+    setEstado(nuevoEstado); // Actualiza el estado localmente para reflejar el cambio
+  };
 
   const manejarVerArchivo = (archivo: string) => {
-    const archivoFinal = archivo.replace(/[\[\]"]/g, '');  // Limpiar si es necesario
+    const archivoFinal = archivo.replace(/[\[\]"]/g, '');
     if (archivoFinal) {
       const fileUrl = `http://localhost:3000/${archivoFinal}`;
       window.open(fileUrl, '_blank');
@@ -33,7 +60,7 @@ const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver, o
           <p><strong>Nombre:</strong> {precario.user?.nombre}</p>
           <p><strong>Apellidos:</strong> {precario.user?.apellido1}</p>
           <p><strong>Cédula:</strong> {precario.user?.cedula}</p>
-          <p><strong>Estado:</strong> {precario.Status || 'Pendiente'}</p>
+          <p><strong>Estado:</strong> {estado}</p> {/* Muestra el estado actualizado */}
         </div>
 
         <div className="detalle-archivos">
@@ -53,7 +80,18 @@ const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver, o
         </div>
       </div>
 
-      {/* Botones para cambiar el estado del uso precario */}
+      <div className="mensaje-container">
+        <h3>Enviar mensaje a: {precario.user?.email}</h3>
+        <textarea
+          value={mensaje}
+          onChange={(e) => setMensaje(e.target.value)}
+          placeholder="Escribe tu mensaje aquí"
+          rows={4}
+          style={{ width: '100%' }}
+        />
+        <button onClick={enviarCorreo} className="btn-enviar">Enviar mensaje</button>
+      </div>
+
       <div className="estado-botones">
         <button className="btn-aprobar" onClick={() => manejarCambioEstado('aprobada')}>
           Aprobar Uso Precario
@@ -63,7 +101,6 @@ const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver, o
         </button>
       </div>
 
-      {/* Botón para volver a la lista */}
       <button className="volver-btn" onClick={onVolver}>Volver a la lista de uso precario</button>
     </div>
   );

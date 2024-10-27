@@ -47,10 +47,12 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, o
           <p><strong>ID:</strong> {denuncia.id}</p>
           <p><strong>Nombre del Denunciante:</strong> {denuncia.nombreDenunciante || 'Anónimo'}</p>
           <p><strong>Cédula del Denunciante:</strong> {denuncia.cedulaDenunciante || 'Anónimo'}</p>
+          <p><strong>Metodo de Notificacion:</strong> {denuncia.metodoNotificacion || 'No especificado'}</p>
+          <p><strong>Medio de Notificacion:</strong> {denuncia.medioNotificacion || 'No especificado'}</p>
           <p><strong>Tipo de Denuncia:</strong> {denuncia.tipoDenuncia?.descripcion}</p>
           <p><strong>Descripción:</strong> {denuncia.descripcion}</p>
           <p><strong>Lugar de Denuncia:</strong> {denuncia.lugarDenuncia?.descripcion}</p>
-          <p><strong>Ubicación:</strong> {denuncia.ubicacion}</p>
+          <p><strong>Ubicación Exacta:</strong> {denuncia.ubicacion}</p>
           <p><strong>Detalles de Evidencia:</strong> {denuncia.detallesEvidencia || 'No disponible'}</p>
           <p><strong>Estado</strong> {denuncia.Status}</p>
         </div>

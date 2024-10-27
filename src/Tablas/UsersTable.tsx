@@ -1,76 +1,127 @@
 import React, { useState, useEffect } from 'react';
-import DetalleUsuario from '../TablaVista/DetalleUsuario'; // Importar DetalleUsuario
-import { Usuario } from '../Types/Types';  // Importar la interfaz User
+import { Usuario } from '../Types/Types';
+import Paginacion from '../components/Paginacion';
+import { eliminarEntidad } from '../Helpers/eliminarEntidad';
+import '../styles/Botones.css';
+import { FaEye, FaTrash } from 'react-icons/fa';
 
-const TablaUsuarios: React.FC = () => {
+interface UsuariosTableProps {
+  onVerUsuario: (usuario: Usuario) => void; // Función para ver los detalles de un usuario
+}
+
+const fetchUsuarios = async (): Promise<Usuario[]> => {
+  const urlBase = 'http://localhost:3000/users';
+
+  try {
+    const response = await fetch(urlBase, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status} - ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching usuarios:', error);
+    throw error;
+  }
+};
+
+const UsuariosTable: React.FC<UsuariosTableProps> = ({ onVerUsuario }) => {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
-  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<Usuario | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   useEffect(() => {
-    const fetchUsuarios = async () => {
+    const obtenerUsuarios = async () => {
       try {
-        const response = await fetch('http://localhost:3000/users', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Error al cargar los usuarios');
-        }
-
-        const data = await response.json();
-        setUsuarios(data);
+        const usuariosFromAPI = await fetchUsuarios();
+        setUsuarios(usuariosFromAPI);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching users:', error);
-        setError('Error al cargar los usuarios');
+        console.error('Error al obtener los usuarios:', error);
+        setError('Error al cargar los usuarios.');
         setLoading(false);
       }
     };
 
-    fetchUsuarios();
+    obtenerUsuarios();
   }, []);
 
-  if (loading) return <p>Cargando usuarios...</p>;
-  if (error) return <p>{error}</p>;
+  const indexUltimoUsuario = currentPage * itemsPerPage;
+  const indexPrimerUsuario = indexUltimoUsuario - itemsPerPage;
+  const usuariosActuales = usuarios.slice(indexPrimerUsuario, indexUltimoUsuario);
+
+  const numeroPaginas = Math.ceil(usuarios.length / itemsPerPage);
+
+  // Función para eliminar un usuario usando el helper
+  const manejarEliminarUsuario = async (id: number) => {
+    await eliminarEntidad<Usuario>('users', id, setUsuarios);
+  };
+
+  if (loading) {
+    return <p>Cargando usuarios...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
 
   return (
     <div>
-      {usuarioSeleccionado ? (
-        <DetalleUsuario usuario={usuarioSeleccionado} onVolver={() => setUsuarioSeleccionado(null)} />
-      ) : (
-        <div className="tabla-container">
-          <h2>Lista de Usuarios</h2>
-          <table className="tabla-usuarios">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Acciones</th>
+      <div className="tabla-container">
+        <h2>Lista de Usuarios</h2>
+        <table className="tabla-usuarios">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Cédula</th>
+              <th>Email</th>
+              <th>Rol</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {usuariosActuales.map((usuario) => (
+              <tr key={usuario.id}>
+                <td>{usuario.id}</td>
+                <td>{usuario.nombre}</td>
+                <td>{usuario.apellido1} {usuario.apellido2}</td>
+                <td>{usuario.cedula}</td>
+                <td>{usuario.email}</td>
+                <td>{usuario.roles?.name}</td>
+                <td>
+                  <button className="boton-ver" onClick={() => onVerUsuario(usuario)}>
+                    <FaEye /> Ver
+                  </button>
+                  <button onClick={() => manejarEliminarUsuario(usuario.id)}>
+                    <FaTrash /> Eliminar
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {usuarios.map((usuario) => (
-                <tr key={usuario.id}>
-                  <td>{usuario.id}</td>
-                  <td>{usuario.nombre}</td>
-                  <td>{usuario.email}</td>
-                  <td>
-                    <button onClick={() => setUsuarioSeleccionado(usuario)}>Ver</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+            ))}
+          </tbody>
+        </table>
+
+        {/* Componente de Paginación */}
+        <Paginacion
+          currentPage={currentPage}
+          totalPages={numeroPaginas}
+          itemsPerPage={itemsPerPage}
+          onPageChange={setCurrentPage}
+          onItemsPerPageChange={setItemsPerPage}
+        />
+      </div>
     </div>
   );
 };
 
-export default TablaUsuarios;
+export default UsuariosTable;

@@ -38,6 +38,7 @@ export interface Concesion {
     cedula: number;
     nombre: string;
     apellido1: string;
+    email: string;
   };
 }
 
@@ -51,6 +52,7 @@ export interface Precario {
     cedula: number;
     nombre: string;
     apellido1: string;
+    email: string;
   };
 }
 
@@ -65,6 +67,14 @@ export interface CopiaExpediente {
   numeroExpediente: string;
   copiaCertificada: boolean;
   status?: string;
+  user?: {
+    id: number;
+    nombre: string;
+    apellido1: string;
+    apellido2: string;
+    cedula: string;
+    email: string;
+  };
 }
 
 
@@ -81,6 +91,7 @@ export interface RevisionPlano {
     apellido1: string;
     apellido2: string;
     cedula: string;
+    email: string;
   };
 }
 
@@ -97,6 +108,7 @@ export interface Prorroga {
     apellido1: string;
     apellido2: string;
     cedula: string;
+    email: string;
   };
 }
 
@@ -111,6 +123,7 @@ export interface Cita {
     id: number;
     nombre: string;
     cedula: string;
+    email: string;
   };
   status: string;
 }
@@ -124,6 +137,11 @@ export interface User {
   apellido2: string;
   email: string;
   telefono: number;
+  roles: {
+    id: number;
+    name: string;
+    permissions: Permission[];
+  };
 }
 
 
@@ -138,4 +156,19 @@ export interface Permission {
   name: string;
   users: User[];
   permissions: Permission[];
+}
+
+export interface Usuario {
+  id: number;
+  cedula: number;
+  nombre: string;
+  apellido1: string;
+  apellido2: string;
+  email: string;
+  telefono: number;
+  isActive: boolean;
+  roles: {
+    name: string;
+  }
+  
 }
