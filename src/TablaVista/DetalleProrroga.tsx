@@ -5,9 +5,10 @@ import { Prorroga } from '../Types/Types';
 interface DetalleProrrogaProps {
   prorroga: Prorroga;
   onVolver: () => void;   // Función para volver a la lista de prórrogas
+  onEstadoCambiado: (id: number, nuevoEstado: string) => void;  // Función para cambiar el estado
 }
 
-const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver }) => {
+const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver, onEstadoCambiado }) => {
 
   const manejarVerArchivo = (archivo: string) => {
     const archivoFinal = archivo.replace(/[\[\]"]/g, '');  // Limpiar si es necesario
@@ -15,6 +16,10 @@ const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver })
       const fileUrl = `http://localhost:3000/${archivoFinal}`;
       window.open(fileUrl, '_blank');
     }
+  };
+
+  const cambiarEstado = (nuevoEstado: string) => {
+    onEstadoCambiado(prorroga.id, nuevoEstado);
   };
 
   return (
@@ -42,6 +47,12 @@ const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver })
             "No disponible"
           )}
         </div>
+      </div>
+
+      {/* Botones para cambiar el estado */}
+      <div className="estado-botones">
+        <button onClick={() => cambiarEstado('Aprobado')} className="estado-aprobado-btn">Aprobar</button>
+        <button onClick={() => cambiarEstado('Denegado')} className="estado-denegado-btn">Denegar</button>
       </div>
 
       {/* Botón para volver a la lista */}

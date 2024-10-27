@@ -85,6 +85,7 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
               <th>Nombre Solicitante</th>
               <th>Apellidos Solicitante</th>
               <th>Cédula Solicitante</th>
+              <th>Fecha Creacion</th>
               <th>Estado</th>
               <th>Acciones</th>
             </tr>
@@ -96,6 +97,7 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
                 <td>{concesion.user?.nombre}</td>
                 <td>{concesion.user?.apellido1}</td>
                 <td>{concesion.user?.cedula}</td>
+                <td>{concesion.Date}</td>
                 <td>{concesion.Status || 'Pendiente'}</td>
                 <td>
                   <button className="boton-ver"onClick={() => onVerConcesion(concesion)}><FaEye />Ver</button>

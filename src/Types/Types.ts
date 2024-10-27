@@ -6,6 +6,7 @@ export interface DecodedToken {
 // Interfaz para la entidad Denuncia
 export interface Denuncia {
   id: number;
+  Date: string;
   nombreDenunciante: string;
   cedulaDenunciante: string;
   notificacion: boolean;
@@ -24,12 +25,14 @@ export interface Denuncia {
   evidencia: boolean;
   archivosEvidencia?: string | string[];
   detallesEvidencia?: string;
+  Status: string;
 }
 
 // Interfaz para la entidad Concesion
 export interface Concesion {
   id: number;
   ArchivoAdjunto: string;
+  Date: String;
   Status?: string;
   user?: {
     cedula: number;
@@ -42,6 +45,7 @@ export interface Concesion {
 export interface Precario {
   id: number;
   ArchivoAdjunto: string;
+  Date: String;
   Status?: string;
   user?: {
     cedula: number;
@@ -53,6 +57,7 @@ export interface Precario {
 // Interfaz para copia expediente
 export interface CopiaExpediente {
   id:number,
+  Date: string;
   idExpediente: number;
   nombreSolicitante: string;
   telefonoSolicitante: string;
@@ -65,10 +70,11 @@ export interface CopiaExpediente {
 
 export interface RevisionPlano {
   id: number;
+  Date: string;
   NumeroExpediente: string;
   NumeroPlano: string;
   ArchivosAdjuntos: string;
-  Status?: string;
+  status?: string;
   user?: {
     id: number;
     nombre: string;
@@ -83,6 +89,7 @@ export interface RevisionPlano {
 export interface Prorroga {
   id: number;
   ArchivoAdjunto: string;
+  Date: String; 
   Status?: string;
   user?: {
     id: number;

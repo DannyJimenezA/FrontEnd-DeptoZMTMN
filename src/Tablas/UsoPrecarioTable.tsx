@@ -86,6 +86,7 @@ const TablaUsoPrecario: React.FC<PrecarioTableProps> = ({ onVerPrecario }) => {
               <th>Cédula Solicitante</th>
               <th>Nombre Solicitante</th>
               <th>Apellido</th>
+              <th>Fecha Creacion</th>
               <th>Estado</th>
               <th>Acciones</th>
             </tr>
@@ -97,6 +98,7 @@ const TablaUsoPrecario: React.FC<PrecarioTableProps> = ({ onVerPrecario }) => {
                 <td>{precario.user?.cedula}</td>
                 <td>{precario.user?.nombre}</td>
                 <td>{precario.user?.apellido1}</td>
+                <td>{precario.Date}</td>
                 <td>{precario.Status || 'Pendiente'}</td>
                 <td>
                   <button onClick={() => onVerPrecario(precario)}><FaEye />Ver</button>

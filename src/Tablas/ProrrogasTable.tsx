@@ -116,6 +116,7 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
             <th>Nombre Solicitante</th>
             <th>Apellidos Solicitante</th>
             <th>Cédula Solicitante</th>
+            <th>Fecha Creacion</th>
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
@@ -127,6 +128,7 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
               <td>{prorroga.user?.nombre || 'Nombre no disponible'}</td>
               <td>{prorroga.user?.apellido1 && prorroga.user?.apellido2 ? `${prorroga.user.apellido1} ${prorroga.user.apellido2}` : 'Apellidos no disponibles'}</td>
               <td>{prorroga.user?.cedula}</td>
+              <td>{prorroga.Date}</td>
               <td>{prorroga.Status || 'Pendiente'}</td>
               <td>
                 <button onClick={() => onVerProrroga(prorroga)}><FaEye />Ver</button>

@@ -4,10 +4,11 @@ import { RevisionPlano } from '../Types/Types';
 
 interface DetalleRevisionPlanoProps {
   revisionPlano: RevisionPlano;
-  onVolver: () => void;   // Función para volver a la lista de revisiones
+  onVolver: () => void;                   // Función para volver a la lista de revisiones
+  onEstadoCambiado: (id: number, nuevoEstado: string) => void;  // Función para cambiar el estado
 }
 
-const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPlano, onVolver }) => {
+const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPlano, onVolver, onEstadoCambiado }) => {
 
   const manejarVerArchivo = (archivo: { nombre: string; ruta: string }) => {
     if (archivo && archivo.ruta) {
@@ -16,6 +17,10 @@ const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPla
     } else {
       console.error('El archivo no tiene una ruta válida:', archivo);
     }
+  };
+
+  const cambiarEstado = (nuevoEstado: string) => {
+    onEstadoCambiado(revisionPlano.id, nuevoEstado);
   };
 
   return (
@@ -28,7 +33,7 @@ const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPla
           <p><strong>Número de Plano:</strong> {revisionPlano.NumeroPlano}</p>
           <p><strong>Nombre del Solicitante:</strong> {revisionPlano.user?.nombre}</p>
           <p><strong>Apellidos del Solicitante:</strong> {revisionPlano.user?.apellido1} {revisionPlano.user?.apellido2}</p>
-          <p><strong>Estado:</strong> {revisionPlano.Status || 'Pendiente'}</p>
+          <p><strong>Estado:</strong> {revisionPlano.status || 'Pendiente'}</p>
         </div>
         <div className="detalle-archivos">
           <p><strong>Archivos Adjuntos:</strong></p>
@@ -49,9 +54,14 @@ const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPla
         </div>
       </div>
 
+      {/* Botones para cambiar el estado */}
+      <div className="estado-botones">
+        <button onClick={() => cambiarEstado('Aprobado')} className="estado-aprobado-btn">Aprobar</button>
+        <button onClick={() => cambiarEstado('Denegado')} className="estado-denegado-btn">Denegar</button>
+      </div>
+
       {/* Botón para volver a la lista */}
       <button className="volver-btn" onClick={onVolver}>Volver a la lista de revisiones</button>
-
     </div>
   );
 };
