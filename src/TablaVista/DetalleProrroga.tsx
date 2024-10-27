@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaFilePdf } from 'react-icons/fa';
 import { Prorroga } from '../Types/Types';
 
@@ -9,6 +9,36 @@ interface DetalleProrrogaProps {
 }
 
 const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver, onEstadoCambiado }) => {
+  const [mensaje, setMensaje] = useState<string>(''); // Estado para almacenar el mensaje personalizado
+
+  // Función para enviar el correo al usuario de la prórroga
+  const enviarCorreo = async () => {
+    if (!prorroga.user?.email || !mensaje) {
+      alert('Por favor, asegúrate de que el usuario tiene un correo y escribe un mensaje.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:3000/mailer/send-custom-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: prorroga.user.email, message: mensaje }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        alert('Mensaje enviado exitosamente.');
+        setMensaje(''); // Limpiar el mensaje después de enviarlo
+      } else {
+        alert('Error al enviar el mensaje.');
+      }
+    } catch (error) {
+      console.error('Error al enviar el correo:', error);
+      alert('Hubo un error al intentar enviar el mensaje.');
+    }
+  };
 
   const manejarVerArchivo = (archivo: string) => {
     const archivoFinal = archivo.replace(/[\[\]"]/g, '');  // Limpiar si es necesario
@@ -47,6 +77,19 @@ const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver, o
             "No disponible"
           )}
         </div>
+      </div>
+
+      {/* Sección para enviar el mensaje */}
+      <div className="mensaje-container">
+        <h3>Enviar mensaje a: {prorroga.user?.email}</h3>
+        <textarea
+          value={mensaje}
+          onChange={(e) => setMensaje(e.target.value)}
+          placeholder="Escribe tu mensaje aquí"
+          rows={4}
+          style={{ width: '100%' }}
+        />
+        <button onClick={enviarCorreo} className="btn-enviar">Enviar mensaje</button>
       </div>
 
       {/* Botones para cambiar el estado */}

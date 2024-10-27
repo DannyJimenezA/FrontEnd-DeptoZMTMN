@@ -12,7 +12,7 @@ import TablaSolicitudExpediente from '../Tablas/ExpedientesTable';
 import TablaUsoPrecario from '../Tablas/UsoPrecarioTable';
 import TablaConcesiones from '../Tablas/ConcesionesTable';
 import { jwtDecode } from 'jwt-decode';
-import { DecodedToken, Denuncia, Concesion, Precario, CopiaExpediente, RevisionPlano, Prorroga, Role } from '../Types/Types'; // Importar las interfaces
+import { DecodedToken, Denuncia, Concesion, Precario, CopiaExpediente, RevisionPlano, Prorroga, Role, Usuario } from '../Types/Types'; // Importar las interfaces
 import DetalleUsoPrecario from '../TablaVista/DetallePrecario';
 import DetalleExpediente from '../TablaVista/DetalleExpediente';
 import DetalleRevisionPlano from '../TablaVista/DetalleRevisionPlano';
@@ -25,6 +25,7 @@ import TablaCitas from '../Tablas/AppointmentTable';
 import RolesTable from '../Tablas/RolesTable';
 import CrearRolForm from '../Tablas/CrearRolForm';
 import AsignarPermisosForm from '../TablaVista/AsignarPermisosForm';
+import DetalleUsuario from '../TablaVista/DetalleUsuario';
 
 const AdminDashboard: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -35,6 +36,7 @@ const AdminDashboard: React.FC = () => {
   const [revisionPlanoSeleccionado, setRevisionPlanoSeleccionado] = useState<RevisionPlano | null>(null);
   const [prorrogaSeleccionada, setProrrogaSeleccionada] = useState<Prorroga | null>(null);
   const [citaSeleccionada, setCitaSeleccionada] = useState<Cita | null>(null);
+  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<Usuario | null>(null);
   const [rolSeleccionado, setRolSeleccionado] = useState<Role | null>(null); // Estado para el rol seleccionado
   const [mostrarFormularioRol, setMostrarFormularioRol] = useState(false);
   const navigate = useNavigate();
@@ -90,6 +92,7 @@ const AdminDashboard: React.FC = () => {
   const manejarVerRevisionPlano = (revisionPlano: RevisionPlano) => setRevisionPlanoSeleccionado(revisionPlano);
   const manejarVerProrroga = (prorroga: Prorroga) => setProrrogaSeleccionada(prorroga);
   const manejarVerCita = (cita: Cita) => setCitaSeleccionada(cita);
+  const manejarVerUsuario = (usuario: Usuario) => setUsuarioSeleccionado(usuario);
 
   const manejarCambioEstadoCita = async (id: number, nuevoEstado: string) => {
     try {
@@ -190,31 +193,28 @@ const AdminDashboard: React.FC = () => {
       if (!token) {
         throw new Error('Token de autenticación no encontrado.');
       }
-
-      const response = await fetch(`http://localhost:3000/precario/${id}/status`, {
+  
+      const response = await fetch(`http://localhost:3000/Precario/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ status: nuevoEstado }),
+        body: JSON.stringify({ Status: nuevoEstado }), // Asegúrate de que el campo coincide con la API
       });
-
+  
       if (!response.ok) {
         throw new Error('Error al actualizar el estado del uso precario');
       }
-
-      if (precarioSeleccionado && precarioSeleccionado.id === id) {
-        setPrecarioSeleccionado({ ...precarioSeleccionado, Status: nuevoEstado });
-      }
-
+  
+      // Si el estado fue actualizado exitosamente, actualiza el estado local si es necesario
       alert(`El estado del uso precario ha sido actualizado a: ${nuevoEstado}`);
     } catch (error) {
       console.error('Error al cambiar el estado del uso precario:', error);
       alert('Hubo un error al intentar cambiar el estado del uso precario.');
     }
   };
-
+  
   const manejarCambioEstadoDenuncia = async (id: number, nuevoEstado: string) => {
     try {
       const token = localStorage.getItem('token');
@@ -307,6 +307,39 @@ const AdminDashboard: React.FC = () => {
       alert('Hubo un error al intentar cambiar el estado de la prórroga.');
     }
   };
+
+  const manejarCambioEstadoUsuario = async (id: number, nuevoEstado: boolean) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Token de autenticación no encontrado.');
+      }
+  
+      const response = await fetch(`http://localhost:3000/users/${id}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ isActive: nuevoEstado }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Error al actualizar el estado del usuario');
+      }
+  
+      // Actualizar el estado local del usuario seleccionado
+      if (usuarioSeleccionado && usuarioSeleccionado.id === id) {
+        setUsuarioSeleccionado({ ...usuarioSeleccionado, isActive: nuevoEstado });
+      }
+  
+      alert(`El estado del usuario ha sido actualizado a: ${nuevoEstado ? 'Activo' : 'Inactivo'}`);
+    } catch (error) {
+      console.error('Error al cambiar el estado del usuario:', error);
+      alert('Hubo un error al intentar cambiar el estado del usuario.');
+    }
+  };
+  
   
 
   const renderSection = () => {
@@ -342,6 +375,10 @@ const AdminDashboard: React.FC = () => {
       return <CrearRolForm onRolCreado={manejarVolverRoles} onCancelar={manejarVolverRoles} />;
     }
 
+    if (usuarioSeleccionado) {
+      return <DetalleUsuario usuario={usuarioSeleccionado} onVolver={() => setUsuarioSeleccionado(null)} onEstadoCambiado={manejarCambioEstadoUsuario}/>;
+    }
+
     if (rolSeleccionado) {
       return <AsignarPermisosForm rol={rolSeleccionado} onCancelar={manejarVolverRoles} />;
     }
@@ -358,7 +395,7 @@ const AdminDashboard: React.FC = () => {
       case 'revision-planos':
         return <TablaRevisionPlanos onVerRevisionPlano={manejarVerRevisionPlano} />;
       case 'users':
-        return <TablaUsuarios />;
+        return <TablaUsuarios onVerUsuario={manejarVerUsuario}/>;
       case 'solicitudes-expedientes':
         return <TablaSolicitudExpediente onVerExpediente={manejarVerExpediente} />;
       case 'uso-precario':
@@ -379,10 +416,10 @@ const AdminDashboard: React.FC = () => {
     { id: 'prorrogas', icon: BarChart2, label: 'Prórrogas' },
     { id: 'denuncias', icon: BarChart2, label: 'Denuncias' },
     { id: 'solicitudes-expedientes', icon: BarChart2, label: 'Expedientes' },
-    { id: 'users', icon: Users, label: 'Usuarios' },
-    { id: 'roles', icon: Settings, label: 'Roles' },
     { id: 'revision-planos', icon: BarChart2, label: 'Revisión de Planos' },
     { id: 'uso-precario', icon: BarChart2, label: 'Uso Precario' },
+    { id: 'users', icon: Users, label: 'Usuarios' },
+    { id: 'roles', icon: Settings, label: 'Roles' },
   ];
 
   return (

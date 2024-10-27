@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode'; // Asegúrate de tener jwt-decode instalado
+import { jwtDecode } from 'jwt-decode';
 import '../styles/Global.css';
 import { Cita, DecodedToken } from '../Types/Types';
 import { FaEye, FaTrash } from 'react-icons/fa';
-
+import Paginacion from '../components/Paginacion';
 
 interface CitasTableProps {
-  onVerCita: (cita: Cita) => void; // Función para ver los detalles de una cita
+  onVerCita: (cita: Cita) => void;
 }
 
-// Función para obtener las citas desde la API
 const fetchCitas = async (): Promise<Cita[]> => {
   const urlBase = 'http://localhost:3000/appointments';
   const token = localStorage.getItem('token');
@@ -41,13 +40,15 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  // Estados para la paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
   useEffect(() => {
     const token = localStorage.getItem('token');
-
     if (token) {
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
-
         if (!decodedToken.roles.includes('admin')) {
           window.alert('No tienes permiso para acceder a esta página.');
           navigate('/');
@@ -80,6 +81,7 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
     obtenerCitas();
   }, [navigate]);
 
+  // Manejar eliminación de citas
   const manejarEliminar = async (id: number) => {
     const confirmacion = window.confirm('¿Estás seguro de eliminar la cita?');
     if (!confirmacion) return;
@@ -113,6 +115,13 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
   if (loading) return <p>Cargando citas...</p>;
   if (error) return <p>{error}</p>;
 
+  // Cálculo de citas a mostrar según la paginación
+  const indexUltimaCita = currentPage * itemsPerPage;
+  const indexPrimeraCita = indexUltimaCita - itemsPerPage;
+  const citasActuales = citas.slice(indexPrimeraCita, indexUltimaCita);
+
+  const totalPages = Math.ceil(citas.length / itemsPerPage);
+
   return (
     <div className="tabla-container">
       <h2>Citas Programadas</h2>
@@ -128,7 +137,7 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
           </tr>
         </thead>
         <tbody>
-          {citas.map((cita) => (
+          {citasActuales.map((cita) => (
             <tr key={cita.id}>
               <td>{cita.id}</td>
               <td>{new Date(cita.date).toLocaleDateString()}  {cita.time}</td>
@@ -138,16 +147,27 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
               <td>
                 <button
                   className="boton-ver"
-                  onClick={() => onVerCita(cita)} // Llama a la función para ver los detalles
-                  > <FaEye/>
-                  Ver
+                  onClick={() => onVerCita(cita)}
+                >
+                  <FaEye /> Ver
                 </button>
-                <button onClick={() => manejarEliminar(cita.id)}><FaTrash />Eliminar</button>
+                <button onClick={() => manejarEliminar(cita.id)}>
+                  <FaTrash /> Eliminar
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {/* Componente de Paginación */}
+      <Paginacion
+        currentPage={currentPage}
+        totalPages={totalPages}
+        itemsPerPage={itemsPerPage}
+        onPageChange={setCurrentPage}
+        onItemsPerPageChange={setItemsPerPage}
+      />
     </div>
   );
 };
