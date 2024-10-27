@@ -13,14 +13,14 @@ const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({ onVolver }) => {
   const [usuario, setUsuario] = useState<Usuario | null>(null); // Estado para almacenar el usuario
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const { id } = useParams<{ id: string }>(); // Obtener el ID del usuario desde la URL
+  const { userId } = useParams<{ userId: string }>(); // Obtener el ID del usuario desde la URL
 
   useEffect(() => {
     const token = localStorage.getItem('token');
 
     const fetchUsuario = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/users/${id}`, {
+        const response = await fetch(`http://localhost:3000/users/${userId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({ onVolver }) => {
     };
 
     fetchUsuario();
-  }, [id]);
+  }, [userId]);
 
   if (loading) return <p>Cargando información del usuario...</p>;
   if (error) return <p>{error}</p>;
