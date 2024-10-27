@@ -86,11 +86,12 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
         <thead>
           <tr>
             <th>ID</th>
+            <th>Fecha Creacion</th>
             <th>Nombre del Denunciante</th>
             <th>Cédula del Denuncaiante</th>
             <th>Tipo de Denuncia</th>
             <th>Lugar de Denuncia</th>
-            {/* <th>Archivos Adjuntos</th> */}
+            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -98,6 +99,7 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
           {denunciasActuales.map((denuncia) => (
             <tr key={denuncia.id}>
               <td>{denuncia.id}</td>
+              <td>{denuncia.Date}</td>
               {denuncia.nombreDenunciante ? (
                 <td>{denuncia.nombreDenunciante}</td>
               ) : (
@@ -110,7 +112,7 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
               )}
               <td>{denuncia.tipoDenuncia?.descripcion || 'Tipo no disponible'}</td>
               <td>{denuncia.lugarDenuncia?.descripcion || 'Lugar no disponible'}</td>
-              
+              <td>{denuncia.Status}</td>
               <td>
                 <button onClick={() => manejarVer(denuncia)}><FaEye />Ver</button>
                 <button onClick={() => manejarEliminarDenuncia(denuncia.id)}><FaTrash />Eliminar</button>

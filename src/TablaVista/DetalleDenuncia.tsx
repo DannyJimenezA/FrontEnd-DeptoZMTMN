@@ -5,10 +5,14 @@ import { Denuncia } from '../Types/Types';
 interface DetalleDenunciaProps {
   denuncia: Denuncia;
   onVolver: () => void;
+  onEstadoCambiado: (id: number, nuevoEstado: string) => void;
 }
 
-const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver }) => {
+const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, onEstadoCambiado }) => {
 
+  const cambiarEstado = (nuevoEstado: string) => {
+    onEstadoCambiado(denuncia.id, nuevoEstado);
+  };
   const procesarArchivos = (archivosEvidencia: string | string[] | undefined) => {
     let archivos: string[] = [];
 
@@ -31,6 +35,10 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver })
 
   const archivosProcesados = procesarArchivos(denuncia.archivosEvidencia);
 
+  const manejarCambioEstado = (nuevoEstado: string) => {
+    onEstadoCambiado(denuncia.id, nuevoEstado); // Llamar la función del componente padre para cambiar el estado
+  };
+
   return (
     <div className="detalle-tabla">
       <h3>Detalles de la Denuncia</h3>
@@ -44,6 +52,7 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver })
           <p><strong>Lugar de Denuncia:</strong> {denuncia.lugarDenuncia?.descripcion}</p>
           <p><strong>Ubicación:</strong> {denuncia.ubicacion}</p>
           <p><strong>Detalles de Evidencia:</strong> {denuncia.detallesEvidencia || 'No disponible'}</p>
+          <p><strong>Estado</strong> {denuncia.Status}</p>
         </div>
         <div className="detalle-archivos">
           <p><strong>Archivos de Evidencia:</strong></p>
@@ -60,6 +69,15 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver })
             'No disponible'
           )}
         </div>
+      </div>
+
+      <div className="estado-botones">
+        <button className="btn-aprobar" onClick={() => cambiarEstado('aprobada')}>
+          Aprobar Concesión
+        </button>
+        <button className="btn-denegar" onClick={() => cambiarEstado('denegada')}>
+          Denegar Concesión
+        </button>
       </div>
 
       {/* Botón de Volver */}

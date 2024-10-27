@@ -91,6 +91,7 @@ const ExpedientesTable: React.FC<ExpedientesTableProps> = ({ onVerExpediente }) 
               <th>ID</th>
               <th>Nombre Solicitante</th>
               <th>Número Expediente</th>
+              <th>Fecha Creacion</th>
               <th>Estado</th>
               <th>Acciones</th>
             </tr>
@@ -101,6 +102,7 @@ const ExpedientesTable: React.FC<ExpedientesTableProps> = ({ onVerExpediente }) 
                 <td>{expediente.idExpediente}</td>
                 <td>{expediente.nombreSolicitante}</td>
                 <td>{expediente.numeroExpediente}</td>
+                <td>{expediente.Date}</td>
                 <td>{expediente.status || 'Pendiente'}</td>
                 <td>
                   <button onClick={() => onVerExpediente((expediente))}><FaEye />Ver</button>

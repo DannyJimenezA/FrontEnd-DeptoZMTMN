@@ -215,9 +215,103 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const manejarCambioEstadoDenuncia = async (id: number, nuevoEstado: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Token de autenticación no encontrado.');
+      }
+  
+      const response = await fetch(`http://localhost:3000/denuncia/${id}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ Status: nuevoEstado }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Error al actualizar el estado de la denuncia');
+      }
+  
+      if (denunciaSeleccionada && denunciaSeleccionada.id === id) {
+        setDenunciaSeleccionada({ ...denunciaSeleccionada, Status: nuevoEstado });
+      }
+  
+      alert(`El estado de la denuncia ha sido actualizado a: ${nuevoEstado}`);
+    } catch (error) {
+      console.error('Error al cambiar el estado de la denuncia:', error);
+      alert('Hubo un error al intentar cambiar el estado de la denuncia.');
+    }
+  };
+
+  const manejarCambioEstadoRevisionPlano = async (id: number, nuevoEstado: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Token de autenticación no encontrado.');
+      }
+  
+      const response = await fetch(`http://localhost:3000/revision-plano/${id}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ Status: nuevoEstado }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Error al actualizar el estado de la revisión de plano');
+      }
+  
+      if (revisionPlanoSeleccionado && revisionPlanoSeleccionado.id === id) {
+        setRevisionPlanoSeleccionado({ ...revisionPlanoSeleccionado, status: nuevoEstado });
+      }
+  
+      alert(`El estado de la revisión de plano ha sido actualizado a: ${nuevoEstado}`);
+    } catch (error) {
+      console.error('Error al cambiar el estado de la revisión de plano:', error);
+      alert('Hubo un error al intentar cambiar el estado de la revisión de plano.');
+    }
+  };
+  
+  const manejarCambioEstadoProrroga = async (id: number, nuevoEstado: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Token de autenticación no encontrado.');
+      }
+  
+      const response = await fetch(`http://localhost:3000/prorrogas/${id}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ Status: nuevoEstado }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Error al actualizar el estado de la prórroga');
+      }
+  
+      if (prorrogaSeleccionada && prorrogaSeleccionada.id === id) {
+        setProrrogaSeleccionada({ ...prorrogaSeleccionada, Status: nuevoEstado });
+      }
+  
+      alert(`El estado de la prórroga ha sido actualizado a: ${nuevoEstado}`);
+    } catch (error) {
+      console.error('Error al cambiar el estado de la prórroga:', error);
+      alert('Hubo un error al intentar cambiar el estado de la prórroga.');
+    }
+  };
+  
+
   const renderSection = () => {
     if (denunciaSeleccionada) {
-      return <DetalleDenuncia denuncia={denunciaSeleccionada} onVolver={() => setDenunciaSeleccionada(null)} />;
+      return <DetalleDenuncia denuncia={denunciaSeleccionada} onVolver={() => setDenunciaSeleccionada(null)} onEstadoCambiado={manejarCambioEstadoDenuncia}/>;
     }
 
     if (concesionSeleccionada) {
@@ -233,11 +327,11 @@ const AdminDashboard: React.FC = () => {
     }
 
     if (revisionPlanoSeleccionado) {
-      return <DetalleRevisionPlano revisionPlano={revisionPlanoSeleccionado} onVolver={() => setRevisionPlanoSeleccionado(null)} />;
+      return <DetalleRevisionPlano revisionPlano={revisionPlanoSeleccionado} onVolver={() => setRevisionPlanoSeleccionado(null)} onEstadoCambiado={manejarCambioEstadoRevisionPlano}/>;
     }
 
     if (prorrogaSeleccionada) {
-      return <DetalleProrroga prorroga={prorrogaSeleccionada} onVolver={() => setProrrogaSeleccionada(null)} />;
+      return <DetalleProrroga prorroga={prorrogaSeleccionada} onVolver={() => setProrrogaSeleccionada(null)} onEstadoCambiado={manejarCambioEstadoProrroga}/>;
     }
 
     if (citaSeleccionada) {
@@ -285,9 +379,9 @@ const AdminDashboard: React.FC = () => {
     { id: 'prorrogas', icon: BarChart2, label: 'Prórrogas' },
     { id: 'denuncias', icon: BarChart2, label: 'Denuncias' },
     { id: 'solicitudes-expedientes', icon: BarChart2, label: 'Expedientes' },
-    { id: 'revision-planos', icon: BarChart2, label: 'Revisión de Planos' },
     { id: 'users', icon: Users, label: 'Usuarios' },
     { id: 'roles', icon: Settings, label: 'Roles' },
+    { id: 'revision-planos', icon: BarChart2, label: 'Revisión de Planos' },
     { id: 'uso-precario', icon: BarChart2, label: 'Uso Precario' },
   ];
 

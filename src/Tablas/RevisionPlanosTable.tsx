@@ -84,6 +84,7 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
               <th>Nombre Solicitante</th>
               <th>Apellidos Solicitante</th>
               <th>Cédula Solicitante</th>
+              <th>Fecha Creacion</th>
               <th>Estado</th>
               <th>Acciones</th>
             </tr>
@@ -95,7 +96,8 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
                 <td>{RevisionPlano.user?.nombre}</td>
                 <td>{RevisionPlano.user?.apellido1}</td>
                 <td>{RevisionPlano.user?.cedula}</td>
-                <td>{RevisionPlano.Status || 'Pendiente'}</td>
+                <td>{RevisionPlano.Date}</td>
+                <td>{RevisionPlano.status || 'Pendiente'}</td>
                 <td>
                   <button onClick={() => onVerRevisionPlano(RevisionPlano)}><FaEye />Ver</button>
                   <button onClick={() => manejarEliminarRevisionPlano(RevisionPlano.id)}><FaTrash />Eliminar</button> {/* Botón para eliminar */}
