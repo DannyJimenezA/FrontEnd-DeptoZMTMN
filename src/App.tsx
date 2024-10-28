@@ -11,7 +11,7 @@ import Register from './pages/Register';
 import TablaSolicitudes from './pages/PanelesAdministrativos/PanelControlUsuario';
 import TablaSolicitudes1 from './pages/PanelesAdministrativos/PanelSolicitudConcesion';
 import PanelCitas from './pages/PanelesAdministrativos/PanelCitas';
-import PanelDenuncia from './pages/PanelesAdministrativos/PanelDenuncia';
+
 import PanelSolicitudConcesion from "./pages/PanelesAdministrativos/PanelSolicitudConcesion";
 import ProrrogaConcesion from './pages/ProrrogaConcesion'; 
 import PanelProrrogaConcesiones from './pages/PanelesAdministrativos/PanelProrrogaConcesion';
@@ -22,10 +22,16 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import ConfirmAccount from './pages/ConfirmAccount';
 
-// Aquí importa desde la nueva carpeta `User`
-import VistaSolicitudesExpediente from './pages/VistaSolicitudesExpedientes'; 
+// Importar los componentes necesarios
+import VistaSolicitudesExpediente from './pages/VistaSolicitudesExpedientes';
 import RevisionPlanos from './pages/RevisionPlanos';
+
+import PanelDenunciasAdmin from './pages/PanelesAdministrativos/PanelDenunciasAdmin'; // Importar el panel de denuncias admin
+import PanelRevisionPlano from './pages/PanelesAdministrativos/PanelRevisionPlano';   // Importar el panel de revisión de plano
 import AdminDashboard from './Dashboard/Dashboard';
+
+
+
 
 function App () {
   return (
@@ -46,7 +52,7 @@ function App () {
         <Route path="/TablaSolicitudes" element={<TablaSolicitudes />} />
         <Route path="/TablaSolicitudes1" element={<TablaSolicitudes1 />} />
         <Route path="/Panel-Citas" element={<PanelCitas />} />
-        <Route path="/Panel-Denuncias" element={<PanelDenuncia />} />
+        {/* Se ha eliminado la ruta de Panel-Denuncias */}
         <Route path="/Panel-Solicitud-Concesion" element={<PanelSolicitudConcesion />} />
         <Route path="/Panel-Prorroga-Concesiones" element={<PanelProrrogaConcesiones />} />
         <Route path="/Panel-Solicitud-Expediente" element={<TablaSolicitudExpediente />} />
@@ -57,10 +63,21 @@ function App () {
 
         {/* Nueva ruta para que los usuarios vean sus solicitudes de expediente */}
         <Route path="/mis-solicitudes-expediente" element={<VistaSolicitudesExpediente />} />
+
+        {/* Nueva ruta para el Panel de Denuncias para admins */}
+        <Route path="/admin/denuncias" element={<PanelDenunciasAdmin />} /> {/* Nueva ruta */}
+
+        {/* Nueva ruta para el Panel de Revisión de Plano para admins */}
+        <Route path="/admin/revision-plano" element={<PanelRevisionPlano />} /> {/* Nueva ruta para revisión de plano */}
       </Routes>
     </Router>
   );
 }
 
 export default App;
+
+
+
+
+
 

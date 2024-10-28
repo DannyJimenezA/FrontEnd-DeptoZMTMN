@@ -8,7 +8,7 @@ function RevisionPlanos() {
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const navigate = useNavigate();
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: unknown) => {
     const formData = new FormData();
 
     if (selectedFiles && selectedFiles.length > 0) {
