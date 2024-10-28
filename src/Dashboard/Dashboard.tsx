@@ -9,7 +9,8 @@ import TablaUsuarios from '../Tablas/UsersTable';
 import TablaSolicitudExpediente from '../Tablas/ExpedientesTable';
 import TablaUsoPrecario from '../Tablas/UsoPrecarioTable'; 
 import TablaConcesiones from '../Tablas/ConcesionesTable'; // Nueva tabla de concesiones
-import {jwtDecode} from 'jwt-decode'; // Asegúrate de tener jwt-decode instalado
+import TablaDenunciasDashboard from '../Tablas/TablaDenuncia'; // Importar la tabla de denuncias
+import { jwtDecode } from 'jwt-decode'; // Asegúrate de tener jwt-decode instalado
 
 // Interfaz para el token decodificado
 interface DecodedToken {
@@ -64,6 +65,8 @@ const AdminDashboard: React.FC = () => {
         return <TablaUsoPrecario />; // Renderiza la tabla de uso precario
       case 'concesiones':
         return <TablaConcesiones />; // Renderiza la tabla de concesiones
+      case 'denuncias': // Añadido: Renderiza la tabla de denuncias
+        return <TablaDenunciasDashboard />;
       default:
         return <p>Bienvenido al dashboard</p>;
     }
@@ -76,6 +79,7 @@ const AdminDashboard: React.FC = () => {
     { id: 'solicitudes-expedientes', icon: BarChart2, label: 'Expedientes' },
     { id: 'uso-precario', icon: BarChart2, label: 'Uso Precario' }, 
     { id: 'concesiones', icon: BarChart2, label: 'Concesiones' }, // Nueva opción para concesiones
+    { id: 'denuncias', icon: BarChart2, label: 'Denuncias' }, // Nueva opción para denuncias
     { id: 'users', icon: Users, label: 'Usuarios' },
     { id: 'settings', icon: Settings, label: 'Configuración' },
     { id: 'revision-planos', icon: BarChart2, label: 'Revisión de Planos' },
@@ -110,3 +114,5 @@ const AdminDashboard: React.FC = () => {
 };
 
 export default AdminDashboard;
+
+
