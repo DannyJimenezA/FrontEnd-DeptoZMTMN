@@ -1,0 +1,38 @@
+/* Botón para Ver */
+.boton-ver {
+    background-color: #4CAF50; /* Verde */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .boton-ver:hover {
+    background-color: #45a049; /* Más oscuro al pasar el ratón */
+  }
+  
+  /* Botón para Eliminar */
+  .boton-eliminar {
+    background-color: #f44336; /* Rojo */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .boton-eliminar:hover {
+    background-color: #d32f2f; /* Más oscuro al pasar el ratón */
+  }
+  

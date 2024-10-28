@@ -4,23 +4,13 @@ import { Bell, Search, User, Home, BarChart2, Users, Settings, LogOut } from 'lu
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaEye, FaEyeSlash, FaLock, FaRegUser } from 'react-icons/fa';
 import {jwtDecode} from 'jwt-decode'; // Importa jwt-decode para decodificar el token
-import '../styles/Login.css';
+
 import image from "../img/WhatsApp Image 2024-09-13 at 6.05.23 PM.jpeg";
 
 // Interfaz para el token decodificado
 interface DecodedToken {
   roles: string[];
 }
-
-import { useState } from 'react';
-
-import { FaUser, FaLock } from 'react-icons/fa'; // Importar los íconos de react-icons
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-
-import { Link, useNavigate, useLocation } from 'react-router-dom'; // Combina todas las importaciones de react-router-dom aquí
-import { FaLock, FaRegUser } from 'react-icons/fa'; // Combina los íconos de react-icons
-
-import '../styles/Login.css';
 
 
 function Login() {

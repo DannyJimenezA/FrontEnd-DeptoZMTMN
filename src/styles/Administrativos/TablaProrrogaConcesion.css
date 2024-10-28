@@ -58,22 +58,22 @@
     opacity: 0.8;
   }
   
-  .tabla-prorrogas button:nth-child(1) {
+  .tabla-solicitudes button:nth-child(1) {
     background-color: #4CAF50; /* Botón Aceptar - Verde */
     color: white;
   }
   
-  .tabla-prorrogas button:nth-child(2) {
+  .tabla-solicitudes button:nth-child(2) {
     background-color: #f44336; /* Botón Denegar - Rojo */
     color: white;
   }
   
-  .tabla-prorrogas button:nth-child(3) {
+  .tabla-solicitudes button:nth-child(3) {
     background-color: #2196F3; /* Botón Ver - Azul */
     color: white;
   }
   
-  .tabla-prorrogas button:nth-child(4) {
+  .tabla-solicitudes button:nth-child(4) {
     background-color: #FF5722; /* Botón Eliminar - Naranja */
     color: white;
   }
