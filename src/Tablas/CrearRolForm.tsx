@@ -14,9 +14,10 @@ interface Permission {
 
 const CrearRolForm: React.FC<CrearRolFormProps> = ({ onRolCreado, onCancelar }) => {
   const [nombreRol, setNombreRol] = useState('');
-  const [descripcionRol, setDescripcionRol] = useState(''); // Estado para la descripción del rol
+  const [descripcionRol, setDescripcionRol] = useState('');
   const [permisos, setPermisos] = useState<Permission[]>([]);
   const [permisosSeleccionados, setPermisosSeleccionados] = useState<number[]>([]);
+  const [resourceSeleccionado, setResourceSeleccionado] = useState<string | null>(null); // Recurso seleccionado
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -42,7 +43,6 @@ const CrearRolForm: React.FC<CrearRolFormProps> = ({ onRolCreado, onCancelar }) 
   const handleCrearRol = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Verificar si hay campos vacíos
     if (!nombreRol || !descripcionRol || permisosSeleccionados.length === 0) {
       setError('El nombre del rol, la descripción y al menos un permiso son obligatorios');
       return;
@@ -53,11 +53,6 @@ const CrearRolForm: React.FC<CrearRolFormProps> = ({ onRolCreado, onCancelar }) 
 
     const token = localStorage.getItem('token');
 
-    // Debug: Imprimir valores antes de enviarlos al backend
-    console.log('Nombre del Rol:', nombreRol);
-    console.log('Descripción del Rol:', descripcionRol);
-    console.log('Permisos seleccionados:', permisosSeleccionados);
-
     try {
       const response = await fetch('http://localhost:3000/roles', {
         method: 'POST',
@@ -67,23 +62,21 @@ const CrearRolForm: React.FC<CrearRolFormProps> = ({ onRolCreado, onCancelar }) 
         },
         body: JSON.stringify({
           name: nombreRol,
-          description: descripcionRol, // Incluyendo la descripción del rol
-          permissionIds: permisosSeleccionados // Enviar permisos seleccionados
+          description: descripcionRol,
+          permissionIds: permisosSeleccionados,
         }),
       });
 
       if (!response.ok) {
-        const errorResponse = await response.json(); // Leer el error desde el backend
-        console.error('Error al crear el rol:', errorResponse);
+        const errorResponse = await response.json();
         setError(`Error al crear el rol: ${errorResponse.message || response.statusText}`);
         return;
       }
 
-      // Limpiar campos
       setNombreRol('');
       setDescripcionRol('');
       setPermisosSeleccionados([]);
-      onRolCreado(); // Callback para actualizar la lista de roles
+      onRolCreado();
     } catch (error) {
       setError('Hubo un problema al crear el rol.');
       console.error('Error al crear el rol:', error);
@@ -93,12 +86,19 @@ const CrearRolForm: React.FC<CrearRolFormProps> = ({ onRolCreado, onCancelar }) 
   };
 
   const handlePermisoSeleccionado = (id: number) => {
-    if (permisosSeleccionados.includes(id)) {
-      setPermisosSeleccionados(permisosSeleccionados.filter((permisoId) => permisoId !== id));
-    } else {
-      setPermisosSeleccionados([...permisosSeleccionados, id]);
-    }
+    setPermisosSeleccionados(prev => 
+      prev.includes(id) ? prev.filter(permisoId => permisoId !== id) : [...prev, id]
+    );
   };
+
+  // Agrupar los permisos por `resource`
+  const permisosPorRecurso = permisos.reduce((acc, permiso) => {
+    if (!acc[permiso.resource]) {
+      acc[permiso.resource] = [];
+    }
+    acc[permiso.resource].push(permiso);
+    return acc;
+  }, {} as Record<string, Permission[]>);
 
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
@@ -129,13 +129,32 @@ const CrearRolForm: React.FC<CrearRolFormProps> = ({ onRolCreado, onCancelar }) 
           />
         </div>
 
-        {/* Permisos */}
+        {/* Filtros de Recursos */}
         <div className="mb-4">
-          <h4 className="text-gray-700 font-medium mb-2">Selecciona Permisos:</h4>
-          {permisos.length > 0 ? (
-            permisos.map((permiso) => (
+          <h4 className="text-gray-700 font-medium mb-2">Selecciona Recursos:</h4>
+          <div className="flex flex-wrap gap-2">
+            {Object.keys(permisosPorRecurso).map((recurso) => (
+              <button
+                key={recurso}
+                type="button"
+                onClick={() => setResourceSeleccionado(recurso === resourceSeleccionado ? null : recurso)}
+                className={`px-4 py-2 rounded-lg font-semibold ${
+                  recurso === resourceSeleccionado ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                {recurso}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Permisos por Recurso Seleccionado */}
+        {resourceSeleccionado && (
+          <div className="mb-4">
+            <h5 className="text-gray-600 font-semibold mb-2">{resourceSeleccionado}</h5>
+            {permisosPorRecurso[resourceSeleccionado].map((permiso) => (
               <div key={permiso.id} className="flex items-center justify-between mb-2">
-                <span>{`${permiso.action} ${permiso.resource}`}</span>
+                <span>{permiso.action}</span>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
@@ -147,11 +166,9 @@ const CrearRolForm: React.FC<CrearRolFormProps> = ({ onRolCreado, onCancelar }) 
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer peer-checked:bg-blue-600 peer-checked:after:translate-x-5 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                 </label>
               </div>
-            ))
-          ) : (
-            <p>Cargando permisos...</p>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
 
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
