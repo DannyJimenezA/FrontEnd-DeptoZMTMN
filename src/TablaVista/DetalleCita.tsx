@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Cita } from '../Types/Types';
 import CambiarEstadoCita from '../components/CambioEstado'; // Importar el nuevo componente
 
@@ -9,6 +9,37 @@ interface DetalleCitaProps {
 }
 
 const DetalleCita: React.FC<DetalleCitaProps> = ({ cita, onVolver, onEstadoCambiado }) => {
+  const [mensaje, setMensaje] = useState<string>(''); // Estado para almacenar el mensaje personalizado
+
+  // Función para enviar el correo al usuario de la cita
+  const enviarCorreo = async () => {
+    if (!cita.user?.email || !mensaje) {
+      alert('Por favor, asegúrate de que el usuario tiene un correo y escribe un mensaje.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:3000/mailer/send-custom-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: cita.user.email, message: mensaje }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        alert('Mensaje enviado exitosamente.');
+        setMensaje(''); // Limpiar el mensaje después de enviarlo
+      } else {
+        alert('Error al enviar el mensaje.');
+      }
+    } catch (error) {
+      console.error('Error al enviar el correo:', error);
+      alert('Hubo un error al intentar enviar el mensaje.');
+    }
+  };
+
   return (
     <div className="detalle-tabla">
       <h3>Detalles de la Cita</h3>
@@ -21,6 +52,19 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita, onVolver, onEstadoCambi
           <p><strong>Hora:</strong> {cita.time}</p>
           <p><strong>Estado:</strong> {cita.status || 'Pendiente'}</p>
         </div>
+      </div>
+
+      {/* Sección para enviar el mensaje */}
+      <div className="mensaje-container">
+        <h3>Enviar mensaje a: {cita.user?.email}</h3>
+        <textarea
+          value={mensaje}
+          onChange={(e) => setMensaje(e.target.value)}
+          placeholder="Escribe tu mensaje aquí"
+          rows={4}
+          style={{ width: '100%' }}
+        />
+        <button onClick={enviarCorreo} className="btn-enviar">Enviar mensaje</button>
       </div>
 
       {/* Botones para cambiar el estado de la cita */}

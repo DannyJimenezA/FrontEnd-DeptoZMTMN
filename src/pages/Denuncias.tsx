@@ -11,7 +11,8 @@ interface DenunciaFormData {
   descripcion: string;
   lugarDenuncia: number;
   ubicacion: string;
-  archivosEvidencia: File[] | null;
+  evidencia: boolean;
+  archivosEvidencia: File[];
   detallesEvidencia: string;
 }
 
@@ -26,6 +27,7 @@ const Denuncias: React.FC = () => {
     descripcion: '',
     lugarDenuncia: 0,
     ubicacion: '',
+    evidencia: false,
     archivosEvidencia: [],
     detallesEvidencia: '',
   });
@@ -50,34 +52,29 @@ const Denuncias: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
 
-    if (e.target instanceof HTMLInputElement && type === 'checkbox') {
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+    });
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
       setFormData({
         ...formData,
-        [name]: e.target.checked,
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value,
+        archivosEvidencia: Array.from(e.target.files),
       });
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      archivosEvidencia: e.target.files ? Array.from(e.target.files) : [],
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const formDataToSend = new FormData();
 
     // Añadir los campos del formulario, excepto los archivos
     Object.entries(formData).forEach(([key, value]) => {
-      if (key !== 'archivosEvidencia' && key !== 'detallesEvidencia') {
+      if (key !== 'archivosEvidencia') {
         formDataToSend.append(key, String(value));
       }
     });
@@ -95,21 +92,27 @@ const Denuncias: React.FC = () => {
 
     formDataToSend.append('detallesEvidencia', formData.detallesEvidencia);
 
-    fetch('http://localhost:3000/denuncia/upload', {
-      method: 'POST',
-      body: formDataToSend,
-    })
-      .then((response) => {
-        if (response.ok) {
-          alert('Denuncia enviada con éxito');
-          navigate('/denuncias');
-        } else {
-          return response.json().then((data) => {
-            console.error('Error al enviar la denuncia:', data);
-          });
-        }
-      })
-      .catch((error) => console.error('Error:', error));
+    try {
+      const response = await fetch('http://localhost:3000/denuncia/upload', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+        },
+        body: formDataToSend,
+      });
+
+      if (response.ok) {
+        alert('Denuncia enviada con éxito');
+        navigate('/denuncias');
+      } else {
+        const errorData = await response.json();
+        console.error('Error al enviar la denuncia:', errorData);
+        alert(`Error al enviar la denuncia: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('Error al enviar la denuncia:', error);
+      alert('Hubo un error al enviar la denuncia. Intente nuevamente.');
+    }
   };
 
   return (
@@ -281,7 +284,7 @@ const Denuncias: React.FC = () => {
               type="file"
               onChange={handleFileChange}
               multiple
-              accept="image/*,.jpg,.png,.jpeg"
+              accept="image/*,.pdf"
               required
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />

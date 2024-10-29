@@ -1,5 +1,3 @@
-// src/components/Paginacion.tsx
-
 import React from 'react';
 
 interface PaginacionProps {

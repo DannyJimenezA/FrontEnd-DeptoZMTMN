@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaFilePdf } from 'react-icons/fa';
 import { Concesion } from '../Types/Types';
 
@@ -9,19 +9,49 @@ interface DetalleConcesionProps {
 }
 
 const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver, onEstadoCambiado }) => {
+  const [mensaje, setMensaje] = useState<string>(''); // Estado para almacenar el mensaje personalizado
 
-  // Manejar la visualización de los archivos adjuntos
+  // Función para ver el archivo adjunto
   const manejarVerArchivo = (archivo: string) => {
-    const archivoFinal = archivo.replace(/[\[\]"]/g, ''); // Limpiar si es necesario
+    const archivoFinal = archivo.replace(/[\[\]"]/g, '');
     if (archivoFinal) {
       const fileUrl = `http://localhost:3000/${archivoFinal}`;
       window.open(fileUrl, '_blank');
     }
   };
 
+  // Función para enviar el correo al usuario de la concesión
+  const enviarCorreo = async () => {
+    if (!concesion.user?.email || !mensaje) {
+      alert('Por favor, asegúrate de que el usuario tiene un correo y escribe un mensaje.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:3000/mailer/send-custom-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: concesion.user.email, message: mensaje }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        alert('Mensaje enviado exitosamente.');
+        setMensaje(''); // Limpiar el mensaje después de enviarlo
+      } else {
+        alert('Error al enviar el mensaje.');
+      }
+    } catch (error) {
+      console.error('Error al enviar el correo:', error);
+      alert('Hubo un error al intentar enviar el mensaje.');
+    }
+  };
+
   // Manejar el cambio de estado
   const manejarCambioEstado = (nuevoEstado: string) => {
-    onEstadoCambiado(concesion.id, nuevoEstado); // Llamar la función del componente padre para cambiar el estado
+    onEstadoCambiado(concesion.id, nuevoEstado);
   };
 
   return (
@@ -50,6 +80,19 @@ const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver
             'No disponible'
           )}
         </div>
+      </div>
+
+      {/* Sección para enviar el mensaje */}
+      <div className="mensaje-container">
+        <h3>Enviar mensaje a: {concesion.user?.email}</h3>
+        <textarea
+          value={mensaje}
+          onChange={(e) => setMensaje(e.target.value)}
+          placeholder="Escribe tu mensaje aquí"
+          rows={4}
+          style={{ width: '100%' }}
+        />
+        <button onClick={enviarCorreo} className="btn-enviar">Enviar mensaje</button>
       </div>
 
       {/* Botones para cambiar el estado de la concesión */}

@@ -35,8 +35,8 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
   const [concesiones, setConcesiones] = useState<Concesion[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1); // Página actual
-  const [itemsPerPage, setItemsPerPage] = useState(5); // Número de concesiones por página
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   useEffect(() => {
     const obtenerConcesiones = async () => {
@@ -54,7 +54,6 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
     obtenerConcesiones();
   }, []);
 
-  // Cálculo de las concesiones que se mostrarán en la página actual
   const indexUltimaConcesion = currentPage * itemsPerPage;
   const indexPrimeraConcesion = indexUltimaConcesion - itemsPerPage;
   const concesionesActuales = concesiones.slice(indexPrimeraConcesion, indexUltimaConcesion);
@@ -63,7 +62,7 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
 
   // Función para eliminar una concesión usando el helper
   const manejarEliminarConcesion = async (id: number) => {
-    await eliminarEntidad<Concesion>('Concesiones', id, setConcesiones);  // Usamos el helper para eliminar
+    await eliminarEntidad<Concesion>('Concesiones', id, setConcesiones);
   };
 
   if (loading) {
@@ -85,6 +84,7 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
               <th>Nombre Solicitante</th>
               <th>Apellidos Solicitante</th>
               <th>Cédula Solicitante</th>
+              <th>Fecha Creacion</th>
               <th>Estado</th>
               <th>Acciones</th>
             </tr>
@@ -96,10 +96,15 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
                 <td>{concesion.user?.nombre}</td>
                 <td>{concesion.user?.apellido1}</td>
                 <td>{concesion.user?.cedula}</td>
+                <td>{concesion.Date}</td>
                 <td>{concesion.Status || 'Pendiente'}</td>
                 <td>
-                  <button className="boton-ver"onClick={() => onVerConcesion(concesion)}><FaEye />Ver</button>
-                  <button onClick={() => manejarEliminarConcesion(concesion.id)}><FaTrash />Eliminar</button> {/* Botón para eliminar */}
+                  <button className="boton-ver" onClick={() => onVerConcesion(concesion)}>
+                    <FaEye /> Ver
+                  </button>
+                  <button onClick={() => manejarEliminarConcesion(concesion.id)}>
+                    <FaTrash /> Eliminar
+                  </button>
                 </td>
               </tr>
             ))}
