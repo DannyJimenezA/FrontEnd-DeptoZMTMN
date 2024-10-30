@@ -41,26 +41,31 @@ const AdminDashboard: React.FC = () => {
   const [mostrarFormularioRol, setMostrarFormularioRol] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
+  useEffect(() => { 
+  const token = localStorage.getItem('token');
 
-    if (token) {
-      try {
-        const decodedToken = jwtDecode<DecodedToken>(token);
-        if (!decodedToken.roles.includes('admin')) {
-          window.alert('Acceso limitado para administradores.');
-          navigate('/');
-        }
-      } catch (error) {
-        console.error('Error al decodificar el token:', error);
-        window.alert('Ha ocurrido un error. Por favor, inicie sesión nuevamente.');
-        navigate('/login');
+  if (token) {
+    try {
+      const decodedToken = jwtDecode<DecodedToken>(token);
+
+      // Mapea solo los nombres de roles y verifica si "admin" está presente
+      const roleNames = decodedToken.roles.map(role => role.name);
+      console.log("Nombres de roles en el token decodificado:", roleNames);
+
+      if (!roleNames.includes('admin')) {
+        window.alert('Acceso limitado para administradores.');
+        navigate('/');
       }
-    } else {
-      window.alert('No se ha encontrado un token de acceso. Por favor, inicie sesión.');
+    } catch (error) {
+      console.error('Error al decodificar el token:', error);
+      window.alert('Ha ocurrido un error. Por favor, inicie sesión nuevamente.');
       navigate('/login');
     }
-  }, [navigate]);
+  } else {
+    window.alert('No se ha encontrado un token de acceso. Por favor, inicie sesión.');
+    navigate('/login');
+  }
+}, [navigate]);
 
   // Función para mostrar el formulario de crear rol
   const manejarMostrarFormularioCrearRol = () => {
