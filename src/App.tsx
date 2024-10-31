@@ -21,8 +21,6 @@ import AppointmentsList from './pages/User/AppointmentsList';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import ConfirmAccount from './pages/ConfirmAccount';
-
-// Importar los componentes necesarios
 import VistaSolicitudesExpediente from './pages/VistaSolicitudesExpedientes';
 import RevisionPlanos from './pages/RevisionPlanos';
 
@@ -55,23 +53,16 @@ function App () {
         <Route path="/TablaSolicitudes" element={<TablaSolicitudes />} />
         <Route path="/TablaSolicitudes1" element={<TablaSolicitudes1 />} />
         <Route path="/Panel-Citas" element={<PanelCitas />} />
-        {/* Se ha eliminado la ruta de Panel-Denuncias */}
         <Route path="/Panel-Solicitud-Concesion" element={<PanelSolicitudConcesion />} />
         <Route path="/Panel-Prorroga-Concesiones" element={<PanelProrrogaConcesiones />} />
         <Route path="/Panel-Solicitud-Expediente" element={<TablaSolicitudExpediente />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/users/reset-password" element={<ResetPassword />} />
-        <Route path="/users/confirm/:token" element={<ConfirmAccount />} /> {/* Ruta para la confirmación */}
+        <Route path="/users/confirm/:token" element={<ConfirmAccount />} /> 
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
-
-        {/* Nueva ruta para que los usuarios vean sus solicitudes de expediente */}
         <Route path="/mis-solicitudes-expediente" element={<VistaSolicitudesExpediente />} />
-
-        {/* Nueva ruta para el Panel de Denuncias para admins */}
-        <Route path="/admin/denuncias" element={<PanelDenunciasAdmin />} /> {/* Nueva ruta */}
-
-        {/* Nueva ruta para el Panel de Revisión de Plano para admins */}
-        <Route path="/admin/revision-plano" element={<PanelRevisionPlano />} /> {/* Nueva ruta para revisión de plano */}
+        <Route path="/admin/denuncias" element={<PanelDenunciasAdmin />} /> 
+        <Route path="/admin/revision-plano" element={<PanelRevisionPlano />} /> 
       </Routes>
     </Router>
     </AuthProvider>

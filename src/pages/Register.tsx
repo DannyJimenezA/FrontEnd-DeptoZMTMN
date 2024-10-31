@@ -1,8 +1,7 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import '../styles/Register.css';
-
 
 function Register() {
   const [nombre, setNombre] = useState('');
@@ -23,7 +22,7 @@ function Register() {
   };
 
   // Función para manejar el envío del formulario
-  const handleSubmit = async (e :React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
 
@@ -50,16 +49,16 @@ function Register() {
           confirmPassword: confirmPassword.trim(),
         }),
       });
-    
+
       const data = await response.json();
-    
+
       if (!response.ok) {
         throw new Error(data.message || 'Error al registrar');
       }
-    
-      //Mostrar alerta de confirmación de registro exitoso
+
+      // Mostrar alerta de confirmación de registro exitoso
       window.alert('Usuario registrado exitosamente. Por favor, revisa tu correo electrónico para verificar tu cuenta.');
-    
+
       // Redirigir al usuario a la página de inicio de sesión
       navigate('/login');
     } catch (error: unknown) {
@@ -69,8 +68,9 @@ function Register() {
         setError("Ocurrió un error inesperado.");
       }
     }
-    
+  };
 
+  // Mueve el `return` fuera del `try-catch`
   return (
     <div className="login-container">
       <h2>Registro de Usuario</h2>
@@ -181,8 +181,6 @@ function Register() {
       </form>
     </div>
   );
-}
-
 }
 
 export default Register;
