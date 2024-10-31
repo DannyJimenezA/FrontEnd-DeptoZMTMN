@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Concesion } from '../Types/Types';
+import { Concesion, DecodedToken } from '../Types/Types';
 import Paginacion from '../components/Paginacion';
 import FilterButtons from '../components/FilterButton'; // Importa el componente de filtro
 import { eliminarEntidad } from '../Helpers/eliminarEntidad';
 import '../styles/Botones.css';
 import { FaEye, FaTrash } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 interface ConcesionesTableProps {
   onVerConcesion: (concesion: Concesion) => void;
@@ -40,8 +42,38 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
   const [filtroEstado, setFiltroEstado] = useState<string>('todos'); // Estado para el filtro
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-
+  const navigate = useNavigate();
   useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      try {
+        const decodedToken = jwtDecode<DecodedToken>(token);
+        console.log(decodedToken.permissions);
+        console.log(decodedToken); // Imprime el token decodificado
+  
+        // Validar que 'permissions' exista y sea un array
+        const hasPermission = decodedToken.permissions.some(
+          (permission: { action: string; resource: string }) =>
+            permission.action === 'GET' && permission.resource === 'concesion'
+        );
+  
+        if (!hasPermission) {
+          window.alert('No tienes permiso para acceder a esta página.');
+          navigate('/');
+          return;
+        }
+      } catch (error) {
+        console.error('Error al decodificar el token:', error);
+        window.alert('Ha ocurrido un error. Por favor, inicie sesión nuevamente.');
+        navigate('/login');
+        return;
+      }
+    } else {
+      window.alert('No se ha encontrado un token de acceso. Por favor, inicie sesión.');
+      navigate('/login');
+      return;
+    }
     const obtenerConcesiones = async () => {
       try {
         const concesionesFromAPI = await fetchConcesiones();
@@ -55,7 +87,7 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
     };
 
     obtenerConcesiones();
-  }, []);
+  }, [navigate]);
 
   // Filtrar concesiones por estado
   const obtenerConcesionesFiltradas = () => {

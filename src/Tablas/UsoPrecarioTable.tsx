@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Precario } from '../Types/Types';
+import { DecodedToken, Precario } from '../Types/Types';
 import Paginacion from '../components/Paginacion';
 import FilterButtons from '../components/FilterButton'; // Importa el componente de filtro por estado
 import { eliminarEntidad } from '../Helpers/eliminarEntidad';
 import { FaEye, FaTrash } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 interface PrecarioTableProps {
   onVerPrecario: (precario: Precario) => void;
@@ -11,12 +13,13 @@ interface PrecarioTableProps {
 
 const fetchPrecarios = async (): Promise<Precario[]> => {
   const urlBase = 'http://localhost:3000/Precario';
-
+  const token = localStorage.getItem('token');
   try {
     const response = await fetch(urlBase, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer${token}`,
       },
     });
 
@@ -38,8 +41,38 @@ const TablaUsoPrecario: React.FC<PrecarioTableProps> = ({ onVerPrecario }) => {
   const [filtroEstado, setFiltroEstado] = useState<string>('todos'); // Estado para el filtro de estado
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-
+  const navigate = useNavigate();
   useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      try {
+        const decodedToken = jwtDecode<DecodedToken>(token);
+        console.log(decodedToken.permissions);
+        console.log(decodedToken); // Imprime el token decodificado
+  
+        // Validar que 'permissions' exista y sea un array
+        const hasPermission = decodedToken.permissions.some(
+          (permission: { action: string; resource: string }) =>
+            permission.action === 'GET' && permission.resource === 'concesion'
+        );
+  
+        if (!hasPermission) {
+          window.alert('No tienes permiso para acceder a esta página.');
+          navigate('/');
+          return;
+        }
+      } catch (error) {
+        console.error('Error al decodificar el token:', error);
+        window.alert('Ha ocurrido un error. Por favor, inicie sesión nuevamente.');
+        navigate('/login');
+        return;
+      }
+    } else {
+      window.alert('No se ha encontrado un token de acceso. Por favor, inicie sesión.');
+      navigate('/login');
+      return;
+    }
     const obtenerPrecarios = async () => {
       try {
         const precariosFromAPI = await fetchPrecarios();

@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { FaTrash, FaEye, FaPlus } from 'react-icons/fa';  // Iconos para ver, eliminar, y agregar
 import AsignarPermisosForm from '../TablaVista/AsignarPermisosForm';  // Importa el componente para asignar permisos
+
+import { DecodedToken, Role, User } from '../Types/Types';  // Asegúrate de importar los tipos correctos
+import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
+
 import { Role } from '../Types/Types';  // Asegúrate de importar los tipos correctos
+
 
 interface RolesTableProps {
   onCrearRol: () => void; // Prop para manejar la creación de un nuevo rol
@@ -41,8 +47,38 @@ const RolesTable: React.FC<RolesTableProps> = ({ onCrearRol }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [rolSeleccionado, setRolSeleccionado] = useState<Role | null>(null); // Estado para el rol seleccionado
-
+  const navigate = useNavigate();
   useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      try {
+        const decodedToken = jwtDecode<DecodedToken>(token);
+        console.log(decodedToken.permissions);
+        console.log(decodedToken); // Imprime el token decodificado
+  
+        // Validar que 'permissions' exista y sea un array
+        const hasPermission = decodedToken.permissions.some(
+          (permission: { action: string; resource: string }) =>
+            permission.action === 'GET' && permission.resource === 'roles'
+        );
+  
+        if (!hasPermission) {
+          window.alert('No tienes permiso para acceder a esta página.');
+          navigate('/');
+          return;
+        }
+      } catch (error) {
+        console.error('Error al decodificar el token:', error);
+        window.alert('Ha ocurrido un error. Por favor, inicie sesión nuevamente.');
+        navigate('/login');
+        return;
+      }
+    } else {
+      window.alert('No se ha encontrado un token de acceso. Por favor, inicie sesión.');
+      navigate('/login');
+      return;
+    }
     const cargarRoles = async () => {
       setLoading(true);
       try {

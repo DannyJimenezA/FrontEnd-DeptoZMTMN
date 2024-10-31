@@ -1,9 +1,18 @@
+
+import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { IoHomeSharp } from 'react-icons/io5';
+import { FaTable, FaUser, FaUserCircle } from 'react-icons/fa';
+import logo from '../img/logo.png';
+import { useAuth } from '../context/AuthContext'; // Usar el contexto de autenticación
+
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { IoHomeSharp } from "react-icons/io5";
 import { FaTable, FaUser, FaUserCircle } from "react-icons/fa";
 import logo from "../img/logo.png";
 import { useAuth } from "../context/AuthContext"; // Usar el contexto de autenticación
+
 
 const Navbar: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -21,7 +30,9 @@ const Navbar: React.FC = () => {
 
   const handleLogout = () => {
     logout(); // Ejecuta la función de logout desde el contexto
+
     navigate("/"); // Redirige al usuario a la página de inicio
+
   };
 
   return (
@@ -35,7 +46,11 @@ const Navbar: React.FC = () => {
       </div>
 
       <div className="flex items-center space-x-6">
+
+        {isAuthenticated && (
+
         {isAuthenticated ? (
+
           <>
             <div className="relative">
               <button
@@ -74,7 +89,13 @@ const Navbar: React.FC = () => {
               )}
             </div>
           </>
+
+        )}
+
+        {!isAuthenticated && (
+
         ) : (
+
           <Link to="/login" className="flex items-center space-x-1 hover:text-gray-200">
             <FaUser />
             <span>Iniciar Sesión</span>
