@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Usuario } from '../Types/Types';
+import { DecodedToken, Usuario } from '../Types/Types';
 import Paginacion from '../components/Paginacion';
 import { eliminarEntidad } from '../Helpers/eliminarEntidad';
 import '../styles/Botones.css';
 import { FaEye, FaTrash } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 interface UsuariosTableProps {
   onVerUsuario: (usuario: Usuario) => void; // Función para ver los detalles de un usuario
@@ -11,12 +13,13 @@ interface UsuariosTableProps {
 
 const fetchUsuarios = async (): Promise<Usuario[]> => {
   const urlBase = 'http://localhost:3000/users';
-
+  const token = localStorage.getItem('token');
   try {
     const response = await fetch(urlBase, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
     });
 
@@ -37,8 +40,38 @@ const UsuariosTable: React.FC<UsuariosTableProps> = ({ onVerUsuario }) => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-
+  const navigate = useNavigate();
   useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      try {
+        const decodedToken = jwtDecode<DecodedToken>(token);
+        console.log(decodedToken.permissions);
+        console.log(decodedToken); // Imprime el token decodificado
+  
+        // Validar que 'permissions' exista y sea un array
+        const hasPermission = decodedToken.permissions.some(
+          (permission: { action: string; resource: string }) =>
+            permission.action === 'GET' && permission.resource === 'users'
+        );
+  
+        if (!hasPermission) {
+          window.alert('No tienes permiso para acceder a esta página.');
+          navigate('/');
+          return;
+        }
+      } catch (error) {
+        console.error('Error al decodificar el token:', error);
+        window.alert('Ha ocurrido un error. Por favor, inicie sesión nuevamente.');
+        navigate('/login');
+        return;
+      }
+    } else {
+      window.alert('No se ha encontrado un token de acceso. Por favor, inicie sesión.');
+      navigate('/login');
+      return;
+    }
     const obtenerUsuarios = async () => {
       try {
         const usuariosFromAPI = await fetchUsuarios();

@@ -16,12 +16,13 @@ const baseUrl = 'http://localhost:3000/';
 // Función para obtener las prórrogas desde la API
 const fetchProrrogas = async (): Promise<Prorroga[]> => {
   const urlBase = `${baseUrl}Prorrogas/`;
-
+  const token = localStorage.getItem('token');
   try {
     const response = await fetch(urlBase, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
     });
 
@@ -55,7 +56,7 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
         // Verificar si el usuario tiene permiso para acceder a 'prorrogas'
         const hasPermission = decodedToken.permissions.some(
           (permission: { action: string; resource: string }) =>
-            permission.action === 'GET' && permission.resource === 'appointments'
+            permission.action === 'GET' && permission.resource === 'prorroga'
         );
   
         if (!hasPermission) {
