@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Home, BarChart2, Users, Settings } from 'lucide-react';
 import './Dashboard.css';
@@ -45,14 +45,22 @@ const AdminDashboard: React.FC = () => {
   const [mostrarFormularioRol, setMostrarFormularioRol] = useState(false);
   const navigate = useNavigate();
 
+
   useEffect(() => {
     const token = localStorage.getItem('token');
-
+  
     if (token) {
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
-        if (decodedToken.roles.length === 1 && decodedToken.roles.includes('user')) {
-          window.alert('Acceso limitado para administradores.');
+        
+        // Verifica que tenga al menos un permiso
+        if (!decodedToken.permissions || decodedToken.permissions.length === 0) {
+          window.alert('Acceso limitado. No tiene permisos para acceder a este componente.');
+
+
+  
+
+  
           navigate('/');
         }
       } catch (error) {

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import '../styles/Global.css';
 import { Cita, DecodedToken } from '../Types/Types';
 import { FaEye, FaTrash } from 'react-icons/fa';
@@ -42,16 +42,25 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
   const [filtroEstado, setFiltroEstado] = useState<string>('todos'); // Estado para el filtro
   const navigate = useNavigate();
 
-  // Estados para la paginación
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+
     if (token) {
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
-        if (!decodedToken.roles.includes('admin')) {
+        console.log(decodedToken.permissions);
+        console.log(decodedToken); // Imprime el token decodificado
+  
+        // Validar que 'permissions' exista y sea un array
+        const hasPermission = decodedToken.permissions.some(
+          (permission: { action: string; resource: string }) =>
+            permission.action === 'GET' && permission.resource === 'appointments'
+        );
+  
+        if (!hasPermission) {
           window.alert('No tienes permiso para acceder a esta página.');
           navigate('/');
           return;
@@ -67,7 +76,8 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
       navigate('/login');
       return;
     }
-
+  
+    // Función para obtener las citas desde la API
     const obtenerCitas = async () => {
       try {
         const citasFromAPI = await fetchCitas();
@@ -79,11 +89,10 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
         setLoading(false);
       }
     };
-
+  
     obtenerCitas();
   }, [navigate]);
 
-  // Función para eliminar citas
   const manejarEliminar = async (id: number) => {
     const confirmacion = window.confirm('¿Estás seguro de eliminar la cita?');
     if (!confirmacion) return;
@@ -125,6 +134,7 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
 
   // Cálculo de citas a mostrar según la paginación
   const citasFiltradas = obtenerCitasFiltradas();
+
   const indexUltimaCita = currentPage * itemsPerPage;
   const indexPrimeraCita = indexUltimaCita - itemsPerPage;
   const citasActuales = citasFiltradas.slice(indexPrimeraCita, indexUltimaCita);
@@ -173,7 +183,6 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
         </tbody>
       </table>
 
-      {/* Componente de Paginación */}
       <Paginacion
         currentPage={currentPage}
         totalPages={totalPages}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import{ useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { DecodedToken, Prorroga } from '../Types/Types';
@@ -47,12 +47,18 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-
+  
     if (token) {
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
-
-        if (!decodedToken.roles.includes('admin')) {
+  
+        // Verificar si el usuario tiene permiso para acceder a 'prorrogas'
+        const hasPermission = decodedToken.permissions.some(
+          (permission: { action: string; resource: string }) =>
+            permission.action === 'GET' && permission.resource === 'appointments'
+        );
+  
+        if (!hasPermission) {
           window.alert('No tienes permiso para acceder a esta página.');
           navigate('/');
           return;
@@ -68,7 +74,7 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
       navigate('/login');
       return;
     }
-
+  
     const obtenerProrrogas = async () => {
       try {
         const prorrogasFromAPI = await fetchProrrogas();
@@ -80,15 +86,24 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
         setLoading(false);
       }
     };
-
+  
     obtenerProrrogas();
   }, [navigate]);
+
+    // Cálculo de las prorrogas que se mostrarán en la página actual
+    //const indexUltimaProrroga = currentPage * itemsPerPage;
+   // const indexPrimeraProrroga = indexUltimaProrroga - itemsPerPage;
+   // const prorrogasActuales = prorrogas.slice(indexPrimeraProrroga, indexUltimaProrroga);
+  
+   // const numeroPaginas = Math.ceil(prorrogas.length / itemsPerPage);
+
 
   // Filtrar las prórrogas según el estado seleccionado
   const obtenerProrrogasFiltradas = () => {
     if (filtroEstado === 'todos') return prorrogas;
     return prorrogas.filter((prorroga) => prorroga.Status === filtroEstado);
   };
+
 
   // Cálculo de las prórrogas que se mostrarán en la página actual
   const prorrogasFiltradas = obtenerProrrogasFiltradas();
