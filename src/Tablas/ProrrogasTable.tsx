@@ -46,12 +46,18 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-
+  
     if (token) {
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
-
-        if (!decodedToken.roles.includes('admin')) {
+  
+        // Verificar si el usuario tiene permiso para acceder a 'prorrogas'
+        const hasPermission = decodedToken.permissions.some(
+          (permission: { action: string; resource: string }) =>
+            permission.action === 'GET' && permission.resource === 'appointments'
+        );
+  
+        if (!hasPermission) {
           window.alert('No tienes permiso para acceder a esta página.');
           navigate('/');
           return;
@@ -67,7 +73,7 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
       navigate('/login');
       return;
     }
-
+  
     const obtenerProrrogas = async () => {
       try {
         const prorrogasFromAPI = await fetchProrrogas();
@@ -79,10 +85,9 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
         setLoading(false);
       }
     };
-
+  
     obtenerProrrogas();
   }, [navigate]);
-
     // Cálculo de las prorrogas que se mostrarán en la página actual
     const indexUltimaProrroga = currentPage * itemsPerPage;
     const indexPrimeraProrroga = indexUltimaProrroga - itemsPerPage;
