@@ -1,12 +1,9 @@
-
-import { Link, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { IoHomeSharp } from 'react-icons/io5';
 import { FaTable, FaUser, FaUserCircle } from 'react-icons/fa';
 import logo from '../img/logo.png';
-import { jwtDecode } from 'jwt-decode'; // Importación corregida
-import { useAuth } from '../context/AuthContext'; // Uso de contexto de autenticación
-
+import { useAuth } from '../context/AuthContext'; // Usar el contexto de autenticación
 
 const Navbar: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -26,37 +23,8 @@ const Navbar: React.FC = () => {
     setUserDropdownVisible(!userDropdownVisible); // Mostrar el dropdown del usuario
   };
 
-
   const handleLogout = () => {
     logout(); // Ejecuta la función de logout desde el contexto
-
-  // useEffect para cargar los datos del usuario desde el token JWT
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const decodedToken = jwtDecode(token) as DecodedToken;
-        console.log('Token decodificado:', decodedToken);
-
-        // Establecer el email y roles si están presentes en el token
-        if (decodedToken.email) setUserEmail(decodedToken.email);
-        if (decodedToken.roles && decodedToken.roles.length > 0) {
-          setUserRoles(decodedToken.roles);
-        } else {
-          console.warn('No se encontraron roles en el token.');
-        }
-      } catch (error) {
-        console.error('Error decodificando el token:', error);
-      }
-    } else {
-      console.warn('No se encontró un token en el localStorage.');
-    }
-  }, []);
-
-  // Verificar si el usuario tiene un rol específico
-  const hasRole = (roleName: string) => {
-    return userRoles.some((role) => role.name === roleName);
-
   };
 
   return (
@@ -70,7 +38,6 @@ const Navbar: React.FC = () => {
       </div>
 
       <div className="flex items-center space-x-6">
-
         {isAuthenticated && (
           <>
             <div className="relative">
@@ -113,7 +80,6 @@ const Navbar: React.FC = () => {
         )}
 
         {!isAuthenticated && (
-
           <Link to="/login" className="flex items-center space-x-1 hover:text-gray-200">
             <FaUser />
             <span>Iniciar Sesión</span>
