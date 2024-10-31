@@ -3,22 +3,22 @@ import "../styles/FormAudiencia.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { isWednesday } from "date-fns";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 function CitasAudiencias() {
-  const [selectedDate, setSelectedDate] = useState(null); // Estado para la fecha
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null); // Estado para la fecha
   const [selectedTime, setSelectedTime] = useState(""); // Estado para la hora
   const [descripcion, setDescripcion] = useState(""); // Estado para la descripción
   const navigate = useNavigate();  // Usar para redirigir al usuario
 
   // Manejador de la fecha
-  const filterWeekdays = (date: unknown) => {
+  const filterWeekdays = (date: Date | null) => {
     // Devuelve verdadero solo si la fecha es un miércoles
-    return date && isWednesday(date);
+    return date ? isWednesday(date) : false;
   };
 
   // Manejador para el envío del formulario
-  const handleSubmit = async (event: { preventDefault: () => void; }) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
   
     // Validar que la fecha y hora estén seleccionadas
@@ -41,7 +41,7 @@ function CitasAudiencias() {
   
     // Crear la fecha y hora combinadas
   
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     const decodedToken = parseJwt(token);  // Necesitarás una función para decodificar el JWT
     const userId = decodedToken.userId;  // Este es el ID del usuario autenticado
 
@@ -53,36 +53,36 @@ function CitasAudiencias() {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/appointments', {
-        method: 'POST',
+      const response = await fetch("http://localhost:3000/appointments", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,  // Agrega el token a la cabecera
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,  // Agrega el token a la cabecera
         },
         body: JSON.stringify(cita),
       });
 
       if (!response.ok) {
-        throw new Error('Error al crear la cita.');
+        throw new Error("Error al crear la cita.");
       }
 
       const result = await response.json();
-      alert('Cita creada exitosamente');
-      console.log('Cita creada:', result);
+      alert("Cita creada exitosamente");
+      console.log("Cita creada:", result);
 
       // Redirigir al usuario a la ruta '/citas-listas' después de crear la cita con éxito
-      navigate('/citas-listas');
+      navigate("/citas-listas");
 
     } catch (error) {
-      console.error('Error al crear la cita:', error);
-      alert('Hubo un error al crear la cita.');
+      console.error("Error al crear la cita:", error);
+      alert("Hubo un error al crear la cita.");
     }
   };
 
   // Función para decodificar el JWT
-  const parseJwt = (token) => {
+  const parseJwt = (token: string | null) => {
     try {
-      return JSON.parse(atob(token.split('.')[1]));
+      return token ? JSON.parse(atob(token.split(".")[1])) : null;
     } catch (e) {
       return null;
     }
@@ -90,7 +90,8 @@ function CitasAudiencias() {
   
   // Generación de opciones de tiempo (horarios)
   const getTimeOptions = () => {
-    const options = [];
+    const options: React.ReactNode[] = [];
+
     
     // Opciones para la mañana
     const morningTimes = ["08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30"];
@@ -134,7 +135,7 @@ function CitasAudiencias() {
           <label>Seleccione la fecha:</label>
           <DatePicker
             selected={selectedDate}
-            onChange={(date) => setSelectedDate(date)}
+            onChange={(date) => setSelectedDate(date as Date | null)}
             filterDate={filterWeekdays} // Filtra las fechas para mostrar solo miércoles
             dateFormat="yyyy-MM-dd"
             placeholderText="Selecciona una fecha"

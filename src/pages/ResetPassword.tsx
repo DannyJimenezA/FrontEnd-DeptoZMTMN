@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import '../styles/ResetPassword.css'
+import axios, { AxiosError } from 'axios';
+import '../styles/ResetPassword.css';
+
+interface ErrorResponse {
+  message: string;
+}
 
 const ResetPassword = () => {
   const query = new URLSearchParams(useLocation().search);
@@ -20,12 +24,12 @@ const ResetPassword = () => {
     }
   }, [token]);
 
-  const validatePassword = (password) => {
+  const validatePassword = (password: string) => {
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // Al menos 8 caracteres, una letra y un número
     return passwordRegex.test(password);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       setMessage('Las contraseñas no coinciden');
@@ -47,8 +51,9 @@ const ResetPassword = () => {
       setMessage(response.data.message);
       navigate('/login'); // Redirigir al login después de cambiar la contraseña
     } catch (error) {
-      if (error.response) {
-        setMessage(error.response.data.message || 'Error al restablecer la contraseña');
+      const err = error as AxiosError<ErrorResponse>; // Asignamos un tipo específico a `err`
+      if (err.response && err.response.data) {
+        setMessage(err.response.data.message || 'Error al restablecer la contraseña');
       } else {
         setMessage('No se pudo conectar con el servidor. Inténtalo más tarde.');
       }
@@ -78,12 +83,11 @@ const ResetPassword = () => {
         <button type="submit" disabled={isSubmitting || !token}> 
           {isSubmitting ? 'Procesando...' : 'Restablecer Contraseña'}
         </button>
-        <button type="submit" onClick={() => navigate('/login')}>Volver</button>
+        <button type="button" onClick={() => navigate('/login')}>Volver</button>
         {message && <p className={`message ${message.includes('exito') ? 'success' : ''}`}>{message}</p>}
       </form>
     </div>
   );
-  
 };
 
 export default ResetPassword;

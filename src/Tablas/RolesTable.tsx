@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaTrash, FaEye, FaPlus } from 'react-icons/fa';  // Iconos para ver, eliminar, y agregar
 import AsignarPermisosForm from '../TablaVista/AsignarPermisosForm';  // Importa el componente para asignar permisos
-import { Role, User } from '../Types/Types';  // Asegúrate de importar los tipos correctos
+import { Role } from '../Types/Types';  // Asegúrate de importar los tipos correctos
 
 interface RolesTableProps {
   onCrearRol: () => void; // Prop para manejar la creación de un nuevo rol

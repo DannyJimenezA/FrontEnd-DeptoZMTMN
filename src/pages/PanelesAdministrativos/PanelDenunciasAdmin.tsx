@@ -1,4 +1,3 @@
-// PanelDenunciasAdmin.tsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import  {jwtDecode} from 'jwt-decode';
@@ -53,8 +52,8 @@ const fetchDenuncias = async (): Promise<Denuncia[]> => {
 
 const PanelDenunciasAdmin: React.FC = () => {
   const [denuncias, setDenuncias] = useState<Denuncia[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setLoading] = useState<boolean>(true);
+  const [, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -140,21 +139,21 @@ const PanelDenunciasAdmin: React.FC = () => {
   };
 
   // Función para enviar una notificación de seguimiento
-  const manejarSeguimiento = (id: number) => {
-    const mensaje = window.prompt('Escribe un mensaje de seguimiento para esta denuncia:');
-    if (!mensaje) return;
+  // const manejarSeguimiento = () => {
+  //   const mensaje = window.prompt('Escribe un mensaje de seguimiento para esta denuncia:');
+  //   if (!mensaje) return;
 
-    // Aquí puedes implementar la lógica para enviar la notificación de seguimiento
-    window.alert(`Mensaje de seguimiento enviado: ${mensaje}`);
-  };
+  //   // Aquí puedes implementar la lógica para enviar la notificación de seguimiento
+  //   window.alert(`Mensaje de seguimiento enviado: ${mensaje}`);
+  // };
 
-  if (loading) {
-    return <p>Cargando denuncias...</p>;
-  }
+  // if (loading) {
+  //   return <p>Cargando denuncias...</p>;
+  // }
 
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
+  // if (error) {
+  //   return <p>Error: {error}</p>;
+  // }
 
   return (
     <div className="tabla-container">
@@ -189,7 +188,7 @@ const PanelDenunciasAdmin: React.FC = () => {
               <td>
                 <button onClick={() => manejarCambioEstado(denuncia.id, 'en progreso')}>En progreso</button>
                 <button onClick={() => manejarCambioEstado(denuncia.id, 'resuelta')}>Resuelta</button>
-                <button onClick={() => manejarSeguimiento(denuncia.id)}>Enviar Seguimiento</button>
+                {/* <button onClick={() => manejarSeguimiento(denuncia.id)}>Enviar Seguimiento</button> */}
               </td>
             </tr>
           ))}

@@ -35,9 +35,9 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, o
 
   const archivosProcesados = procesarArchivos(denuncia.archivosEvidencia);
 
-  const manejarCambioEstado = (nuevoEstado: string) => {
-    onEstadoCambiado(denuncia.id, nuevoEstado); // Llamar la función del componente padre para cambiar el estado
-  };
+  // const manejarCambioEstado = (nuevoEstado: string) => {
+  //   onEstadoCambiado(denuncia.id, nuevoEstado); // Llamar la función del componente padre para cambiar el estado
+  // };
 
   return (
     <div className="detalle-tabla">

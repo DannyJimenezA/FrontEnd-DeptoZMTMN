@@ -44,29 +44,29 @@ const GestionDenunciasTable: React.FC = () => {
     cargarDatos();
   }, []);
 
-  const manejarEliminar = async (id: number, tipo: 'tipo-denuncia' | 'lugar-denuncia') => {
-    if (window.confirm('¿Está seguro de que desea eliminar este registro?')) {
-      try {
-        const response = await fetch(`http://localhost:3000/${tipo}/${id}`, { method: 'DELETE' });
-        if (response.ok) {
-          if (tipo === 'tipo-denuncia') {
-            setTipoDenuncias((prev) => prev.filter((item) => item.id !== id));
-          } else {
-            setLugarDenuncias((prev) => prev.filter((item) => item.id !== id));
-          }
-        }
-      } catch (error) {
-        console.error(`Error eliminando ${tipo}:`, error);
-      }
-    }
-  };
+  // const manejarEliminar = async (id: number, tipo: 'tipo-denuncia' | 'lugar-denuncia') => {
+  //   if (window.confirm('¿Está seguro de que desea eliminar este registro?')) {
+  //     try {
+  //       const response = await fetch(`http://localhost:3000/${tipo}/${id}`, { method: 'DELETE' });
+  //       if (response.ok) {
+  //         if (tipo === 'tipo-denuncia') {
+  //           setTipoDenuncias((prev) => prev.filter((item) => item.id !== id));
+  //         } else {
+  //           setLugarDenuncias((prev) => prev.filter((item) => item.id !== id));
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error(`Error eliminando ${tipo}:`, error);
+  //     }
+  //   }
+  // };
 
-  const manejarEditar = (id: number, descripcionActual: string, tipo: 'tipo-denuncia' | 'lugar-denuncia') => {
-    setIsEditing(true);
-    setEditingId(id);
-    setDescripcion(descripcionActual);
-    setDenunciaType(tipo);
-  };
+  // const manejarEditar = (id: number, descripcionActual: string, tipo: 'tipo-denuncia' | 'lugar-denuncia') => {
+  //   setIsEditing(true);
+  //   setEditingId(id);
+  //   setDescripcion(descripcionActual);
+  //   setDenunciaType(tipo);
+  // };
 
   const manejarGuardar = async () => {
     const url = `http://localhost:3000/${denunciaType}${isEditing ? `/${editingId}` : ''}`;

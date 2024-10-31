@@ -3,12 +3,22 @@ import "../styles/RevisionPlanos.css";
 import { useForm } from "react-hook-form";
 import { useNavigate } from 'react-router-dom';
 
-function RevisionPlanos() {
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm();
+interface FormData {
+  expediente: string;
+  numeroPlano: string;
+  comentarios?: string;
+}
+
+interface DecodedToken {
+  sub: string;
+}
+
+const RevisionPlanos = () => {
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const navigate = useNavigate();
 
-  const onSubmit = async (data: unknown) => {
+  const onSubmit = async (data: FormData) => {
     const formData = new FormData();
 
     if (selectedFiles && selectedFiles.length > 0) {
@@ -29,16 +39,15 @@ function RevisionPlanos() {
       return;
     }
 
-    // Estructura para la solicitud que se envía al backend
     const revisionData = {
       userId,
-      NumeroExpediente: data.expediente,    // Se obtiene del formulario
-      NumeroPlano: data.numeroPlano,        // Se obtiene del formulario
-      Comentario: data.comentarios || "",   // Comentarios opcionales
-      ArchivosAdjuntos: Array.from(selectedFiles).map(file => ({
+      NumeroExpediente: data.expediente,
+      NumeroPlano: data.numeroPlano,
+      Comentario: data.comentarios || "",
+      ArchivosAdjuntos: selectedFiles ? Array.from(selectedFiles).map(file => ({
         nombre: file.name,
-        ruta: `/uploads/${file.name}` // Aquí puedes manejar la ruta dependiendo de tu servidor de almacenamiento
-      })),
+        ruta: `/uploads/${file.name}`
+      })) : [],
     };
 
     formData.append('userId', revisionData.userId.toString());
@@ -46,7 +55,7 @@ function RevisionPlanos() {
     formData.append('NumeroPlano', revisionData.NumeroPlano);
     formData.append('Comentario', revisionData.Comentario);
     formData.append('ArchivosAdjuntos', JSON.stringify(revisionData.ArchivosAdjuntos));
-     // Convertimos a JSON
+
     try {
       const response = await fetch('http://localhost:3000/revision-plano', {
         method: 'POST',
@@ -69,14 +78,13 @@ function RevisionPlanos() {
     }
   };
 
-  const parseJwt = (token: string | null) => {
+  const parseJwt = (token: string | null): DecodedToken | null => {
     if (!token) {
       console.error('Token no disponible');
       return null;
     }
     try {
-      const decoded = JSON.parse(atob(token.split('.')[1]));
-      return decoded;
+      return JSON.parse(atob(token.split('.')[1])) as DecodedToken;
     } catch (e) {
       console.error('Error al decodificar el token:', e);
       return null;
@@ -85,14 +93,13 @@ function RevisionPlanos() {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    const validFiles = Array.from(files).every((file) => file.type === 'application/pdf');
+    const validFiles = files && Array.from(files).every((file) => file.type === 'application/pdf');
     if (!validFiles) {
       window.alert('Solo se permiten archivos PDF.');
       setSelectedFiles(null);
       return;
     }
-    setValue('files', files);
-    setSelectedFiles(files);
+    setSelectedFiles(files); // Aquí eliminamos el uso de `setValue` para archivos
   };
 
   return (
@@ -137,9 +144,7 @@ function RevisionPlanos() {
               onChange={handleFileChange}
               className="form-input"
             />
-            {errors.files && (
-              <p className="error-message">Debe subir al menos un archivo PDF</p>
-            )}
+            {/* Validación opcional adicional aquí si lo deseas */}
           </div>
 
           <div className="form-field">

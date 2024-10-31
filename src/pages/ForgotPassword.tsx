@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import '../styles/ForgotPassword.css';
-import {  useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -9,14 +9,18 @@ const ForgotPassword = () => {
   const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:3000/users/forgot-password', { email });
       setMessage(response.data.message);
       setIsError(false);
     } catch (error) {
-      setMessage(error.response.data.message);
+      if (axios.isAxiosError(error) && error.response) {
+        setMessage(error.response.data.message);
+      } else {
+        setMessage('Error inesperado. Por favor, intente nuevamente.');
+      }
       setIsError(true);
     }
   };
@@ -33,7 +37,7 @@ const ForgotPassword = () => {
           required
         />
         <button type="submit">Recuperar Contraseña</button>
-        <button type="submit" onClick={() => navigate('/login')}>Volver</button>
+        <button type="button" onClick={() => navigate('/login')}>Volver</button>
       </form>
       {message && (
         <p className={`forgot-password-message ${isError ? 'error' : 'success'}`}>

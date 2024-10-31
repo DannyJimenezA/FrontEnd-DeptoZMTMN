@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import '../styles/VistaSolicitudesExpedientes.css';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 interface Solicitud {
   idExpediente: string;
@@ -32,8 +32,10 @@ const VistaSolicitudesExpediente: React.FC = () => {
         }
         const data: Solicitud[] = await response.json();
         setSolicitudes(data);
-      } catch (error) {
-        setError(error.message);
+        setError(null); // Reinicia el error en caso de éxito
+      } catch (err) {
+        const error = err as AxiosError<{ message: string }>;
+        setError(error.response?.data?.message || 'Error al cargar las solicitudes');
       } finally {
         setLoading(false);
       }
@@ -41,6 +43,14 @@ const VistaSolicitudesExpediente: React.FC = () => {
 
     fetchSolicitudes();
   }, []);
+
+  if (loading) {
+    return <p>Cargando solicitudes...</p>; // Muestra un mensaje mientras carga
+  }
+
+  if (error) {
+    return <p style={{ color: 'red' }}>{error}</p>; // Muestra el mensaje de error si lo hay
+  }
 
   const handleEditClick = (index: number) => {
     setEditIndex(index);
@@ -79,8 +89,9 @@ const VistaSolicitudesExpediente: React.FC = () => {
           alert("Hubo un error al actualizar la solicitud: " + response.data.message);
         }
       } catch (error) {
-        console.error("Error al actualizar la solicitud:", error);
-        alert("Hubo un error al actualizar la solicitud: " + (error.response?.data?.message || error.message));
+        const err = error as AxiosError<{ message: string }>; // Especificar que el error es de tipo AxiosError
+        const errorMessage = err.response?.data?.message || err.message || 'Error desconocido';
+        alert("Hubo un error al actualizar la solicitud: " + errorMessage);
       }
     }
   };
@@ -110,9 +121,9 @@ const VistaSolicitudesExpediente: React.FC = () => {
       setSolicitudes(prev => prev.filter(solicitud => solicitud.idExpediente !== currentId));
       setIsDeleteModalOpen(false); // Cerrar modal de confirmación
     } catch (error) {
-      console.error("Error al eliminar la solicitud:", error);
-      alert("Hubo un error al eliminar la solicitud: " + (error.response?.data?.message || error.message));
-    }
+      const err = error as AxiosError<{ message: string }>; // Especificar que el error es de tipo AxiosError
+      const errorMessage = err.response?.data?.message || err.message || 'Error desconocido';
+      alert("Hubo un error al actualizar la solicitud: " + errorMessage);
   };
 
   // Función para redirigir a la creación de una nueva solicitud
@@ -203,5 +214,5 @@ const VistaSolicitudesExpediente: React.FC = () => {
     </div>
   );
 };
-
+}
 export default VistaSolicitudesExpediente;

@@ -28,6 +28,7 @@ import CrearRolForm from '../Tablas/CrearRolForm';
 import AsignarPermisosForm from '../TablaVista/AsignarPermisosForm';
 import DetalleUsuario from '../TablaVista/DetalleUsuario';
 import GestionDenunciasTable from '../Tablas/GestionDenunciasTable';
+import TablaDenunciasDashboard from '../Tablas/TablaDenuncia';
 
 
 const AdminDashboard: React.FC = () => {
@@ -71,16 +72,16 @@ const AdminDashboard: React.FC = () => {
     setRolSeleccionado(null);  // Asegurarse de que no se esté editando un rol
   };
 
-  // Función para ocultar el formulario de crear rol
-  const manejarOcultarFormularioCrearRol = () => {
-    setMostrarFormularioRol(false);
-  };
+  // // Función para ocultar el formulario de crear rol
+  // const manejarOcultarFormularioCrearRol = () => {
+  //   setMostrarFormularioRol(false);
+  // };
 
-  // Función para editar los permisos del rol seleccionado
-  const manejarEditarRol = (rol: Role) => {
-    setRolSeleccionado(rol);
-    setMostrarFormularioRol(false);  // Asegurarse de que no esté en modo de creación
-  };
+  // // Función para editar los permisos del rol seleccionado
+  // const manejarEditarRol = (rol: Role) => {
+  //   setRolSeleccionado(rol);
+  //   setMostrarFormularioRol(false);  // Asegurarse de que no esté en modo de creación
+  // };
 
   // Función para volver a la tabla de roles
   const manejarVolverRoles = () => {
@@ -411,7 +412,6 @@ const AdminDashboard: React.FC = () => {
         return <DenunciasTable onVerDenuncia={manejarVerDenuncia} />;
       case 'gestion-denuncias':
         return <GestionDenunciasTable/>;
-        return <TablaConcesiones />; // Renderiza la tabla de concesiones
       case 'denuncias': // Añadido: Renderiza la tabla de denuncias
         return <TablaDenunciasDashboard />;
       default:

@@ -46,8 +46,8 @@ const fetchCopiasExpedientes = async (): Promise<CopiaExpediente[]> => {
 
 const TablaSolicitudExpediente: React.FC = () => {
   const [copiasExpedientes, setCopiasExpedientes] = useState<CopiaExpediente[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setLoading] = useState<boolean>(true);
+  const [, setError] = useState<string | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [copiaSeleccionada, setCopiaSeleccionada] = useState<CopiaExpediente | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
