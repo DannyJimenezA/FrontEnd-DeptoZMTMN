@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Usuario } from '../Types/Types';
 
 interface DetalleUsuarioProps {

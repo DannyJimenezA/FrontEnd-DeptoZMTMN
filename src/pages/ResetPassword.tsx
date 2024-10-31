@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import '../styles/ResetPassword.css'
 
 const ResetPassword = () => {
   const query = new URLSearchParams(useLocation().search);
@@ -57,7 +58,7 @@ const ResetPassword = () => {
   };
 
   return (
-    <div>
+    <div className="reset-password-container">
       <h2>Restablecer Contraseña</h2>
       <form onSubmit={handleSubmit}>
         <input 
@@ -77,10 +78,12 @@ const ResetPassword = () => {
         <button type="submit" disabled={isSubmitting || !token}> 
           {isSubmitting ? 'Procesando...' : 'Restablecer Contraseña'}
         </button>
-        {message && <p>{message}</p>}
+        <button type="submit" onClick={() => navigate('/login')}>Volver</button>
+        {message && <p className={`message ${message.includes('exito') ? 'success' : ''}`}>{message}</p>}
       </form>
     </div>
   );
+  
 };
 
 export default ResetPassword;

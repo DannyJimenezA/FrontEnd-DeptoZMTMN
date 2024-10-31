@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Concesion } from '../Types/Types';
 import Paginacion from '../components/Paginacion';
-import { eliminarEntidad } from '../Helpers/eliminarEntidad';  // Importar el helper
-import '../styles/Botones.css'
+import FilterButtons from '../components/FilterButton'; // Importa el componente de filtro
+import { eliminarEntidad } from '../Helpers/eliminarEntidad';
+import '../styles/Botones.css';
 import { FaEye, FaTrash } from 'react-icons/fa';
 
 interface ConcesionesTableProps {
@@ -36,6 +37,7 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
   const [concesiones, setConcesiones] = useState<Concesion[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [filtroEstado, setFiltroEstado] = useState<string>('todos'); // Estado para el filtro
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
@@ -55,11 +57,19 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
     obtenerConcesiones();
   }, []);
 
+  // Filtrar concesiones por estado
+  const obtenerConcesionesFiltradas = () => {
+    if (filtroEstado === 'todos') return concesiones;
+    return concesiones.filter((concesion) => concesion.Status === filtroEstado);
+  };
+
+  // Calcular concesiones a mostrar según la paginación
+  const concesionesFiltradas = obtenerConcesionesFiltradas();
   const indexUltimaConcesion = currentPage * itemsPerPage;
   const indexPrimeraConcesion = indexUltimaConcesion - itemsPerPage;
-  const concesionesActuales = concesiones.slice(indexPrimeraConcesion, indexUltimaConcesion);
+  const concesionesActuales = concesionesFiltradas.slice(indexPrimeraConcesion, indexUltimaConcesion);
 
-  const numeroPaginas = Math.ceil(concesiones.length / itemsPerPage);
+  const numeroPaginas = Math.ceil(concesionesFiltradas.length / itemsPerPage);
 
   // Función para eliminar una concesión usando el helper
   const manejarEliminarConcesion = async (id: number) => {
@@ -75,52 +85,54 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
   }
 
   return (
-    <div>
-      <div className="tabla-container">
-        <h2>Solicitudes de Concesión</h2>
-        <table className="tabla-solicitudes">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre Solicitante</th>
-              <th>Apellidos Solicitante</th>
-              <th>Cédula Solicitante</th>
-              <th>Fecha Creacion</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {concesionesActuales.map((concesion) => (
-              <tr key={concesion.id}>
-                <td>{concesion.id}</td>
-                <td>{concesion.user?.nombre}</td>
-                <td>{concesion.user?.apellido1}</td>
-                <td>{concesion.user?.cedula}</td>
-                <td>{concesion.Date}</td>
-                <td>{concesion.Status || 'Pendiente'}</td>
-                <td>
-                  <button className="boton-ver" onClick={() => onVerConcesion(concesion)}>
-                    <FaEye /> Ver
-                  </button>
-                  <button onClick={() => manejarEliminarConcesion(concesion.id)}>
-                    <FaTrash /> Eliminar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="tabla-container">
+      <h2>Solicitudes de Concesión</h2>
 
-        {/* Componente de Paginación */}
-        <Paginacion
-          currentPage={currentPage}
-          totalPages={numeroPaginas}
-          itemsPerPage={itemsPerPage}
-          onPageChange={setCurrentPage}
-          onItemsPerPageChange={setItemsPerPage}
-        />
-      </div>
+      {/* Componente de filtro por estado */}
+      <FilterButtons onFilterChange={setFiltroEstado} />
+
+      <table className="tabla-solicitudes">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre Solicitante</th>
+            <th>Apellidos Solicitante</th>
+            <th>Cédula Solicitante</th>
+            <th>Fecha Creacion</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {concesionesActuales.map((concesion) => (
+            <tr key={concesion.id}>
+              <td>{concesion.id}</td>
+              <td>{concesion.user?.nombre}</td>
+              <td>{concesion.user?.apellido1}</td>
+              <td>{concesion.user?.cedula}</td>
+              <td>{concesion.Date}</td>
+              <td>{concesion.Status || 'Pendiente'}</td>
+              <td>
+                <button className="boton-ver" onClick={() => onVerConcesion(concesion)}>
+                  <FaEye /> Ver
+                </button>
+                <button onClick={() => manejarEliminarConcesion(concesion.id)}>
+                  <FaTrash /> Eliminar
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Componente de Paginación */}
+      <Paginacion
+        currentPage={currentPage}
+        totalPages={numeroPaginas}
+        itemsPerPage={itemsPerPage}
+        onPageChange={setCurrentPage}
+        onItemsPerPageChange={setItemsPerPage}
+      />
     </div>
   );
 };
