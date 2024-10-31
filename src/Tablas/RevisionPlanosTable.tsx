@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { RevisionPlano } from '../Types/Types';
 import Paginacion from '../components/Paginacion';
-import { eliminarEntidad } from '../Helpers/eliminarEntidad';  // Importar el helper
+import FilterButtons from '../components/FilterButton'; // Importar el componente de filtro por estado
+import { eliminarEntidad } from '../Helpers/eliminarEntidad';
 import { FaEye, FaTrash } from 'react-icons/fa';
 
 interface RevisionplanoTableProps {
@@ -9,7 +10,7 @@ interface RevisionplanoTableProps {
 }
 
 const fetchRevisionplano = async (): Promise<RevisionPlano[]> => {
-  const urlBase = 'http://localhost:3000/Revision-Plano'; // Ajusta la URL de tu API
+  const urlBase = 'http://localhost:3000/Revision-Plano';
 
   try {
     const response = await fetch(urlBase, {
@@ -34,8 +35,9 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
   const [Revisionplano, setRevisionplano] = useState<RevisionPlano[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1); // Página actual
-  const [itemsPerPage, setItemsPerPage] = useState(5); // Número de Revisionplano por página
+  const [filtroEstado, setFiltroEstado] = useState<string>('todos'); // Estado para el filtro de estado
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   useEffect(() => {
     const obtenerRevisionplano = async () => {
@@ -53,20 +55,26 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
     obtenerRevisionplano();
   }, []);
 
-  // Cálculo de las Revisionplano que se mostrarán en la página actual
+  // Filtrar las solicitudes de revisión de planos según el estado seleccionado
+  const obtenerRevisionplanoFiltradas = () => {
+    if (filtroEstado === 'todos') return Revisionplano;
+    return Revisionplano.filter((plano) => plano.status === filtroEstado);
+  };
+
+  const RevisionplanoFiltradas = obtenerRevisionplanoFiltradas();
   const indexUltimaRevisionPlano = currentPage * itemsPerPage;
   const indexPrimeraRevisionPlano = indexUltimaRevisionPlano - itemsPerPage;
-  const RevisionplanoActuales = Revisionplano.slice(indexPrimeraRevisionPlano, indexUltimaRevisionPlano);
+  const RevisionplanoActuales = RevisionplanoFiltradas.slice(indexPrimeraRevisionPlano, indexUltimaRevisionPlano);
 
-  const numeroPaginas = Math.ceil(Revisionplano.length / itemsPerPage);
+  const numeroPaginas = Math.ceil(RevisionplanoFiltradas.length / itemsPerPage);
 
-  // Función para eliminar una concesión usando el helper
+  // Función para eliminar una solicitud de revisión de plano
   const manejarEliminarRevisionPlano = async (id: number) => {
     await eliminarEntidad<RevisionPlano>('Revision-Plano', id, setRevisionplano);
   };
 
   if (loading) {
-    return <p>Cargando concesiones...</p>;
+    return <p>Cargando solicitudes de revisión de planos...</p>;
   }
 
   if (error) {
@@ -77,6 +85,10 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
     <div>
       <div className="tabla-container">
         <h2>Solicitudes de Revisión de Planos</h2>
+
+        {/* Componente de filtro por estado */}
+        <FilterButtons onFilterChange={setFiltroEstado} />
+
         <table className="tabla-solicitudes">
           <thead>
             <tr>
@@ -99,8 +111,8 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
                 <td>{RevisionPlano.Date}</td>
                 <td>{RevisionPlano.status || 'Pendiente'}</td>
                 <td>
-                  <button onClick={() => onVerRevisionPlano(RevisionPlano)}><FaEye />Ver</button>
-                  <button onClick={() => manejarEliminarRevisionPlano(RevisionPlano.id)}><FaTrash />Eliminar</button> {/* Botón para eliminar */}
+                  <button onClick={() => onVerRevisionPlano(RevisionPlano)}><FaEye /> Ver</button>
+                  <button onClick={() => manejarEliminarRevisionPlano(RevisionPlano.id)}><FaTrash /> Eliminar</button>
                 </td>
               </tr>
             ))}

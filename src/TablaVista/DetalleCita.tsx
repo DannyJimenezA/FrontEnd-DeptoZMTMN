@@ -71,13 +71,13 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita, onVolver, onEstadoCambi
       <div className="estado-botones">
         <CambiarEstadoCita
           id={cita.id}
-          nuevoEstado="aprobada"
+          nuevoEstado="Aprobada"
           onEstadoCambiado={onEstadoCambiado}
           label="Aprobar Cita"
         />
         <CambiarEstadoCita
           id={cita.id}
-          nuevoEstado="denegada"
+          nuevoEstado="Denegada"
           onEstadoCambiado={onEstadoCambiado}
           label="Denegar Cita"
         />
