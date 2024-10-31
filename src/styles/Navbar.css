@@ -1,3 +1,4 @@
+/* Estilos generales del navbar */
 .navbar {
   position: sticky;
   top: 0;
@@ -6,30 +7,37 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px; /* Ajustar el padding para dar algo de espacio */
-  background-color: #004080;
-  border-bottom: 0px solid #ccc;
+  padding: 10px 20px; /* Ajusta el padding para darle espacio */
+  background-color: #004080; /* Color de fondo del navbar */
   z-index: 1000;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombras sutiles */
 }
 
+/* Logo del navbar */
 .navbar__logo img {
-  height: 35px;
+  height: 60px; /* Ajuste del tamaño del logo */
+  width: auto;
 }
 
+/* Enlaces del navbar */
 .navbar__links {
   display: flex;
-  flex-grow: 1;
-  justify-content: center; /* Centra los elementos del navbar */
-  align-items: center;
-  gap: 20px; /* Añade espacio uniforme entre los elementos */
+  gap: 20px; /* Espacio entre los enlaces */
 }
 
 .navbar__links a {
-  margin: 0 10px;
   text-decoration: none;
   color: #ffffff;
+  font-weight: bold;
+  padding: 10px;
+  transition: color 0.3s ease;
 }
 
+.navbar__links a:hover {
+  color: #f0f0f0; /* Color más claro al hacer hover */
+}
+
+/* Dropdown del menú */
 .dropdown {
   position: relative;
 }
@@ -37,10 +45,9 @@
 .dropdown__toggle {
   background: none;
   border: none;
-  color: #a3a3a3;
+  color: #ffffff;
   font-weight: bold;
   cursor: pointer;
-  margin-left: 10px;
 }
 
 .dropdown__menu {
@@ -49,65 +56,58 @@
   left: 0;
   background-color: #f9f9f9;
   padding: 10px;
-  display: flex;
-  flex-direction: column;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  display: none; /* Oculto por defecto */
+  display: none;
 }
 
 .dropdown__menu a {
   color: #333;
   text-decoration: none;
-  padding: 8px 0;
+  padding: 8px 16px;
 }
 
 .dropdown__menu a:hover {
   background-color: #ddd;
 }
 
-/* Mostrar dropdown al hacer hover */
+/* Mostrar el dropdown al hacer hover */
 .dropdown:hover .dropdown__menu {
-  display: flex;
+  display: block;
 }
 
-/* Ajuste para los elementos del usuario */
+/* Ajuste para el icono de usuario */
 .navbar__user {
-  margin-left: auto; /* Alinea el usuario al extremo derecho */
-  position: relative;
-  cursor: pointer;
-  color: rgb(255, 255, 255);
+  margin-left: auto;
+  color: #ffffff;
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 
-/* Mostrar el user-dropdown al hacer hover sobre el navbar__user */
-.navbar__user:hover .user-dropdown {
-  display: block; /* Cambiar a display block al hacer hover */
-}
-
-/* Ocultar el dropdown del usuario por defecto */
 .user-dropdown {
-  display: none; /* Ocultar el dropdown inicialmente */
+  display: none;
   position: absolute;
   top: 100%;
   right: 0;
   background-color: white;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-  overflow: hidden;
   z-index: 1000;
+  border-radius: 4px;
 }
 
-.user-dropdown a,
-.user-dropdown div {
+.navbar__user:hover .user-dropdown {
   display: block;
-  padding: 8px 16px;
-  cursor: pointer;
-  text-decoration: none;
-  color: black;
 }
 
-.user-dropdown a:hover,
-.user-dropdown div:hover {
+.user-dropdown a {
+  padding: 10px 20px;
+  color: #333;
+  text-decoration: none;
+}
+
+.user-dropdown a:hover {
   background-color: #f0f0f0;
 }
+
+
+

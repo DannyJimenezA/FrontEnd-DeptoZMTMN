@@ -1,0 +1,41 @@
+.tabla-container {
+  margin: 20px;
+}
+
+.tabla-denuncias {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-denuncias th,
+.tabla-denuncias td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.tabla-denuncias th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+button {
+  margin-right: 10px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+button:focus {
+  outline: none;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+  
