@@ -14,6 +14,7 @@ interface DenunciaFormData {
   evidencia: boolean;
   archivosEvidencia: File[];
   detallesEvidencia: string;
+  Date: string; // Formato de fecha yyyy-mm-dd
 }
 
 const Denuncias: React.FC = () => {
@@ -30,6 +31,7 @@ const Denuncias: React.FC = () => {
     evidencia: false,
     archivosEvidencia: [],
     detallesEvidencia: '',
+    Date: '',
   });
 
   const [tiposDenuncia, setTiposDenuncia] = useState<any[]>([]);
@@ -51,7 +53,6 @@ const Denuncias: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
@@ -73,24 +74,23 @@ const Denuncias: React.FC = () => {
     const formDataToSend = new FormData();
 
     // Añadir los campos del formulario, excepto los archivos
-    Object.entries(formData).forEach(([key, value]) => {
-      if (key !== 'archivosEvidencia') {
-        formDataToSend.append(key, String(value));
-      }
-    });
-
-    // Validación para archivos de evidencia
-    if (!formData.archivosEvidencia || formData.archivosEvidencia.length === 0) {
-      alert('Debes subir al menos un archivo como evidencia.');
-      return;
-    }
-
-    // Si hay archivos, los añadimos al FormData
-    formData.archivosEvidencia.forEach((file) => {
-      formDataToSend.append('files', file);
-    });
-
+    formDataToSend.append('nombreDenunciante', formData.nombreDenunciante);
+    formDataToSend.append('cedulaDenunciante', formData.cedulaDenunciante);
+    formDataToSend.append('notificacion', String(formData.notificacion));
+    formDataToSend.append('metodoNotificacion', formData.metodoNotificacion);
+    formDataToSend.append('medioNotificacion', formData.medioNotificacion);
+    formDataToSend.append('tipoDenuncia', String(formData.tipoDenuncia));
+    formDataToSend.append('descripcion', formData.descripcion);
+    formDataToSend.append('lugarDenuncia', String(formData.lugarDenuncia));
+    formDataToSend.append('ubicacion', formData.ubicacion);
+    formDataToSend.append('evidencia', String(formData.evidencia));
     formDataToSend.append('detallesEvidencia', formData.detallesEvidencia);
+    formDataToSend.append('Date', formData.Date); // Asegúrate de enviar en el formato correcto
+
+    // Añadir archivos de evidencia
+    formData.archivosEvidencia.forEach((file) => {
+      formDataToSend.append('files', file); // Nombre del campo debe coincidir con el backend
+    });
 
     try {
       const response = await fetch('http://localhost:3000/denuncia/upload', {
@@ -119,34 +119,48 @@ const Denuncias: React.FC = () => {
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h1 className="text-2xl font-bold mb-6 text-center">Formulario de Denuncias</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-4">
-          <div>
-            <label htmlFor="nombreDenunciante" className="block text-sm font-medium text-gray-700">
-              Nombre del Denunciante *(opcional)
-            </label>
-            <input
-              id="nombreDenunciante"
-              name="nombreDenunciante"
-              type="text"
-              value={formData.nombreDenunciante}
-              onChange={handleInputChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
+        {/* Campo para seleccionar la fecha
+        <div>
+          <label htmlFor="Date" className="block text-sm font-medium text-gray-700">
+            Fecha de la Denuncia
+          </label>
+          <input
+            id="Date"
+            name="Date"
+            type="date"
+            value={formData.Date}
+            onChange={handleInputChange}
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div> */}
 
-          <div>
-            <label htmlFor="cedulaDenunciante" className="block text-sm font-medium text-gray-700">
-              Cédula del Denunciante *(opcional)
-            </label>
-            <input
-              id="cedulaDenunciante"
-              name="cedulaDenunciante"
-              type="text"
-              value={formData.cedulaDenunciante}
-              onChange={handleInputChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
+        <div>
+          <label htmlFor="nombreDenunciante" className="block text-sm font-medium text-gray-700">
+            Nombre del Denunciante *(opcional)
+          </label>
+          <input
+            id="nombreDenunciante"
+            name="nombreDenunciante"
+            type="text"
+            value={formData.nombreDenunciante}
+            onChange={handleInputChange}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="cedulaDenunciante" className="block text-sm font-medium text-gray-700">
+            Cédula del Denunciante *(opcional)
+          </label>
+          <input
+            id="cedulaDenunciante"
+            name="cedulaDenunciante"
+            type="text"
+            value={formData.cedulaDenunciante}
+            onChange={handleInputChange}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
         </div>
 
         <div className="flex items-center space-x-2">
@@ -164,7 +178,7 @@ const Denuncias: React.FC = () => {
         </div>
 
         {formData.notificacion && (
-          <div className="space-y-4">
+          <>
             <div>
               <label htmlFor="metodoNotificacion" className="block text-sm font-medium text-gray-700">
                 Método de Notificación
@@ -195,114 +209,108 @@ const Denuncias: React.FC = () => {
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
             </div>
-          </div>
+          </>
         )}
 
-        <div className="space-y-4">
-          <div>
-            <label htmlFor="tipoDenuncia" className="block text-sm font-medium text-gray-700">
-              Tipo de Denuncia
-            </label>
-            <select
-              id="tipoDenuncia"
-              name="tipoDenuncia"
-              value={formData.tipoDenuncia}
-              onChange={handleInputChange}
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            >
-              <option value="">Seleccione un tipo de denuncia</option>
-              {tiposDenuncia.map((tipo) => (
-                <option key={tipo.id} value={tipo.id}>
-                  {tipo.descripcion}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700">
-              Descripción
-            </label>
-            <textarea
-              id="descripcion"
-              name="descripcion"
-              value={formData.descripcion}
-              onChange={handleInputChange}
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            ></textarea>
-          </div>
+        <div>
+          <label htmlFor="tipoDenuncia" className="block text-sm font-medium text-gray-700">
+            Tipo de Denuncia
+          </label>
+          <select
+            id="tipoDenuncia"
+            name="tipoDenuncia"
+            value={formData.tipoDenuncia}
+            onChange={handleInputChange}
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          >
+            <option value="">Seleccione un tipo de denuncia</option>
+            {tiposDenuncia.map((tipo) => (
+              <option key={tipo.id} value={tipo.id}>
+                {tipo.descripcion}
+              </option>
+            ))}
+          </select>
         </div>
 
-        <div className="space-y-4">
-          <div>
-            <label htmlFor="lugarDenuncia" className="block text-sm font-medium text-gray-700">
-              Lugar de Denuncia
-            </label>
-            <select
-              id="lugarDenuncia"
-              name="lugarDenuncia"
-              value={formData.lugarDenuncia}
-              onChange={handleInputChange}
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            >
-              <option value="">Seleccione un lugar de denuncia</option>
-              {lugaresDenuncia.map((lugar) => (
-                <option key={lugar.id} value={lugar.id}>
-                  {lugar.descripcion}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="ubicacion" className="block text-sm font-medium text-gray-700">
-              Ubicación Exacta
-            </label>
-            <input
-              id="ubicacion"
-              name="ubicacion"
-              type="text"
-              value={formData.ubicacion}
-              onChange={handleInputChange}
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
+        <div>
+          <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700">
+            Descripción
+          </label>
+          <textarea
+            id="descripcion"
+            name="descripcion"
+            value={formData.descripcion}
+            onChange={handleInputChange}
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          ></textarea>
         </div>
 
-        <div className="space-y-4">
-          <div>
-            <label htmlFor="archivosEvidencia" className="block text-sm font-medium text-gray-700">
-              Archivos de Evidencia
-            </label>
-            <input
-              id="archivosEvidencia"
-              name="archivosEvidencia"
-              type="file"
-              onChange={handleFileChange}
-              multiple
-              accept="image/*,.pdf"
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
+        <div>
+          <label htmlFor="lugarDenuncia" className="block text-sm font-medium text-gray-700">
+            Lugar de Denuncia
+          </label>
+          <select
+            id="lugarDenuncia"
+            name="lugarDenuncia"
+            value={formData.lugarDenuncia}
+            onChange={handleInputChange}
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          >
+            <option value="">Seleccione un lugar de denuncia</option>
+            {lugaresDenuncia.map((lugar) => (
+              <option key={lugar.id} value={lugar.id}>
+                {lugar.descripcion}
+              </option>
+            ))}
+          </select>
+        </div>
 
-          <div>
-            <label htmlFor="detallesEvidencia" className="block text-sm font-medium text-gray-700">
-              Detalles de la Evidencia
-            </label>
-            <textarea
-              id="detallesEvidencia"
-              name="detallesEvidencia"
-              value={formData.detallesEvidencia}
-              onChange={handleInputChange}
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            ></textarea>
-          </div>
+        <div>
+          <label htmlFor="ubicacion" className="block text-sm font-medium text-gray-700">
+            Ubicación Exacta
+          </label>
+          <input
+            id="ubicacion"
+            name="ubicacion"
+            type="text"
+            value={formData.ubicacion}
+            onChange={handleInputChange}
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="archivosEvidencia" className="block text-sm font-medium text-gray-700">
+            Archivos de Evidencia
+          </label>
+          <input
+            id="archivosEvidencia"
+            name="archivosEvidencia"
+            type="file"
+            onChange={handleFileChange}
+            multiple
+            accept="image/*,.pdf"
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="detallesEvidencia" className="block text-sm font-medium text-gray-700">
+            Detalles de la Evidencia
+          </label>
+          <textarea
+            id="detallesEvidencia"
+            name="detallesEvidencia"
+            value={formData.detallesEvidencia}
+            onChange={handleInputChange}
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          ></textarea>
         </div>
 
         <button

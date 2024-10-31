@@ -99,8 +99,8 @@ const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPla
 
       {/* Botones para cambiar el estado */}
       <div className="estado-botones">
-        <button onClick={() => cambiarEstado('Aprobado')} className="estado-aprobado-btn">Aprobar</button>
-        <button onClick={() => cambiarEstado('Denegado')} className="estado-denegado-btn">Denegar</button>
+        <button onClick={() => cambiarEstado('Aprobada')} className="estado-aprobado-btn">Aprobar</button>
+        <button onClick={() => cambiarEstado('Denegada')} className="estado-denegado-btn">Denegar</button>
       </div>
 
       {/* Botón para volver a la lista */}

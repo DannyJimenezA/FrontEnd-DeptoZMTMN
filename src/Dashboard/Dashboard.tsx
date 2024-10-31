@@ -26,6 +26,7 @@ import RolesTable from '../Tablas/RolesTable';
 import CrearRolForm from '../Tablas/CrearRolForm';
 import AsignarPermisosForm from '../TablaVista/AsignarPermisosForm';
 import DetalleUsuario from '../TablaVista/DetalleUsuario';
+import GestionDenunciasTable from '../Tablas/GestionDenunciasTable';
 
 const AdminDashboard: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -47,7 +48,7 @@ const AdminDashboard: React.FC = () => {
     if (token) {
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
-        if (!decodedToken.roles.includes('admin')) {
+        if (decodedToken.roles.length === 1 && decodedToken.roles.includes('user')) {
           window.alert('Acceso limitado para administradores.');
           navigate('/');
         }
@@ -93,6 +94,7 @@ const AdminDashboard: React.FC = () => {
   const manejarVerProrroga = (prorroga: Prorroga) => setProrrogaSeleccionada(prorroga);
   const manejarVerCita = (cita: Cita) => setCitaSeleccionada(cita);
   const manejarVerUsuario = (usuario: Usuario) => setUsuarioSeleccionado(usuario);
+  
 
   const manejarCambioEstadoCita = async (id: number, nuevoEstado: string) => {
     try {
@@ -386,6 +388,7 @@ const AdminDashboard: React.FC = () => {
     if (activeSection === 'roles') {
       return <RolesTable onCrearRol={manejarMostrarFormularioCrearRol}  />;
     }
+    
 
     switch (activeSection) {
       case 'citas':
@@ -404,6 +407,8 @@ const AdminDashboard: React.FC = () => {
         return <TablaConcesiones onVerConcesion={manejarVerConcesion} />;
       case 'denuncias':
         return <DenunciasTable onVerDenuncia={manejarVerDenuncia} />;
+      case 'gestion-denuncias':
+        return <GestionDenunciasTable/>;
       default:
         return <p>Bienvenido al dashboard</p>;
     }
@@ -419,7 +424,8 @@ const AdminDashboard: React.FC = () => {
     { id: 'revision-planos', icon: BarChart2, label: 'Revisión de Planos' },
     { id: 'uso-precario', icon: BarChart2, label: 'Uso Precario' },
     { id: 'users', icon: Users, label: 'Usuarios' },
-    { id: 'roles', icon: Settings, label: 'Roles' },
+    { id: 'roles', icon: Settings, label: 'Gestión de Roles' },
+    { id: 'gestion-denuncias', icon: Settings, label: 'Gestión de Denuncias' },
   ];
 
   return (
@@ -439,6 +445,8 @@ const AdminDashboard: React.FC = () => {
                 setExpedienteSeleccionado(null);
                 setRevisionPlanoSeleccionado(null);
                 setProrrogaSeleccionada(null);
+                setCitaSeleccionada(null);
+                setUsuarioSeleccionado(null);
               }}
             >
               <item.icon size={20} />

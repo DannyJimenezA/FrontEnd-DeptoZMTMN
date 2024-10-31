@@ -97,10 +97,10 @@ const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver
 
       {/* Botones para cambiar el estado de la concesión */}
       <div className="estado-botones">
-        <button className="btn-aprobar" onClick={() => manejarCambioEstado('aprobada')}>
+        <button className="btn-aprobar" onClick={() => manejarCambioEstado('Aprobada')}>
           Aprobar Concesión
         </button>
-        <button className="btn-denegar" onClick={() => manejarCambioEstado('denegada')}>
+        <button className="btn-denegar" onClick={() => manejarCambioEstado('Denegada')}>
           Denegar Concesión
         </button>
       </div>

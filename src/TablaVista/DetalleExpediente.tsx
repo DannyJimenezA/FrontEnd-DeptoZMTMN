@@ -75,10 +75,10 @@ const DetalleExpediente: React.FC<DetalleExpedienteProps> = ({ expediente, onVol
 
       {/* Botones para cambiar el estado del expediente */}
       <div className="estado-botones">
-        <button className="btn-aprobar" onClick={() => manejarCambioEstado('aprobada')}>
+        <button className="btn-aprobar" onClick={() => manejarCambioEstado('Aprobada')}>
           Aprobar Expediente
         </button>
-        <button className="btn-denegar" onClick={() => manejarCambioEstado('denegada')}>
+        <button className="btn-denegar" onClick={() => manejarCambioEstado('Denegada')}>
           Denegar Expediente
         </button>
       </div>

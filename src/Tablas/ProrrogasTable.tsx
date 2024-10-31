@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode'; // Importación correcta
+import { jwtDecode } from 'jwt-decode';
 import { DecodedToken, Prorroga } from '../Types/Types';
-import { eliminarEntidad } from '../Helpers/eliminarEntidad';  // Importa el helper de eliminar
+import { eliminarEntidad } from '../Helpers/eliminarEntidad';
 import Paginacion from '../components/Paginacion';
+import FilterButtons from '../components/FilterButton'; // Importa el componente de filtro por estado
 import { FaEye, FaTrash } from 'react-icons/fa';
 
 interface ProrrogasTableProps {
   onVerProrroga: (prorroga: Prorroga) => void;
 }
 
-const baseUrl = 'http://localhost:3000/'; // URL base del servidor
+const baseUrl = 'http://localhost:3000/';
 
 // Función para obtener las prórrogas desde la API
 const fetchProrrogas = async (): Promise<Prorroga[]> => {
@@ -28,8 +29,7 @@ const fetchProrrogas = async (): Promise<Prorroga[]> => {
       throw new Error(`Error: ${response.status} - ${response.statusText}`);
     }
 
-    const data: Prorroga[] = await response.json();
-    return data;
+    return await response.json();
   } catch (error) {
     console.error('Error fetching prorrogas:', error);
     throw error;
@@ -40,7 +40,8 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
   const [prorrogas, setProrrogas] = useState<Prorroga[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1); 
+  const [filtroEstado, setFiltroEstado] = useState<string>('todos'); // Estado para el filtro de estado
+  const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const navigate = useNavigate();
 
@@ -83,13 +84,19 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
     obtenerProrrogas();
   }, [navigate]);
 
-    // Cálculo de las prorrogas que se mostrarán en la página actual
-    const indexUltimaProrroga = currentPage * itemsPerPage;
-    const indexPrimeraProrroga = indexUltimaProrroga - itemsPerPage;
-    const prorrogasActuales = prorrogas.slice(indexPrimeraProrroga, indexUltimaProrroga);
-  
-    const numeroPaginas = Math.ceil(prorrogas.length / itemsPerPage);
+  // Filtrar las prórrogas según el estado seleccionado
+  const obtenerProrrogasFiltradas = () => {
+    if (filtroEstado === 'todos') return prorrogas;
+    return prorrogas.filter((prorroga) => prorroga.Status === filtroEstado);
+  };
 
+  // Cálculo de las prórrogas que se mostrarán en la página actual
+  const prorrogasFiltradas = obtenerProrrogasFiltradas();
+  const indexUltimaProrroga = currentPage * itemsPerPage;
+  const indexPrimeraProrroga = indexUltimaProrroga - itemsPerPage;
+  const prorrogasActuales = prorrogasFiltradas.slice(indexPrimeraProrroga, indexUltimaProrroga);
+
+  const numeroPaginas = Math.ceil(prorrogasFiltradas.length / itemsPerPage);
 
   // Función para eliminar una prórroga usando el helper eliminarEntidad
   const manejarEliminarProrroga = async (id: number) => {
@@ -109,6 +116,10 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
   return (
     <div className="tabla-container">
       <h2>Prórrogas de Concesiones</h2>
+
+      {/* Componente de filtro por estado */}
+      <FilterButtons onFilterChange={setFiltroEstado} />
+
       <table className="tabla-solicitudes">
         <thead>
           <tr>
@@ -122,31 +133,39 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
           </tr>
         </thead>
         <tbody>
-          {prorrogas.map((prorroga) => (
+          {prorrogasActuales.map((prorroga) => (
             <tr key={prorroga.id}>
               <td>{prorroga.id}</td>
               <td>{prorroga.user?.nombre || 'Nombre no disponible'}</td>
-              <td>{prorroga.user?.apellido1 && prorroga.user?.apellido2 ? `${prorroga.user.apellido1} ${prorroga.user.apellido2}` : 'Apellidos no disponibles'}</td>
+              <td>
+                {prorroga.user?.apellido1 && prorroga.user?.apellido2
+                  ? `${prorroga.user.apellido1} ${prorroga.user.apellido2}`
+                  : 'Apellidos no disponibles'}
+              </td>
               <td>{prorroga.user?.cedula}</td>
               <td>{prorroga.Date}</td>
               <td>{prorroga.Status || 'Pendiente'}</td>
               <td>
-                <button onClick={() => onVerProrroga(prorroga)}><FaEye />Ver</button>
-                <button onClick={() => manejarEliminarProrroga(prorroga.id)}><FaTrash />Eliminar</button> {/* Usamos la función del helper */}
+                <button onClick={() => onVerProrroga(prorroga)}>
+                  <FaEye /> Ver
+                </button>
+                <button onClick={() => manejarEliminarProrroga(prorroga.id)}>
+                  <FaTrash /> Eliminar
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-
+      {/* Componente de Paginación */}
       <Paginacion
-          currentPage={currentPage}
-          totalPages={numeroPaginas}
-          itemsPerPage={itemsPerPage}
-          onPageChange={setCurrentPage}
-          onItemsPerPageChange={setItemsPerPage}
-        />
+        currentPage={currentPage}
+        totalPages={numeroPaginas}
+        itemsPerPage={itemsPerPage}
+        onPageChange={setCurrentPage}
+        onItemsPerPageChange={setItemsPerPage}
+      />
     </div>
   );
 };
