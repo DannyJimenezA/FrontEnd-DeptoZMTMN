@@ -5,6 +5,7 @@ import '../styles/Global.css';
 import { Cita, DecodedToken } from '../Types/Types';
 import { FaEye, FaTrash } from 'react-icons/fa';
 import Paginacion from '../components/Paginacion';
+import FilterButtons from '../components/FilterButton'; // Importa el componente de filtro por estado
 
 interface CitasTableProps {
   onVerCita: (cita: Cita) => void;
@@ -38,6 +39,7 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
   const [citas, setCitas] = useState<Cita[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [filtroEstado, setFiltroEstado] = useState<string>('todos'); // Estado para el filtro
   const navigate = useNavigate();
 
   // Estados para la paginación
@@ -81,7 +83,7 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
     obtenerCitas();
   }, [navigate]);
 
-  // Manejar eliminación de citas
+  // Función para eliminar citas
   const manejarEliminar = async (id: number) => {
     const confirmacion = window.confirm('¿Estás seguro de eliminar la cita?');
     if (!confirmacion) return;
@@ -115,16 +117,27 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
   if (loading) return <p>Cargando citas...</p>;
   if (error) return <p>{error}</p>;
 
+  // Filtrar las citas según el estado seleccionado
+  const obtenerCitasFiltradas = () => {
+    if (filtroEstado === 'todos') return citas;
+    return citas.filter((cita) => cita.status === filtroEstado);
+  };
+
   // Cálculo de citas a mostrar según la paginación
+  const citasFiltradas = obtenerCitasFiltradas();
   const indexUltimaCita = currentPage * itemsPerPage;
   const indexPrimeraCita = indexUltimaCita - itemsPerPage;
-  const citasActuales = citas.slice(indexPrimeraCita, indexUltimaCita);
+  const citasActuales = citasFiltradas.slice(indexPrimeraCita, indexUltimaCita);
 
-  const totalPages = Math.ceil(citas.length / itemsPerPage);
+  const totalPages = Math.ceil(citasFiltradas.length / itemsPerPage);
 
   return (
     <div className="tabla-container">
       <h2>Citas Programadas</h2>
+
+      {/* Componente de filtro por estado */}
+      <FilterButtons onFilterChange={setFiltroEstado} />
+
       <table className="tabla-solicitudes">
         <thead>
           <tr>

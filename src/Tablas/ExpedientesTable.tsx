@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { CopiaExpediente } from '../Types/Types';
 import Paginacion from '../components/Paginacion';
-import { eliminarEntidad } from '../Helpers/eliminarEntidad'; // Helper para eliminación
+import FilterButtons from '../components/FilterButton'; // Importa el componente de filtro por estado
+import { eliminarEntidad } from '../Helpers/eliminarEntidad';
 import { FaEye, FaTrash } from 'react-icons/fa';
 
 interface ExpedientesTableProps {
@@ -9,7 +10,7 @@ interface ExpedientesTableProps {
 }
 
 const fetchExpedientes = async (): Promise<CopiaExpediente[]> => {
-  const urlBase = 'http://localhost:3000/expedientes';  // Ajusta la ruta según tu API
+  const urlBase = 'http://localhost:3000/expedientes';
 
   try {
     const response = await fetch(urlBase, {
@@ -23,8 +24,7 @@ const fetchExpedientes = async (): Promise<CopiaExpediente[]> => {
       throw new Error(`Error: ${response.status} - ${response.statusText}`);
     }
 
-    const data: CopiaExpediente[] = await response.json();
-    return data;
+    return await response.json();
   } catch (error) {
     console.error('Error fetching expedientes:', error);
     throw error;
@@ -35,8 +35,9 @@ const ExpedientesTable: React.FC<ExpedientesTableProps> = ({ onVerExpediente }) 
   const [expedientes, setExpedientes] = useState<CopiaExpediente[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [filtroEstado, setFiltroEstado] = useState<string>('todos'); // Estado para el filtro de estado
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5); // Número de elementos por página
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   useEffect(() => {
     const obtenerExpedientes = async () => {
@@ -54,17 +55,23 @@ const ExpedientesTable: React.FC<ExpedientesTableProps> = ({ onVerExpediente }) 
     obtenerExpedientes();
   }, []);
 
+  // Filtrar los expedientes según el estado seleccionado
+  const obtenerExpedientesFiltrados = () => {
+    if (filtroEstado === 'todos') return expedientes;
+    return expedientes.filter((expediente) => expediente.status === filtroEstado);
+  };
+
+  const expedientesFiltrados = obtenerExpedientesFiltrados();
   const indexUltimoExpediente = currentPage * itemsPerPage;
   const indexPrimerExpediente = indexUltimoExpediente - itemsPerPage;
-  const expedientesActuales = expedientes.slice(indexPrimerExpediente, indexUltimoExpediente);
+  const expedientesActuales = expedientesFiltrados.slice(indexPrimerExpediente, indexUltimoExpediente);
 
-  const numeroPaginas = Math.ceil(expedientes.length / itemsPerPage);
+  const numeroPaginas = Math.ceil(expedientesFiltrados.length / itemsPerPage);
 
   // Función para eliminar un expediente
   const manejarEliminarExpediente = async (id: number) => {
     try {
-      await eliminarEntidad<CopiaExpediente>('expedientes', id, setExpedientes);  // Elimina del backend
-      // Actualiza el estado local filtrando el expediente eliminado
+      await eliminarEntidad<CopiaExpediente>('expedientes', id, setExpedientes);
       setExpedientes((expedientesAnteriores) =>
         expedientesAnteriores.filter((expediente) => expediente.idExpediente !== id)
       );
@@ -85,6 +92,10 @@ const ExpedientesTable: React.FC<ExpedientesTableProps> = ({ onVerExpediente }) 
     <div>
       <div className="tabla-container">
         <h2>Solicitudes de Expedientes</h2>
+
+        {/* Componente de filtro por estado */}
+        <FilterButtons onFilterChange={setFiltroEstado} />
+
         <table className="tabla-solicitudes">
           <thead>
             <tr>
@@ -105,8 +116,12 @@ const ExpedientesTable: React.FC<ExpedientesTableProps> = ({ onVerExpediente }) 
                 <td>{expediente.Date}</td>
                 <td>{expediente.status || 'Pendiente'}</td>
                 <td>
-                  <button onClick={() => onVerExpediente((expediente))}><FaEye />Ver</button>
-                  <button onClick={() => manejarEliminarExpediente(expediente.idExpediente)}><FaTrash />Eliminar</button>
+                  <button onClick={() => onVerExpediente(expediente)}>
+                    <FaEye /> Ver
+                  </button>
+                  <button onClick={() => manejarEliminarExpediente(expediente.idExpediente)}>
+                    <FaTrash /> Eliminar
+                  </button>
                 </td>
               </tr>
             ))}

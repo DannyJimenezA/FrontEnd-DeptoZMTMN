@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Precario } from '../Types/Types'; // Asegúrate de tener el tipo Precario definido en tus tipos
+import { Precario } from '../Types/Types';
 import Paginacion from '../components/Paginacion';
-import { eliminarEntidad } from '../Helpers/eliminarEntidad';  // Importar el helper
+import FilterButtons from '../components/FilterButton'; // Importa el componente de filtro por estado
+import { eliminarEntidad } from '../Helpers/eliminarEntidad';
 import { FaEye, FaTrash } from 'react-icons/fa';
 
 interface PrecarioTableProps {
@@ -9,7 +10,7 @@ interface PrecarioTableProps {
 }
 
 const fetchPrecarios = async (): Promise<Precario[]> => {
-  const urlBase = 'http://localhost:3000/Precario'; // Ajusta la URL de tu API
+  const urlBase = 'http://localhost:3000/Precario';
 
   try {
     const response = await fetch(urlBase, {
@@ -34,10 +35,9 @@ const TablaUsoPrecario: React.FC<PrecarioTableProps> = ({ onVerPrecario }) => {
   const [precarios, setPrecarios] = useState<Precario[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Estado para la paginación
-  const [currentPage, setCurrentPage] = useState(1); // Página actual
-  const [itemsPerPage, setItemsPerPage] = useState(5); // Número de precarios por página
+  const [filtroEstado, setFiltroEstado] = useState<string>('todos'); // Estado para el filtro de estado
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   useEffect(() => {
     const obtenerPrecarios = async () => {
@@ -55,16 +55,22 @@ const TablaUsoPrecario: React.FC<PrecarioTableProps> = ({ onVerPrecario }) => {
     obtenerPrecarios();
   }, []);
 
-  // Cálculo de los precarios que se mostrarán en la página actual
+  // Filtrar las solicitudes de uso precario según el estado seleccionado
+  const obtenerPrecariosFiltrados = () => {
+    if (filtroEstado === 'todos') return precarios;
+    return precarios.filter((precario) => precario.Status === filtroEstado);
+  };
+
+  const precariosFiltrados = obtenerPrecariosFiltrados();
   const indexUltimaSolicitud = currentPage * itemsPerPage;
   const indexPrimeraSolicitud = indexUltimaSolicitud - itemsPerPage;
-  const precariosActuales = precarios.slice(indexPrimeraSolicitud, indexUltimaSolicitud);
+  const precariosActuales = precariosFiltrados.slice(indexPrimeraSolicitud, indexUltimaSolicitud);
 
-  const numeroPaginas = Math.ceil(precarios.length / itemsPerPage);
+  const numeroPaginas = Math.ceil(precariosFiltrados.length / itemsPerPage);
 
-  // Función para eliminar una solicitud de precario usando el helper
+  // Función para eliminar una solicitud de precario
   const manejarEliminarPrecario = async (id: number) => {
-    await eliminarEntidad<Precario>('Precario', id, setPrecarios);  // Usamos el helper para eliminar
+    await eliminarEntidad<Precario>('Precario', id, setPrecarios);
   };
 
   if (loading) {
@@ -79,6 +85,10 @@ const TablaUsoPrecario: React.FC<PrecarioTableProps> = ({ onVerPrecario }) => {
     <div>
       <div className="tabla-container">
         <h2>Solicitudes de Uso Precario</h2>
+
+        {/* Componente de filtro por estado */}
+        <FilterButtons onFilterChange={setFiltroEstado} />
+
         <table className="tabla-solicitudes">
           <thead>
             <tr>
@@ -101,8 +111,8 @@ const TablaUsoPrecario: React.FC<PrecarioTableProps> = ({ onVerPrecario }) => {
                 <td>{precario.Date}</td>
                 <td>{precario.Status || 'Pendiente'}</td>
                 <td>
-                  <button onClick={() => onVerPrecario(precario)}><FaEye />Ver</button>
-                  <button onClick={() => manejarEliminarPrecario(precario.id)}><FaTrash />Eliminar</button> {/* Botón para eliminar */}
+                  <button onClick={() => onVerPrecario(precario)}><FaEye /> Ver</button>
+                  <button onClick={() => manejarEliminarPrecario(precario.id)}><FaTrash /> Eliminar</button>
                 </td>
               </tr>
             ))}
