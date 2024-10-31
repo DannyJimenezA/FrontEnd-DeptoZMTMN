@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import Paginacion from '../components/Paginacion';  // Importamos el componente actualizado de paginación
+import Paginacion from '../components/Paginacion';
+import FilterButtons from '../components/FilterButton'; // Importamos el componente de filtro
 import { Denuncia } from '../Types/Types';
-import { eliminarEntidad } from '../Helpers/eliminarEntidad';  // Importamos el helper
+import { eliminarEntidad } from '../Helpers/eliminarEntidad';
 import { FaEye, FaTrash } from 'react-icons/fa';
 
 const fetchDenuncias = async (): Promise<Denuncia[]> => {
@@ -35,10 +36,9 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
   const [denuncias, setDenuncias] = useState<Denuncia[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  
-  // Estados para la paginación
+  const [filtroEstado, setFiltroEstado] = useState<string>('todos'); // Estado para el filtro
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5); // Estado para manejar el número de ítems por página
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   useEffect(() => {
     const obtenerDenuncias = async () => {
@@ -56,19 +56,25 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
     obtenerDenuncias();
   }, []);
 
+  // Función para filtrar denuncias según el estado seleccionado
+  const obtenerDenunciasFiltradas = () => {
+    if (filtroEstado === 'todos') return denuncias;
+    return denuncias.filter((denuncia) => denuncia.Status === filtroEstado);
+  };
+
+  // Paginación
+  const denunciasFiltradas = obtenerDenunciasFiltradas();
   const indiceUltimaDenuncia = currentPage * itemsPerPage;
   const indicePrimeraDenuncia = indiceUltimaDenuncia - itemsPerPage;
-  const denunciasActuales = denuncias.slice(indicePrimeraDenuncia, indiceUltimaDenuncia);
-
-  const numeroPaginas = Math.ceil(denuncias.length / itemsPerPage);
+  const denunciasActuales = denunciasFiltradas.slice(indicePrimeraDenuncia, indiceUltimaDenuncia);
+  const numeroPaginas = Math.ceil(denunciasFiltradas.length / itemsPerPage);
 
   const manejarVer = (denuncia: Denuncia) => {
     onVerDenuncia(denuncia);
   };
 
-  // Usar el helper genérico para eliminar la denuncia
   const manejarEliminarDenuncia = async (id: number) => {
-    await eliminarEntidad<Denuncia>('denuncia', id, setDenuncias);  // Usamos el helper para eliminar
+    await eliminarEntidad<Denuncia>('denuncia', id, setDenuncias);
   };
 
   if (loading) {
@@ -82,13 +88,17 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
   return (
     <div className="tabla-container">
       <h2>Listado de Denuncias</h2>
+      
+      {/* Componente de filtro */}
+      <FilterButtons onFilterChange={setFiltroEstado} />
+      
       <table className="tabla-solicitudes">
         <thead>
           <tr>
             <th>ID</th>
             <th>Fecha Creacion</th>
             <th>Nombre del Denunciante</th>
-            <th>Cédula del Denuncaiante</th>
+            <th>Cédula del Denunciante</th>
             <th>Tipo de Denuncia</th>
             <th>Lugar de Denuncia</th>
             <th>Estado</th>
@@ -100,16 +110,8 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
             <tr key={denuncia.id}>
               <td>{denuncia.id}</td>
               <td>{denuncia.Date}</td>
-              {denuncia.nombreDenunciante ? (
-                <td>{denuncia.nombreDenunciante}</td>
-              ) : (
-                <td><h3>Anónimo</h3></td>
-              )}
-              {denuncia.cedulaDenunciante ? (
-                <td>{denuncia.cedulaDenunciante}</td>
-              ) : (
-                <td><h3>Anónimo</h3></td>
-              )}
+              <td>{denuncia.nombreDenunciante || 'Anónimo'}</td>
+              <td>{denuncia.cedulaDenunciante || 'Anónimo'}</td>
               <td>{denuncia.tipoDenuncia?.descripcion || 'Tipo no disponible'}</td>
               <td>{denuncia.lugarDenuncia?.descripcion || 'Lugar no disponible'}</td>
               <td>{denuncia.Status}</td>

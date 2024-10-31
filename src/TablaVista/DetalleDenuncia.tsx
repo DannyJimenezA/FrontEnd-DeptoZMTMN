@@ -45,6 +45,7 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, o
       <div className="detalle-contenido">
         <div className="detalle-info">
           <p><strong>ID:</strong> {denuncia.id}</p>
+          <p><strong>Fecha de Creacion:</strong> {denuncia.Date}</p>
           <p><strong>Nombre del Denunciante:</strong> {denuncia.nombreDenunciante || 'Anónimo'}</p>
           <p><strong>Cédula del Denunciante:</strong> {denuncia.cedulaDenunciante || 'Anónimo'}</p>
           <p><strong>Metodo de Notificacion:</strong> {denuncia.metodoNotificacion || 'No especificado'}</p>
@@ -74,10 +75,10 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, o
       </div>
 
       <div className="estado-botones">
-        <button className="btn-aprobar" onClick={() => cambiarEstado('aprobada')}>
+        <button className="btn-aprobar" onClick={() => cambiarEstado('Aprobada')}>
           Aprobar Concesión
         </button>
-        <button className="btn-denegar" onClick={() => cambiarEstado('denegada')}>
+        <button className="btn-denegar" onClick={() => cambiarEstado('Denegada')}>
           Denegar Concesión
         </button>
       </div>

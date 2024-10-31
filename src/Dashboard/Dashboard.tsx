@@ -9,6 +9,7 @@ import TablaProrrogas from '../Tablas/ProrrogasTable';
 import TablaRevisionPlanos from '../Tablas/RevisionPlanosTable';
 import TablaUsuarios from '../Tablas/UsersTable';
 import TablaSolicitudExpediente from '../Tablas/ExpedientesTable';
+
 import TablaUsoPrecario from '../Tablas/UsoPrecarioTable';
 import TablaConcesiones from '../Tablas/ConcesionesTable';
 import { jwtDecode } from 'jwt-decode';
@@ -26,6 +27,8 @@ import RolesTable from '../Tablas/RolesTable';
 import CrearRolForm from '../Tablas/CrearRolForm';
 import AsignarPermisosForm from '../TablaVista/AsignarPermisosForm';
 import DetalleUsuario from '../TablaVista/DetalleUsuario';
+import GestionDenunciasTable from '../Tablas/GestionDenunciasTable';
+
 
 const AdminDashboard: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -41,6 +44,7 @@ const AdminDashboard: React.FC = () => {
   const [mostrarFormularioRol, setMostrarFormularioRol] = useState(false);
   const navigate = useNavigate();
 
+
   useEffect(() => {
     const token = localStorage.getItem('token');
   
@@ -51,6 +55,11 @@ const AdminDashboard: React.FC = () => {
         // Verifica que tenga al menos un permiso
         if (!decodedToken.permissions || decodedToken.permissions.length === 0) {
           window.alert('Acceso limitado. No tiene permisos para acceder a este componente.');
+
+
+  
+
+  
           navigate('/');
         }
       } catch (error) {
@@ -95,6 +104,7 @@ const AdminDashboard: React.FC = () => {
   const manejarVerProrroga = (prorroga: Prorroga) => setProrrogaSeleccionada(prorroga);
   const manejarVerCita = (cita: Cita) => setCitaSeleccionada(cita);
   const manejarVerUsuario = (usuario: Usuario) => setUsuarioSeleccionado(usuario);
+  
 
   const manejarCambioEstadoCita = async (id: number, nuevoEstado: string) => {
     try {
@@ -388,6 +398,7 @@ const AdminDashboard: React.FC = () => {
     if (activeSection === 'roles') {
       return <RolesTable onCrearRol={manejarMostrarFormularioCrearRol}  />;
     }
+    
 
     switch (activeSection) {
       case 'citas':
@@ -406,6 +417,11 @@ const AdminDashboard: React.FC = () => {
         return <TablaConcesiones onVerConcesion={manejarVerConcesion} />;
       case 'denuncias':
         return <DenunciasTable onVerDenuncia={manejarVerDenuncia} />;
+      case 'gestion-denuncias':
+        return <GestionDenunciasTable/>;
+        return <TablaConcesiones />; // Renderiza la tabla de concesiones
+      case 'denuncias': // Añadido: Renderiza la tabla de denuncias
+        return <TablaDenunciasDashboard />;
       default:
         return <p>Bienvenido al dashboard</p>;
     }
@@ -418,10 +434,11 @@ const AdminDashboard: React.FC = () => {
     { id: 'prorrogas', icon: BarChart2, label: 'Prórrogas' },
     { id: 'denuncias', icon: BarChart2, label: 'Denuncias' },
     { id: 'solicitudes-expedientes', icon: BarChart2, label: 'Expedientes' },
+    { id: 'uso-precario', icon: BarChart2, label: 'Uso Precario' }, 
     { id: 'revision-planos', icon: BarChart2, label: 'Revisión de Planos' },
-    { id: 'uso-precario', icon: BarChart2, label: 'Uso Precario' },
     { id: 'users', icon: Users, label: 'Usuarios' },
-    { id: 'roles', icon: Settings, label: 'Roles' },
+    { id: 'roles', icon: Settings, label: 'Gestión de Roles' },
+    { id: 'gestion-denuncias', icon: Settings, label: 'Gestión de Denuncias' },
   ];
 
   return (
@@ -441,6 +458,8 @@ const AdminDashboard: React.FC = () => {
                 setExpedienteSeleccionado(null);
                 setRevisionPlanoSeleccionado(null);
                 setProrrogaSeleccionada(null);
+                setCitaSeleccionada(null);
+                setUsuarioSeleccionado(null);
               }}
             >
               <item.icon size={20} />
@@ -458,3 +477,5 @@ const AdminDashboard: React.FC = () => {
 };
 
 export default AdminDashboard;
+
+

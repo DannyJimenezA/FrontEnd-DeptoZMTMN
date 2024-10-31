@@ -10,7 +10,7 @@ const LogoutButton: React.FC = () => {
   const handleLogout = () => {
     logout(); // Ejecuta la función de cierre de sesión
     localStorage.removeItem('token'); // Limpia el token del almacenamiento local
-    navigate('/login'); // Redirige al usuario a la página de inicio
+    navigate('/'); // Redirige al usuario a la página de inicio
   };
 
   return (
