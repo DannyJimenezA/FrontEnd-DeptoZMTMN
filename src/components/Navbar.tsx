@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom';
-import { useState } from 'react';
-import { IoHomeSharp } from 'react-icons/io5';
-import { FaTable, FaUser, FaUserCircle } from 'react-icons/fa';
-import logo from '../img/logo.png';
-import { useAuth } from '../context/AuthContext'; // Usar el contexto de autenticación
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { IoHomeSharp } from "react-icons/io5";
+import { FaTable, FaUser, FaUserCircle } from "react-icons/fa";
+import logo from "../img/logo.png";
+import { useAuth } from "../context/AuthContext"; // Usar el contexto de autenticación
 
 const Navbar: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -31,7 +31,10 @@ const Navbar: React.FC = () => {
     <nav className="bg-blue-600 text-white flex items-center justify-between p-4 shadow-md">
       <div className="flex items-center space-x-4">
         <img src={logo} alt="Logo" className="h-10 w-10" />
-        <Link to="/" className="flex items-center space-x-1 hover:text-gray-200">
+        <Link
+          to="/"
+          className="flex items-center space-x-1 hover:text-gray-200"
+        >
           <IoHomeSharp />
           <span>Inicio</span>
         </Link>
@@ -50,10 +53,13 @@ const Navbar: React.FC = () => {
               </button>
               {dropdownVisible && (
                 <div className="absolute bg-white text-black rounded shadow-lg mt-2">
-                  <Link to="/admin-dashboard" className="block px-4 py-2 hover:bg-gray-200">
+                  <Link
+                    to="/admin-dashboard"
+                    className="block px-4 py-2 hover:bg-gray-200"
+                  >
                     Ir a Admin Dashboard
                   </Link>
-                  {/* Otras opciones del menú */}
+                  {/* Otras opciones del menú si es necesario */}
                 </div>
               )}
             </div>
@@ -80,7 +86,10 @@ const Navbar: React.FC = () => {
         )}
 
         {!isAuthenticated && (
-          <Link to="/login" className="flex items-center space-x-1 hover:text-gray-200">
+          <Link
+            to="/login"
+            className="flex items-center space-x-1 hover:text-gray-200"
+          >
             <FaUser />
             <span>Iniciar Sesión</span>
           </Link>
