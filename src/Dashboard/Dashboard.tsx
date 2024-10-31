@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Home, BarChart2, Users, Settings } from 'lucide-react';
 import './Dashboard.css';
