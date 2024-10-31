@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { IoHomeSharp } from 'react-icons/io5';
@@ -5,26 +6,33 @@ import { FaTable, FaUser, FaUserCircle } from 'react-icons/fa';
 import logo from '../img/logo.png';
 import { useAuth } from '../context/AuthContext'; // Usar el contexto de autenticación
 
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { IoHomeSharp } from "react-icons/io5";
+import { FaTable, FaUser, FaUserCircle } from "react-icons/fa";
+import logo from "../img/logo.png";
+import { useAuth } from "../context/AuthContext"; // Usar el contexto de autenticación
+
+
 const Navbar: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [adminDropdownVisible, setAdminDropdownVisible] = useState(false);
   const [userDropdownVisible, setUserDropdownVisible] = useState(false);
   const { isAuthenticated, userEmail, logout } = useAuth(); // Obtener el estado de autenticación desde el contexto
+  const navigate = useNavigate();
 
   const handleDropdownToggle = () => {
     setDropdownVisible(!dropdownVisible);
   };
 
-  const handleAdminDropdownToggle = () => {
-    setAdminDropdownVisible(!adminDropdownVisible);
-  };
-
   const handleUserDropdownToggle = () => {
-    setUserDropdownVisible(!userDropdownVisible); // Mostrar el dropdown del usuario
+    setUserDropdownVisible(!userDropdownVisible);
   };
 
   const handleLogout = () => {
     logout(); // Ejecuta la función de logout desde el contexto
+
+    navigate("/"); // Redirige al usuario a la página de inicio
+
   };
 
   return (
@@ -38,7 +46,11 @@ const Navbar: React.FC = () => {
       </div>
 
       <div className="flex items-center space-x-6">
+
         {isAuthenticated && (
+
+        {isAuthenticated ? (
+
           <>
             <div className="relative">
               <button
@@ -53,10 +65,10 @@ const Navbar: React.FC = () => {
                   <Link to="/admin-dashboard" className="block px-4 py-2 hover:bg-gray-200">
                     Ir a Admin Dashboard
                   </Link>
-                  {/* Otras opciones del menú */}
                 </div>
               )}
             </div>
+
             <div className="relative">
               <FaUserCircle
                 className="text-2xl cursor-pointer hover:text-gray-200"
@@ -64,9 +76,9 @@ const Navbar: React.FC = () => {
               />
               {userDropdownVisible && (
                 <div className="absolute right-0 mt-2 bg-white text-black rounded shadow-lg">
-                  {/* Mostrar el email del usuario */}
+
                   <div className="block px-4 py-2">{userEmail}</div>
-                  {/* Opción para cerrar sesión */}
+
                   <div
                     className="block px-4 py-2 hover:bg-gray-200 cursor-pointer"
                     onClick={handleLogout}
@@ -77,9 +89,13 @@ const Navbar: React.FC = () => {
               )}
             </div>
           </>
+
         )}
 
         {!isAuthenticated && (
+
+        ) : (
+
           <Link to="/login" className="flex items-center space-x-1 hover:text-gray-200">
             <FaUser />
             <span>Iniciar Sesión</span>

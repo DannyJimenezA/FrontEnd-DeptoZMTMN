@@ -1,5 +1,2 @@
-declare module 'react-slick' {
-    const Slider: unknown;
-    export default Slider;
-  }
-  
+import Slider from 'react-slick';
+const SliderComponent = Slider as unknown as React.ComponentType;

@@ -1,7 +1,6 @@
-// ConfirmAccount.jsx
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 const ConfirmAccount = () => {
   const { token } = useParams(); // Obtener el token de la URL
@@ -16,7 +15,13 @@ const ConfirmAccount = () => {
         const response = await axios.get(`http://localhost:3000/users/confirm/${token}`);
         setMessage(response.data.message); // Mensaje de éxito
       } catch (error) {
-        setMessage(error.response.data.message || 'Error al activar la cuenta'); // Mensaje de error
+        // Verificación de tipo para AxiosError
+        const err = error as AxiosError<{ message: string }>;
+        if (err.response && err.response.data) {
+          setMessage(err.response.data.message || 'Error al activar la cuenta');
+        } else {
+          setMessage('Error al activar la cuenta');
+        }
       } finally {
         setLoading(false); // Desactivar el indicador de carga
       }

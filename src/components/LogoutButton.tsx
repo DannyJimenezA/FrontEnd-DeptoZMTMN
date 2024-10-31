@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; // Asegúrate de que el contexto de autenticación está configurado
-import { LogOut } from 'lucide-react';
 
 const LogoutButton: React.FC = () => {
   const { logout } = useAuth(); // Usar autenticación desde el contexto

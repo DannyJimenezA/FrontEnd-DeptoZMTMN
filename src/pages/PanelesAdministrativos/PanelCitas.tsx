@@ -52,8 +52,8 @@ const fetchCitas = async (): Promise<Cita[]> => {
 
 const TablaCitas: React.FC = () => {
   const [citas, setCitas] = useState<Cita[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setLoading] = useState<boolean>(true);
+  const [, setError] = useState<string | null>(null);
   const navigate = useNavigate(); // Hook para la navegación
 
   useEffect(() => {

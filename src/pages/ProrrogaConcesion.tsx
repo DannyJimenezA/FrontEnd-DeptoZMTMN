@@ -9,7 +9,7 @@ function Prorrogas() {
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const navigate = useNavigate(); // Usar para redirigir al usuario
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async () => {
     // Crear un objeto FormData para manejar archivos y otros datos
     const formData = new FormData();
 
@@ -64,7 +64,11 @@ function Prorrogas() {
     }
   };
 
-  const parseJwt = (token) => {
+  const parseJwt = (token: string | null) => {
+    if (!token) {
+      return null;
+    }
+  
     try {
       const decoded = JSON.parse(atob(token.split('.')[1]));
       console.log("Decoded Token:", decoded);
@@ -73,6 +77,7 @@ function Prorrogas() {
       return null;
     }
   };
+  
 
   // Manejar la selección de múltiples archivos
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
