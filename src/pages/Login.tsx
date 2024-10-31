@@ -3,12 +3,14 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaEye, FaEyeSlash, FaLock, FaRegUser } from 'react-icons/fa';
 import { jwtDecode } from 'jwt-decode'; // Importa jwt-decode para decodificar el token
 import '../styles/Login.css';
+
 import image from "../img/WhatsApp Image 2024-09-13 at 6.05.23 PM.jpeg";
 
 // Interfaz para el token decodificado
 interface DecodedToken {
   roles: string[];
 }
+
 
 function Login() {
   const [email, setEmail] = useState('');

@@ -29,12 +29,15 @@ import RevisionPlanos from './pages/RevisionPlanos';
 import PanelDenunciasAdmin from './pages/PanelesAdministrativos/PanelDenunciasAdmin'; // Importar el panel de denuncias admin
 import PanelRevisionPlano from './pages/PanelesAdministrativos/PanelRevisionPlano';   // Importar el panel de revisión de plano
 import AdminDashboard from './Dashboard/Dashboard';
+import { AuthProvider } from './context/AuthContext';
 
 
 
 
 function App () {
   return (
+    <AuthProvider>
+
     <Router>
       <Navbar />
       <Routes>
@@ -71,6 +74,7 @@ function App () {
         <Route path="/admin/revision-plano" element={<PanelRevisionPlano />} /> {/* Nueva ruta para revisión de plano */}
       </Routes>
     </Router>
+    </AuthProvider>
   );
 }
 

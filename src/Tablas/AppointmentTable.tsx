@@ -1,31 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Importa useNavigate para redirección
-import {jwtDecode} from 'jwt-decode'; // Asegúrate de que jwt-decode esté instalado
-// import "../../styles/Administrativos/TablaCitas.css";
-import "../styles/Global.css"
+import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
+import '../styles/Global.css';
+import { Cita, DecodedToken } from '../Types/Types';
+import { FaEye, FaTrash } from 'react-icons/fa';
+import Paginacion from '../components/Paginacion';
+import FilterButtons from '../components/FilterButton'; // Importa el componente de filtro por estado
 
-// Interfaz para las citas
-interface Cita {
-  id: number;
-  description: string;
-  date: string; // Nota: Se usa string para las fechas en JSON
-  time: string;
-  user: {
-    id: number;
-    nombre: string;
-    cedula: string;
-  };
-  status: string;
+interface CitasTableProps {
+  onVerCita: (cita: Cita) => void;
 }
 
-// Interfaz para el token decodificado
-interface DecodedToken {
-  roles: string[];
-}
-
-// Función para obtener las citas desde la API
 const fetchCitas = async (): Promise<Cita[]> => {
-  const urlBase = 'http://localhost:3000/appointments';  // Ruta para obtener las citas
+  const urlBase = 'http://localhost:3000/appointments';
   const token = localStorage.getItem('token');
   try {
     const response = await fetch(urlBase, {
@@ -35,9 +22,6 @@ const fetchCitas = async (): Promise<Cita[]> => {
         'Authorization': `Bearer ${token}`,
       },
     });
-    if (response.status === 403) {
-      throw new Error('No tienes permiso para acceder a estas citas.'); // Manejar caso de error 403
-    }
 
     if (!response.ok) {
       throw new Error(`Error: ${response.status} - ${response.statusText}`);
@@ -51,33 +35,36 @@ const fetchCitas = async (): Promise<Cita[]> => {
   }
 };
 
-const TablaCitas: React.FC = () => {
+const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
   const [citas, setCitas] = useState<Cita[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate(); // Hook para la navegación
+  const [filtroEstado, setFiltroEstado] = useState<string>('todos'); // Estado para el filtro
+  const navigate = useNavigate();
+
+  // Estados para la paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-
     if (token) {
       try {
-        const decodedToken = jwtDecode<DecodedToken>(token); // Decodificar el token para obtener roles
-
+        const decodedToken = jwtDecode<DecodedToken>(token);
         if (!decodedToken.roles.includes('admin')) {
-          window.alert('No tienes permiso para acceder a esta página.'); // Mostrar alerta al usuario
-          navigate('/'); // Redirige a una página de acceso denegado o inicio
+          window.alert('No tienes permiso para acceder a esta página.');
+          navigate('/');
           return;
         }
       } catch (error) {
         console.error('Error al decodificar el token:', error);
         window.alert('Ha ocurrido un error. Por favor, inicie sesión nuevamente.');
-        navigate('/login'); // Redirige a login si hay un problema con el token
+        navigate('/login');
         return;
       }
     } else {
       window.alert('No se ha encontrado un token de acceso. Por favor, inicie sesión.');
-      navigate('/login'); // Redirige a login si no hay un token
+      navigate('/login');
       return;
     }
 
@@ -96,14 +83,17 @@ const TablaCitas: React.FC = () => {
     obtenerCitas();
   }, [navigate]);
 
+  // Función para eliminar citas
   const manejarEliminar = async (id: number) => {
+    const confirmacion = window.confirm('¿Estás seguro de eliminar la cita?');
+    if (!confirmacion) return;
+
     const token = localStorage.getItem('token');
     if (!token) {
       console.error('Token no encontrado');
       return;
     }
-    const confirmacion = window.confirm('¿Estás seguro de eliminar la cita?');
-    if (!confirmacion) return;
+
     try {
       const response = await fetch(`http://localhost:3000/appointments/${id}`, {
         method: 'DELETE',
@@ -112,9 +102,11 @@ const TablaCitas: React.FC = () => {
           'Authorization': `Bearer ${token}`,
         },
       });
+
       if (!response.ok) {
         throw new Error(`Error al eliminar la cita con ID: ${id}`);
       }
+
       setCitas((prevCitas) => prevCitas.filter((cita) => cita.id !== id));
       console.log(`Cita con ID: ${id} eliminada`);
     } catch (error) {
@@ -122,73 +114,73 @@ const TablaCitas: React.FC = () => {
     }
   };
 
-  const manejarCambioEstado = async (id: number, nuevoEstado: string) => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.error('Token no encontrado');
-      return;
-    }
-    try {
-      const response = await fetch(`http://localhost:3000/appointments/${id}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ status: nuevoEstado }),
-      });
-      if (!response.ok) {
-        throw new Error(`Error al actualizar el estado de la cita con ID: ${id}`);
-      }
-      setCitas((prevCitas) =>
-        prevCitas.map((cita) =>
-          cita.id === id ? { ...cita, status: nuevoEstado } : cita
-        )
-      );
-      console.log(`Estado de la cita con ID: ${id} cambiado a ${nuevoEstado}`);
-    } catch (error) {
-      console.error('Error al cambiar el estado de la cita:', error);
-    }
-  };
-
   if (loading) return <p>Cargando citas...</p>;
   if (error) return <p>{error}</p>;
+
+  // Filtrar las citas según el estado seleccionado
+  const obtenerCitasFiltradas = () => {
+    if (filtroEstado === 'todos') return citas;
+    return citas.filter((cita) => cita.status === filtroEstado);
+  };
+
+  // Cálculo de citas a mostrar según la paginación
+  const citasFiltradas = obtenerCitasFiltradas();
+  const indexUltimaCita = currentPage * itemsPerPage;
+  const indexPrimeraCita = indexUltimaCita - itemsPerPage;
+  const citasActuales = citasFiltradas.slice(indexPrimeraCita, indexUltimaCita);
+
+  const totalPages = Math.ceil(citasFiltradas.length / itemsPerPage);
 
   return (
     <div className="tabla-container">
       <h2>Citas Programadas</h2>
-      <table className="tabla-citas">
+
+      {/* Componente de filtro por estado */}
+      <FilterButtons onFilterChange={setFiltroEstado} />
+
+      <table className="tabla-solicitudes">
         <thead>
           <tr>
-            <th>ID Cita</th>
-            <th>Descripción</th>
-            <th>Fecha</th>
-            <th>Hora</th>
-            <th>Cédula</th>
-            <th>Nombre</th>
+            <th>ID</th>
+            <th>Fecha Y Hora</th>
+            <th>Cédula Solicitante</th>
+            <th>Nombre Solicitante</th>
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {citas.map((cita) => (
+          {citasActuales.map((cita) => (
             <tr key={cita.id}>
               <td>{cita.id}</td>
-              <td>{cita.description}</td>
-              <td>{new Date(cita.date).toLocaleDateString()}</td>
-              <td>{cita.time}</td>
-              <td>{cita.user ? `${cita.user.cedula}` : 'ID no disponible'}</td>
-              <td>{cita.user ? cita.user.nombre : 'Nombre no disponible'}</td>
+              <td>{new Date(cita.date).toLocaleDateString()}  {cita.time}</td>
+              <td>{cita.user?.cedula || 'No disponible'}</td>
+              <td>{cita.user?.nombre || 'No disponible'}</td>
               <td>{cita.status}</td>
               <td>
-                <button onClick={() => manejarCambioEstado(cita.id, 'aprobada')}>Aprobar</button>
-                <button onClick={() => manejarCambioEstado(cita.id, 'denegada')}>Denegar</button>
-                <button onClick={() => manejarEliminar(cita.id)}>Eliminar</button>
+                <button
+                  className="boton-ver"
+                  onClick={() => onVerCita(cita)}
+                >
+                  <FaEye /> Ver
+                </button>
+                <button onClick={() => manejarEliminar(cita.id)}>
+                  <FaTrash /> Eliminar
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {/* Componente de Paginación */}
+      <Paginacion
+        currentPage={currentPage}
+        totalPages={totalPages}
+        itemsPerPage={itemsPerPage}
+        onPageChange={setCurrentPage}
+        onItemsPerPageChange={setItemsPerPage}
+      />
     </div>
   );
 };
