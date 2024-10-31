@@ -53,7 +53,7 @@ const LandingPage: React.FC = () => {
             <h3>Citas</h3>
             <p>Solicita tus citas de manera rápida.</p>
           </div>
-          <div className="service-card" onClick={() => handleNavigation('/concesiones')}>
+          <div className="service-card" onClick={() => handleNavigation('/seguimiento-concesiones')}>
             <h3>Concesiones</h3>
             <p>Solicita concesiones.</p>
           </div>
