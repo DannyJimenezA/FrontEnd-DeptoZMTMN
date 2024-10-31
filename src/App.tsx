@@ -30,6 +30,7 @@ import PanelDenunciasAdmin from './pages/PanelesAdministrativos/PanelDenunciasAd
 import PanelRevisionPlano from './pages/PanelesAdministrativos/PanelRevisionPlano';   // Importar el panel de revisión de plano
 import AdminDashboard from './Dashboard/Dashboard';
 import { AuthProvider } from './context/AuthContext';
+import SeguimientoConcesiones from './pages/User/SeguimientoConcesion';
 
 
 
@@ -55,6 +56,7 @@ function App () {
         <Route path="/TablaSolicitudes" element={<TablaSolicitudes />} />
         <Route path="/TablaSolicitudes1" element={<TablaSolicitudes1 />} />
         <Route path="/Panel-Citas" element={<PanelCitas />} />
+        <Route path="/seguimiento-concesiones" element={<SeguimientoConcesiones />} />
         {/* Se ha eliminado la ruta de Panel-Denuncias */}
         <Route path="/Panel-Solicitud-Concesion" element={<PanelSolicitudConcesion />} />
         <Route path="/Panel-Prorroga-Concesiones" element={<PanelProrrogaConcesiones />} />

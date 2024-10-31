@@ -32,7 +32,7 @@ export interface Denuncia {
 export interface Concesion {
   id: number;
   ArchivoAdjunto: string;
-  Date: String;
+  Date: string;
   Status?: string;
   user?: {
     cedula: number;
