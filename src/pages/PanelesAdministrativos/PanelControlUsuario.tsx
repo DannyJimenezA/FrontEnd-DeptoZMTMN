@@ -30,7 +30,7 @@ const fetchSolicitudes = async (): Promise<Solicitud[]> => {
 
 
   try {
-    const response = await fetch(ApiRoutes.usuarios, {
+    const response = await fetch(ApiRoutes.usuarios.usuariosbase, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

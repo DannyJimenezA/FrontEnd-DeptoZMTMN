@@ -54,7 +54,7 @@ function Login() {
       if (decodedToken.roles.includes('admin')) {
         navigate('/admin-dashboard'); // Redirige al Admin Dashboard
       } else {
-        navigate('/dashboard'); // Redirige a la página principal para otros roles
+        navigate('/admin-dashboard'); // Redirige a la página principal para otros roles
       }
     } catch (error) {
       if (error instanceof Error) {
