@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Cita } from '../Types/Types';
 import CambiarEstadoCita from '../components/CambioEstado'; // Importar el nuevo componente
+import ApiRoutes from '../components/ApiRoutes';
 
 interface DetalleCitaProps {
   cita: Cita;
@@ -19,7 +20,7 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita, onVolver, onEstadoCambi
     }
 
     try {
-      const response = await fetch('http://localhost:3000/mailer/send-custom-message', {
+      const response = await fetch(`${ApiRoutes.urlBase}/mailer/send-custom-message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

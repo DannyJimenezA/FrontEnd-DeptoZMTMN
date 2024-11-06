@@ -7,16 +7,17 @@ import '../styles/Botones.css';
 import { FaEye, FaTrash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import ApiRoutes from '../components/ApiRoutes';
 
 interface ConcesionesTableProps {
   onVerConcesion: (concesion: Concesion) => void;
 }
 
 const fetchConcesiones = async (): Promise<Concesion[]> => {
-  const urlBase = 'http://localhost:3000/Concesiones'; // Ajusta la URL de tu API
+ 
   const token = localStorage.getItem('token');
   try {
-    const response = await fetch(urlBase, {
+    const response = await fetch(ApiRoutes.concesiones, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -43,21 +44,17 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const navigate = useNavigate();
+
   useEffect(() => {
     const token = localStorage.getItem('token');
 
     if (token) {
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
-        console.log(decodedToken.permissions);
-        console.log(decodedToken); // Imprime el token decodificado
-  
-        // Validar que 'permissions' exista y sea un array
         const hasPermission = decodedToken.permissions.some(
-          (permission: { action: string; resource: string }) =>
-            permission.action === 'GET' && permission.resource === 'concesion'
+          (permission) => permission.action === 'GET' && permission.resource === 'concesion'
         );
-  
+
         if (!hasPermission) {
           window.alert('No tienes permiso para acceder a esta página.');
           navigate('/');
@@ -74,6 +71,7 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
       navigate('/login');
       return;
     }
+
     const obtenerConcesiones = async () => {
       try {
         const concesionesFromAPI = await fetchConcesiones();
@@ -89,21 +87,17 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
     obtenerConcesiones();
   }, [navigate]);
 
-  // Filtrar concesiones por estado
   const obtenerConcesionesFiltradas = () => {
     if (filtroEstado === 'todos') return concesiones;
     return concesiones.filter((concesion) => concesion.Status === filtroEstado);
   };
 
-  // Calcular concesiones a mostrar según la paginación
   const concesionesFiltradas = obtenerConcesionesFiltradas();
   const indexUltimaConcesion = currentPage * itemsPerPage;
   const indexPrimeraConcesion = indexUltimaConcesion - itemsPerPage;
   const concesionesActuales = concesionesFiltradas.slice(indexPrimeraConcesion, indexUltimaConcesion);
-
   const numeroPaginas = Math.ceil(concesionesFiltradas.length / itemsPerPage);
 
-  // Función para eliminar una concesión usando el helper
   const manejarEliminarConcesion = async (id: number) => {
     await eliminarEntidad<Concesion>('Concesiones', id, setConcesiones);
   };
@@ -117,47 +111,44 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
   }
 
   return (
-    <div className="tabla-container">
-      <h2>Solicitudes de Concesión</h2>
+    <div className="flex flex-col w-full h-full p-4">
+      <h2 className="text-2xl font-semibold mb-4">Solicitudes de Concesión</h2>
 
       {/* Componente de filtro por estado */}
       <FilterButtons onFilterChange={setFiltroEstado} />
 
-      <table className="tabla-solicitudes">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nombre Solicitante</th>
-            <th>Apellidos Solicitante</th>
-            <th>Cédula Solicitante</th>
-            <th>Fecha Creacion</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {concesionesActuales.map((concesion) => (
-            <tr key={concesion.id}>
-              <td>{concesion.id}</td>
-              <td>{concesion.user?.nombre}</td>
-              <td>{concesion.user?.apellido1}</td>
-              <td>{concesion.user?.cedula}</td>
-              <td>{concesion.Date}</td>
-              <td>{concesion.Status || 'Pendiente'}</td>
-              <td>
-                <button className="boton-ver" onClick={() => onVerConcesion(concesion)}>
-                  <FaEye /> Ver
-                </button>
-                <button onClick={() => manejarEliminarConcesion(concesion.id)}>
-                  <FaTrash /> Eliminar
-                </button>
-              </td>
+      <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">ID</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Nombre Solicitante</th>
+              {/* <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Apellidos Solicitante</th> */}
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Cédula Solicitante</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Fecha Creación</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Estado</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {concesionesActuales.map((concesion) => (
+              <tr key={concesion.id}>
+                <td className="px-4 py-2">{concesion.id}</td>
+                <td className="px-4 py-2">{concesion.user?.nombre}</td>
+                {/* <td className="px-4 py-2">{concesion.user?.apellido1}</td> */}
+                <td className="px-4 py-2">{concesion.user?.cedula}</td>
+                <td className="px-4 py-2">{concesion.Date}</td>
+                <td className="px-4 py-2">{concesion.Status || 'Pendiente'}</td>
+                <td className="px-4 py-2 space-x-2">
+                  <button onClick={() => onVerConcesion(concesion)} className="text-green-500 hover:text-green-700"><FaEye /> Ver</button>
+                  <button onClick={() => manejarEliminarConcesion(concesion.id)} className="text-red-500 hover:text-red-700"><FaTrash /> Eliminar</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      {/* Componente de Paginación */}
       <Paginacion
         currentPage={currentPage}
         totalPages={numeroPaginas}

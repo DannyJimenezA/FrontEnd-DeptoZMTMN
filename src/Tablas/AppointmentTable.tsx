@@ -1,21 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import '../styles/Global.css';
 import { Cita, DecodedToken } from '../Types/Types';
 import { FaEye, FaTrash } from 'react-icons/fa';
 import Paginacion from '../components/Paginacion';
 import FilterButtons from '../components/FilterButton'; // Importa el componente de filtro por estado
+import ApiRoutes from '../components/ApiRoutes';
 
 interface CitasTableProps {
   onVerCita: (cita: Cita) => void;
 }
 
 const fetchCitas = async (): Promise<Cita[]> => {
-  const urlBase = 'http://localhost:3000/appointments';
+
   const token = localStorage.getItem('token');
   try {
-    const response = await fetch(urlBase, {
+    const response = await fetch(ApiRoutes.citas.crearcita, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -51,15 +52,10 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
     if (token) {
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
-        console.log(decodedToken.permissions);
-        console.log(decodedToken); // Imprime el token decodificado
-  
-        // Validar que 'permissions' exista y sea un array
         const hasPermission = decodedToken.permissions.some(
-          (permission: { action: string; resource: string }) =>
-            permission.action === 'GET' && permission.resource === 'appointments'
+          (permission) => permission.action === 'GET' && permission.resource === 'appointments'
         );
-  
+
         if (!hasPermission) {
           window.alert('No tienes permiso para acceder a esta página.');
           navigate('/');
@@ -76,8 +72,7 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
       navigate('/login');
       return;
     }
-  
-    // Función para obtener las citas desde la API
+
     const obtenerCitas = async () => {
       try {
         const citasFromAPI = await fetchCitas();
@@ -89,7 +84,7 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
         setLoading(false);
       }
     };
-  
+
     obtenerCitas();
   }, [navigate]);
 
@@ -104,7 +99,7 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/appointments/${id}`, {
+      const response = await fetch(`${ApiRoutes.citas.crearcita}/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -126,62 +121,53 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
   if (loading) return <p>Cargando citas...</p>;
   if (error) return <p>{error}</p>;
 
-  // Filtrar las citas según el estado seleccionado
   const obtenerCitasFiltradas = () => {
     if (filtroEstado === 'todos') return citas;
     return citas.filter((cita) => cita.status === filtroEstado);
   };
 
-  // Cálculo de citas a mostrar según la paginación
   const citasFiltradas = obtenerCitasFiltradas();
-
   const indexUltimaCita = currentPage * itemsPerPage;
   const indexPrimeraCita = indexUltimaCita - itemsPerPage;
   const citasActuales = citasFiltradas.slice(indexPrimeraCita, indexUltimaCita);
-
   const totalPages = Math.ceil(citasFiltradas.length / itemsPerPage);
 
   return (
-    <div className="tabla-container">
-      <h2>Citas Programadas</h2>
+    <div className="flex flex-col w-full h-full p-4">
+      <h2 className="text-2xl font-semibold mb-4">Citas Programadas</h2>
 
       {/* Componente de filtro por estado */}
       <FilterButtons onFilterChange={setFiltroEstado} />
 
-      <table className="tabla-solicitudes">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Fecha Y Hora</th>
-            <th>Cédula Solicitante</th>
-            <th>Nombre Solicitante</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {citasActuales.map((cita) => (
-            <tr key={cita.id}>
-              <td>{cita.id}</td>
-              <td>{new Date(cita.date).toLocaleDateString()}  {cita.time}</td>
-              <td>{cita.user?.cedula || 'No disponible'}</td>
-              <td>{cita.user?.nombre || 'No disponible'}</td>
-              <td>{cita.status}</td>
-              <td>
-                <button
-                  className="boton-ver"
-                  onClick={() => onVerCita(cita)}
-                >
-                  <FaEye /> Ver
-                </button>
-                <button onClick={() => manejarEliminar(cita.id)}>
-                  <FaTrash /> Eliminar
-                </button>
-              </td>
+      <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">ID</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Fecha Y Hora</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Cédula Solicitante</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Nombre Solicitante</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Estado</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {citasActuales.map((cita) => (
+              <tr key={cita.id}>
+                <td className="px-4 py-2">{cita.id}</td>
+                <td className="px-4 py-2">{new Date(cita.date).toLocaleDateString()}  {cita.time}</td>
+                <td className="px-4 py-2">{cita.user?.cedula || 'No disponible'}</td>
+                <td className="px-4 py-2">{cita.user?.nombre || 'No disponible'}</td>
+                <td className="px-4 py-2">{cita.status}</td>
+                <td className="px-4 py-2 space-x-2">
+                  <button onClick={() => onVerCita(cita)} className="text-green-500 hover:text-green-700"><FaEye /> Ver</button>
+                  <button onClick={() => manejarEliminar(cita.id)} className="text-red-500 hover:text-red-700"><FaTrash /> Eliminar</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <Paginacion
         currentPage={currentPage}

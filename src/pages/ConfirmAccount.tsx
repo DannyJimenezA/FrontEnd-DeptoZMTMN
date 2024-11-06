@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios, { AxiosError } from 'axios';
+import ApiRoutes from '../components/ApiRoutes';
 
 const ConfirmAccount = () => {
   const { token } = useParams(); // Obtener el token de la URL
@@ -12,7 +13,7 @@ const ConfirmAccount = () => {
     // Función para confirmar la cuenta
     const confirmAccount = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/users/confirm/${token}`);
+        const response = await axios.get(`${ApiRoutes.usuarios}/confirm/${token}`);
         setMessage(response.data.message); // Mensaje de éxito
       } catch (error) {
         // Verificación de tipo para AxiosError

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import '../styles/ForgotPassword.css';
 import { useNavigate } from 'react-router-dom';
+import ApiRoutes from '../components/ApiRoutes';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -12,7 +13,7 @@ const ForgotPassword = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/users/forgot-password', { email });
+      const response = await axios.post(`${ApiRoutes.usuarios.usuariosbase}/status/forgot-password`, { email });
       setMessage(response.data.message);
       setIsError(false);
     } catch (error) {

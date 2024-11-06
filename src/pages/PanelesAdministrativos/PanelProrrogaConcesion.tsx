@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import "../../styles/Administrativos/TablaProrrogaConcesion.css";
 import { FaFilePdf } from 'react-icons/fa';
+import ApiRoutes from '../../components/ApiRoutes';
 
 // Interfaz para las prórrogas
 interface Prorroga {
@@ -22,13 +23,11 @@ interface DecodedToken {
   roles: string[];
 }
 
-const baseUrl = 'http://localhost:3000/'; // URL base del servidor
 
 const fetchProrrogas = async (): Promise<Prorroga[]> => {
-  const urlBase = `${baseUrl}Prorrogas/`;
 
   try {
-    const response = await fetch(urlBase, {
+    const response = await fetch(ApiRoutes.prorrogas, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -103,7 +102,7 @@ const TablaProrrogas: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/Prorrogas/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.prorrogas}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -130,7 +129,7 @@ const TablaProrrogas: React.FC = () => {
     if (!confirmacion) return; // Salir si el usuario cancela la acción
 
     try {
-      const response = await fetch(`${baseUrl}Prorrogas/${id}`, {
+      const response = await fetch(ApiRoutes.prorrogas, {
         method: 'DELETE',
       });
 
@@ -149,7 +148,7 @@ const TablaProrrogas: React.FC = () => {
 
   const manejarVerArchivo = (archivoUrl: string | undefined) => {
     if (archivoUrl && archivoUrl !== 'undefined') {
-      window.open(`${baseUrl}${archivoUrl}`, '_blank');
+      window.open(`${ApiRoutes}${archivoUrl}`, '_blank');
     } else {
       alert('El archivo no está disponible.');
     }

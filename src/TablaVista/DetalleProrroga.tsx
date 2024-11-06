@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaFilePdf } from 'react-icons/fa';
 import { Prorroga } from '../Types/Types';
+import ApiRoutes from '../components/ApiRoutes';
 
 interface DetalleProrrogaProps {
   prorroga: Prorroga;
@@ -19,7 +20,7 @@ const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver, o
     }
 
     try {
-      const response = await fetch('http://localhost:3000/mailer/send-custom-message', {
+      const response = await fetch(`${ApiRoutes.urlBase}/mailer/send-custom-message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -43,7 +44,7 @@ const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver, o
   const manejarVerArchivo = (archivo: string) => {
     const archivoFinal = archivo.replace(/[\[\]"]/g, '');  // Limpiar si es necesario
     if (archivoFinal) {
-      const fileUrl = `http://localhost:3000/${archivoFinal}`;
+      const fileUrl = `${ApiRoutes.urlBase}${archivoFinal}`;
       window.open(fileUrl, '_blank');
     }
   };

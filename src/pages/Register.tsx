@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import '../styles/Register.css';
+import ApiRoutes from '../components/ApiRoutes';
 
 function Register() {
   const [nombre, setNombre] = useState('');
@@ -33,7 +34,7 @@ function Register() {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/users/register', {
+      const response = await fetch(`${ApiRoutes.usuarios}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

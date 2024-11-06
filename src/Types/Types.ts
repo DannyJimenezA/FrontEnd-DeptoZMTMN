@@ -18,8 +18,10 @@ export interface Permission {
 export interface Role {
   id: number;
   name: string;
-  permissions: Permission[]; // Lista de permisos asociados al rol
-}
+  permissions: Permission[]; 
+  users: {
+    
+  }}
 
 // Interfaz para las entidades relacionadas
 export interface Denuncia {
@@ -163,6 +165,7 @@ export interface Usuario {
   telefono: number;
   isActive: boolean;
   roles: {
+    id: number,
     name: string;
   }[];
 }

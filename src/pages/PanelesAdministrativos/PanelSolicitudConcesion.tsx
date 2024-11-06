@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"; // Importa useNavigate para redi
 import {jwtDecode} from "jwt-decode"; // Asegúrate de que jwt-decode esté instalado
 import "../../styles/Administrativos/TablaProrrogaConcesion.css";
 import { FaFilePdf } from "react-icons/fa";
+import ApiRoutes from "../../components/ApiRoutes";
 
 // Interfaz para las prórrogas
 interface Prorroga {
@@ -53,13 +54,11 @@ interface SolicitudesResponse {
   precario: Precario[];
 }
 
-const baseUrl = "http://localhost:3000/";
 
 const fetchSolicitudes = async (): Promise<SolicitudesResponse> => {
-  const urlBase = "http://localhost:3000/solicitudes";
 
   try {
-    const response = await fetch(urlBase, {
+    const response = await fetch(ApiRoutes.concesiones, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -132,7 +131,7 @@ const TablaSolicitudes: React.FC = () => {
     archivoFinal = archivoFinal.replace(/[\[\]"]/g, "");
 
     if (archivoFinal) {
-      const fileUrl = `${baseUrl}${archivoFinal}`;
+      const fileUrl = `${ApiRoutes}${archivoFinal}`;
       window.open(fileUrl, "_blank");
     } else {
       console.error("No hay archivo adjunto para ver.");
@@ -150,7 +149,7 @@ const TablaSolicitudes: React.FC = () => {
     }
     try {
       const response = await fetch(
-        `http://localhost:3000/Prorrogas/${id}/status`,
+        `${ApiRoutes.concesiones}/${id}/status`,
         {
           method: "PUT",
           headers: {
@@ -183,7 +182,7 @@ const TablaSolicitudes: React.FC = () => {
     }
     try {
       const response = await fetch(
-        `http://localhost:3000/Precario/${id}/status`,
+        `${ApiRoutes.concesiones}/${id}/status`,
         {
           method: "PUT",
           headers: {
@@ -216,7 +215,7 @@ const TablaSolicitudes: React.FC = () => {
     }
     try {
       const response = await fetch(
-        `http://localhost:3000/Concesiones/${id}/status`,
+        `${ApiRoutes.concesiones}/${id}/status`,
         {
           method: "PUT",
           headers: {
@@ -252,7 +251,7 @@ const TablaSolicitudes: React.FC = () => {
     if (!confirmacion) return;
 
     try {
-      const response = await fetch(`${baseUrl}Prorrogas/${id}`, {
+      const response = await fetch(`${ApiRoutes.concesiones}/${id}`, {
         method: 'DELETE',
       });
 
@@ -273,7 +272,7 @@ const TablaSolicitudes: React.FC = () => {
     const confirmacion = window.confirm("¿Estás seguro de que deseas eliminar esta concesión?");
     if (!confirmacion) return;
     try {
-      const response = await fetch(`${baseUrl}Concesiones/${id}`, {
+      const response = await fetch(`${ApiRoutes.expedientes}/${id}`, {
         method: 'DELETE',
       });
 
@@ -293,7 +292,7 @@ const TablaSolicitudes: React.FC = () => {
     const confirmacion = window.confirm("¿Estás seguro de que deseas eliminar esta solicitud?");
     if (!confirmacion) return;
     try {
-      const response = await fetch(`${baseUrl}Precario/${id}`, {
+      const response = await fetch(`${ApiRoutes.expedientes}/${id}/status`, {
         method: 'DELETE',
       });
 

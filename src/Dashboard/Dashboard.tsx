@@ -29,6 +29,7 @@ import AsignarPermisosForm from '../TablaVista/AsignarPermisosForm';
 import DetalleUsuario from '../TablaVista/DetalleUsuario';
 import GestionDenunciasTable from '../Tablas/GestionDenunciasTable';
 import TablaDenunciasDashboard from '../Tablas/TablaDenuncia';
+import ApiRoutes from '../components/ApiRoutes';
 
 
 const AdminDashboard: React.FC = () => {
@@ -114,7 +115,7 @@ const AdminDashboard: React.FC = () => {
         throw new Error('Token de autenticación no encontrado.');
       }
 
-      const response = await fetch(`http://localhost:3000/appointments/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.citas.crearcita}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -145,7 +146,7 @@ const AdminDashboard: React.FC = () => {
         throw new Error('Token de autenticación no encontrado.');
       }
 
-      const response = await fetch(`http://localhost:3000/Concesiones/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.concesiones}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -176,7 +177,7 @@ const AdminDashboard: React.FC = () => {
         throw new Error('Token de autenticación no encontrado.');
       }
 
-      const response = await fetch(`http://localhost:3000/expedientes/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.expedientes}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -207,7 +208,7 @@ const AdminDashboard: React.FC = () => {
         throw new Error('Token de autenticación no encontrado.');
       }
   
-      const response = await fetch(`http://localhost:3000/Precario/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.precarios}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -235,7 +236,7 @@ const AdminDashboard: React.FC = () => {
         throw new Error('Token de autenticación no encontrado.');
       }
   
-      const response = await fetch(`http://localhost:3000/denuncia/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.denuncias}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -266,7 +267,7 @@ const AdminDashboard: React.FC = () => {
         throw new Error('Token de autenticación no encontrado.');
       }
   
-      const response = await fetch(`http://localhost:3000/revision-plano/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.planos}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -297,7 +298,7 @@ const AdminDashboard: React.FC = () => {
         throw new Error('Token de autenticación no encontrado.');
       }
   
-      const response = await fetch(`http://localhost:3000/prorrogas/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.prorrogas}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -328,7 +329,7 @@ const AdminDashboard: React.FC = () => {
         throw new Error('Token de autenticación no encontrado.');
       }
   
-      const response = await fetch(`http://localhost:3000/users/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.usuarios}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

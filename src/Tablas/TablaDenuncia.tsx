@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaFileDownload } from 'react-icons/fa';
 import { jwtDecode } from 'jwt-decode'; // Para decodificar el token JWT
+import ApiRoutes from '../components/ApiRoutes';
 
 // Interfaz para la denuncia
 interface Denuncia {
@@ -23,14 +24,14 @@ interface DecodedToken {
   roles: string[];
 }
 
-const baseUrl = 'http://localhost:3000/'; // URL base del servidor
+
 
 // Función para obtener las denuncias desde la API
 const fetchDenuncias = async (): Promise<Denuncia[]> => {
-  const urlBase = `${baseUrl}Denuncias/`;
+
 
   try {
-    const response = await fetch(urlBase, {
+    const response = await fetch(ApiRoutes.denuncias, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -97,7 +98,7 @@ const TablaDenunciasDashboard: React.FC = () => {
   // Función para descargar la evidencia adjunta
   const manejarDescargaEvidencia = (archivoUrl: string | undefined) => {
     if (archivoUrl && archivoUrl !== 'undefined') {
-      window.open(`${baseUrl}${archivoUrl}`, '_blank');
+      window.open(`${ApiRoutes}${archivoUrl}`, '_blank');
     } else {
       alert('La evidencia no está disponible.');
     }
@@ -115,7 +116,7 @@ const TablaDenunciasDashboard: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`${baseUrl}Denuncias/${id}/status`, {
+      const response = await fetch(`${ApiRoutes}Denuncias/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

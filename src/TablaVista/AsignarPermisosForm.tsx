@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Permission, Role } from '../Types/Types';
+import ApiRoutes from '../components/ApiRoutes';
 
 interface AsignarPermisosFormProps {
   rol: Role;
@@ -16,7 +17,7 @@ const AsignarPermisosForm: React.FC<AsignarPermisosFormProps> = ({ rol, onCancel
   useEffect(() => {
     const fetchPermisos = async () => {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/permissions', {
+      const response = await fetch(`${ApiRoutes.urlBase}/permissions`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       const data = await response.json();
@@ -28,7 +29,7 @@ const AsignarPermisosForm: React.FC<AsignarPermisosFormProps> = ({ rol, onCancel
 
   const manejarGuardarPermisos = async () => {
     const token = localStorage.getItem('token');
-    const response = await fetch(`http://localhost:3000/roles/${rol.id}`, {
+    const response = await fetch(`${ApiRoutes.roles}/${rol.id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaEye, FaEyeSlash, FaLock, FaRegUser } from 'react-icons/fa';
-import { jwtDecode } from 'jwt-decode'; // Importa jwt-decode para decodificar el token
-//import '../styles/Login.css';
-
+import { jwtDecode } from 'jwt-decode';
+import ApiRoutes from '../components/ApiRoutes';  // Importa ApiRoutes
 import image from "../img/WhatsApp Image 2024-09-13 at 6.05.23 PM.jpeg";
 
 // Interfaz para el token decodificado
 interface DecodedToken {
   roles: string[];
 }
-
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -32,7 +30,7 @@ function Login() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3000/auth/login', {
+      const response = await fetch(ApiRoutes.auth.login, {  // Usa ApiRoutes.auth.login en lugar de la URL
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,7 +54,7 @@ function Login() {
       if (decodedToken.roles.includes('admin')) {
         navigate('/admin-dashboard'); // Redirige al Admin Dashboard
       } else {
-        navigate('/'); // Redirige a la página principal para otros roles
+        navigate('/dashboard'); // Redirige a la página principal para otros roles
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -147,4 +145,3 @@ function Login() {
 }
 
 export default Login;
-

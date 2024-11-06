@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ApiRoutes from '../components/ApiRoutes';
 
 interface DenunciaData {
   id: number;
@@ -6,7 +7,7 @@ interface DenunciaData {
 }
 
 const fetchDenunciaData = async (tipo: 'tipo-denuncia' | 'lugar-denuncia'): Promise<DenunciaData[]> => {
-  const urlBase = `http://localhost:3000/${tipo}`;
+  const urlBase = `${ApiRoutes.urlBase}/${tipo}`;
 
   try {
     const response = await fetch(urlBase, {
@@ -69,7 +70,7 @@ const GestionDenunciasTable: React.FC = () => {
   // };
 
   const manejarGuardar = async () => {
-    const url = `http://localhost:3000/${denunciaType}${isEditing ? `/${editingId}` : ''}`;
+    const url = `${ApiRoutes.urlBase}/${denunciaType}${isEditing ? `/${editingId}` : ''}`;
     const method = isEditing ? 'PUT' : 'POST';
   
     try {

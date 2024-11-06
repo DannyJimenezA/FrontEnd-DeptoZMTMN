@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios, { AxiosError } from 'axios';
 import '../styles/ResetPassword.css';
+import ApiRoutes from '../components/ApiRoutes';
 
 interface ErrorResponse {
   message: string;
@@ -44,7 +45,7 @@ const ResetPassword = () => {
     setIsSubmitting(true); // Desactiva el botón mientras se envía la solicitud
 
     try {
-      const response = await axios.post(`http://localhost:3000/users/reset-password`, {
+      const response = await axios.post(`${ApiRoutes.usuarios}/reset-password`, {
         token, // Incluye el token en el cuerpo si el backend lo requiere
         newPassword,
       });

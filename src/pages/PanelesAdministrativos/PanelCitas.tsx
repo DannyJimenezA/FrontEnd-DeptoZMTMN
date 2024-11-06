@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Importa useNavigate para redirección
 import {jwtDecode} from 'jwt-decode'; // Asegúrate de que jwt-decode esté instalado
 import "../../styles/Administrativos/TablaCitas.css";
+import ApiRoutes from '../../components/ApiRoutes';
 
 // Interfaz para las citas
 interface Cita {
@@ -24,10 +25,9 @@ interface DecodedToken {
 
 // Función para obtener las citas desde la API
 const fetchCitas = async (): Promise<Cita[]> => {
-  const urlBase = 'http://localhost:3000/appointments';  // Ruta para obtener las citas
   const token = localStorage.getItem('token');
   try {
-    const response = await fetch(urlBase, {
+    const response = await fetch(ApiRoutes.citas.crearcita, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -104,7 +104,7 @@ const TablaCitas: React.FC = () => {
     const confirmacion = window.confirm('¿Estás seguro de eliminar la cita?');
     if (!confirmacion) return;
     try {
-      const response = await fetch(`http://localhost:3000/appointments/${id}`, {
+      const response = await fetch(`${ApiRoutes.citas}/${id}`, { 
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -128,7 +128,7 @@ const TablaCitas: React.FC = () => {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:3000/appointments/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.citas}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
