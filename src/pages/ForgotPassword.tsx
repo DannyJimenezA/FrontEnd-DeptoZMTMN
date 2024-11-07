@@ -70,7 +70,7 @@ const ForgotPassword = () => {
     e.preventDefault();
     try {
       // Enviar solicitud de recuperación de contraseña con el parámetro `origin`
-      const response = await axios.post(`${ApiRoutes.usuarios.usuariosbase}/status/forgot-password`, { email, origin });
+      const response = await axios.post(`${ApiRoutes.usuarios.usuariosbase}/forgot-password`, { email, origin });
       setMessage(response.data.message);
       setIsError(false);
     } catch (error) {
