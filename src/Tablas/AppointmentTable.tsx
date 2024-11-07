@@ -276,13 +276,14 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
   const manejarEliminar = async (id: number) => {
     const confirmacion = window.confirm('¿Estás seguro de eliminar la cita?');
     if (!confirmacion) return;
-
+  
     const token = localStorage.getItem('token');
     if (!token) {
       console.error('Token no encontrado');
+      alert('No tienes permisos para realizar esta acción.');
       return;
     }
-
+  
     try {
       const response = await fetch(`${ApiRoutes.citas.crearcita}/${id}`, {
         method: 'DELETE',
@@ -291,18 +292,23 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
           'Authorization': `Bearer ${token}`,
         },
       });
-
+  
       if (!response.ok) {
+        if (response.status === 403) {
+          alert('No tienes permisos para eliminar esta cita.');
+        } else {
+          alert('Error al eliminar la cita.');
+        }
         throw new Error(`Error al eliminar la cita con ID: ${id}`);
       }
-
+  
       setCitas((prevCitas) => prevCitas.filter((cita) => cita.id !== id));
       console.log(`Cita con ID: ${id} eliminada`);
     } catch (error) {
       console.error('Error al eliminar la cita:', error);
-      alert('Hubo un error al intentar eliminar la cita. Por favor, inténtelo nuevamente.');
     }
   };
+  
 
   if (loading) return <p>Cargando citas...</p>;
   if (error) return <p>{error}</p>;
