@@ -48,7 +48,7 @@ function Register() {
           email,
           password: password.trim(),
           confirmPassword: confirmPassword.trim(),
-          orirgin: "user"
+          orirgin: "admin"
         }),
       });
 
