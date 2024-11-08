@@ -76,10 +76,10 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, o
 
       <div className="estado-botones">
         <button className="btn-aprobar" onClick={() => cambiarEstado('Aprobada')}>
-          Aprobar Concesión
+          Aprobar Denuncia
         </button>
         <button className="btn-denegar" onClick={() => cambiarEstado('Denegada')}>
-          Denegar Concesión
+          Denegar Denuncia
         </button>
       </div>
 

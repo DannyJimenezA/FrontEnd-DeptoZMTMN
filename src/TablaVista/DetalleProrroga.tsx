@@ -44,7 +44,7 @@ const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver, o
   const manejarVerArchivo = (archivo: string) => {
     const archivoFinal = archivo.replace(/[\[\]"]/g, '');  // Limpiar si es necesario
     if (archivoFinal) {
-      const fileUrl = `${ApiRoutes.urlBase}${archivoFinal}`;
+      const fileUrl = `${ApiRoutes.urlBase}/${archivoFinal}`;
       window.open(fileUrl, '_blank');
     }
   };
