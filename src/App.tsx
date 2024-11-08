@@ -54,6 +54,7 @@ function App () {
         <Route path="/Panel-Prorroga-Concesiones" element={<PanelProrrogaConcesiones />} />
         <Route path="/Panel-Solicitud-Expediente" element={<TablaSolicitudExpediente />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/users/reset-password" element={<ResetPassword />} />
         <Route path="/users/confirm/:token" element={<ConfirmAccount />} /> 
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
