@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "../styles/RevisionPlanos.css";
 import { useForm } from "react-hook-form";
 import { useNavigate } from 'react-router-dom';
+import ApiRoutes from "../components/ApiRoutes";
 
 interface FormData {
   expediente: string;
@@ -57,7 +58,7 @@ const RevisionPlanos = () => {
     formData.append('ArchivosAdjuntos', JSON.stringify(revisionData.ArchivosAdjuntos));
 
     try {
-      const response = await fetch('http://localhost:3000/revision-plano', {
+      const response = await fetch(ApiRoutes.planos, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

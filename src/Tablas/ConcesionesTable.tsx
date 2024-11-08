@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Concesion, DecodedToken } from '../Types/Types';
 import Paginacion from '../components/Paginacion';
-import FilterButtons from '../components/FilterButton'; // Importa el componente de filtro
+import FilterButtons from '../components/FilterButton';
+import FiltroFecha from '../components/FiltroFecha';
+import SearchBar from '../components/SearchBar';
 import { eliminarEntidad } from '../Helpers/eliminarEntidad';
 import '../styles/Botones.css';
 import { FaEye, FaTrash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import ApiRoutes from '../components/ApiRoutes';
+import "../styles/TableButtons.css"
 
 interface ConcesionesTableProps {
   onVerConcesion: (concesion: Concesion) => void;
 }
 
 const fetchConcesiones = async (): Promise<Concesion[]> => {
- 
   const token = localStorage.getItem('token');
   try {
     const response = await fetch(ApiRoutes.concesiones, {
@@ -40,14 +42,16 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
   const [concesiones, setConcesiones] = useState<Concesion[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [filtroEstado, setFiltroEstado] = useState<string>('todos'); // Estado para el filtro
+  const [filtroEstado, setFiltroEstado] = useState<string>('todos');
+  const [fechaFiltro, setFechaFiltro] = useState<Date | null>(null);
+  const [searchText, setSearchText] = useState<string>('');
+  const [searchBy, setSearchBy] = useState<string>('nombre');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-
     if (token) {
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
@@ -76,10 +80,10 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
       try {
         const concesionesFromAPI = await fetchConcesiones();
         setConcesiones(concesionesFromAPI);
-        setLoading(false);
       } catch (error) {
         console.error('Error al obtener las concesiones:', error);
         setError('Error al cargar las concesiones.');
+      } finally {
         setLoading(false);
       }
     };
@@ -88,8 +92,26 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
   }, [navigate]);
 
   const obtenerConcesionesFiltradas = () => {
-    if (filtroEstado === 'todos') return concesiones;
-    return concesiones.filter((concesion) => concesion.Status === filtroEstado);
+    let concesionesFiltradas = concesiones;
+
+    if (filtroEstado !== 'todos') {
+      concesionesFiltradas = concesionesFiltradas.filter((concesion) => concesion.Status === filtroEstado);
+    }
+
+    if (fechaFiltro) {
+      const fechaSeleccionada = fechaFiltro.toISOString().split('T')[0];
+      concesionesFiltradas = concesionesFiltradas.filter((concesion) => concesion.Date === fechaSeleccionada);
+    }
+
+    if (searchText) {
+      concesionesFiltradas = concesionesFiltradas.filter((concesion) =>
+        searchBy === 'nombre'
+          ? concesion.user?.nombre?.toLowerCase().includes(searchText.toLowerCase())
+          : concesion.user?.cedula?.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+
+    return concesionesFiltradas;
   };
 
   const concesionesFiltradas = obtenerConcesionesFiltradas();
@@ -102,17 +124,22 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
     await eliminarEntidad<Concesion>('Concesiones', id, setConcesiones);
   };
 
-  if (loading) {
-    return <p>Cargando concesiones...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
+  if (loading) return <p>Cargando concesiones...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="flex flex-col w-full h-full p-4">
       <h2 className="text-2xl font-semibold mb-4">Solicitudes de Concesión</h2>
+
+      {/* Barra de búsqueda */}
+      <SearchBar
+        onSearch={setSearchText}
+        searchBy={searchBy}
+        onSearchByChange={setSearchBy}
+      />
+
+      {/* Filtro por fecha */}
+      <FiltroFecha fechaFiltro={fechaFiltro} onChangeFecha={setFechaFiltro} />
 
       {/* Componente de filtro por estado */}
       <FilterButtons onFilterChange={setFiltroEstado} />
@@ -123,7 +150,6 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
             <tr>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">ID</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Nombre Solicitante</th>
-              {/* <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Apellidos Solicitante</th> */}
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Cédula Solicitante</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Fecha Creación</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Estado</th>
@@ -135,13 +161,16 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
               <tr key={concesion.id}>
                 <td className="px-4 py-2">{concesion.id}</td>
                 <td className="px-4 py-2">{concesion.user?.nombre}</td>
-                {/* <td className="px-4 py-2">{concesion.user?.apellido1}</td> */}
                 <td className="px-4 py-2">{concesion.user?.cedula}</td>
                 <td className="px-4 py-2">{concesion.Date}</td>
                 <td className="px-4 py-2">{concesion.Status || 'Pendiente'}</td>
                 <td className="px-4 py-2 space-x-2">
-                  <button onClick={() => onVerConcesion(concesion)} className="text-green-500 hover:text-green-700"><FaEye /> Ver</button>
-                  <button onClick={() => manejarEliminarConcesion(concesion.id)} className="text-red-500 hover:text-red-700"><FaTrash /> Eliminar</button>
+                  <button onClick={() => onVerConcesion(concesion)} className="button-view">
+                    <FaEye /> Ver
+                  </button>
+                  <button onClick={() => manejarEliminarConcesion(concesion.id)} className="button-delete">
+                    <FaTrash /> Eliminar
+                  </button>
                 </td>
               </tr>
             ))}

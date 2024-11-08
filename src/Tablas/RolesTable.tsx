@@ -5,6 +5,7 @@ import { DecodedToken, Role } from '../Types/Types';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import ApiRoutes from '../components/ApiRoutes';
+import "../styles/TableButtons.css"
 
 interface RolesTableProps {
   onCrearRol: () => void;
@@ -236,10 +237,10 @@ return (
                 </div>
               </td>
               <td className="py-2 px-4 border-b flex space-x-2">
-                <button onClick={() => manejarVerDetalles(rol)} className="text-blue-500 hover:underline">
+                <button onClick={() => manejarVerDetalles(rol)} className="button-view">
                   <FaEye /> Ver
                 </button>
-                <button onClick={() => manejarEliminar(rol.id)} className="text-red-500 hover:underline">
+                <button onClick={() => manejarEliminar(rol.id)} className="button-delete">
                   <FaTrash /> Eliminar
                 </button>
               </td>

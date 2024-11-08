@@ -32,6 +32,7 @@ import TablaDenunciasDashboard from '../Tablas/TablaDenuncia';
 import ApiRoutes from '../components/ApiRoutes';
 
 
+
 const AdminDashboard: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [denunciaSeleccionada, setDenunciaSeleccionada] = useState<Denuncia | null>(null);
@@ -428,19 +429,33 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  // const menuItems = [
+  //   { id: 'home', icon: Home, label: 'Inicio' },
+  //   { id: 'citas', icon: BarChart2, label: 'Citas' },
+  //   { id: 'concesiones', icon: BarChart2, label: 'Concesiones' },
+  //   { id: 'prorrogas', icon: BarChart2, label: 'Prórrogas' },
+  //   { id: 'denuncias', icon: BarChart2, label: 'Denuncias' },
+  //   { id: 'solicitudes-expedientes', icon: BarChart2, label: 'Expedientes' },
+  //   { id: 'uso-precario', icon: BarChart2, label: 'Uso Precario' }, 
+  //   { id: 'revision-planos', icon: BarChart2, label: 'Revisión de Planos' },
+  //   { id: 'users', icon: Users, label: 'Usuarios' },
+  //   { id: 'roles', icon: Settings, label: 'Gestión de Roles' },
+  //   { id: 'gestion-denuncias', icon: Settings, label: 'Gestión de Denuncias' },
+  // ];
   const menuItems = [
     { id: 'home', icon: Home, label: 'Inicio' },
-    { id: 'citas', icon: BarChart2, label: 'Citas' },
-    { id: 'concesiones', icon: BarChart2, label: 'Concesiones' },
-    { id: 'prorrogas', icon: BarChart2, label: 'Prórrogas' },
-    { id: 'denuncias', icon: BarChart2, label: 'Denuncias' },
-    { id: 'solicitudes-expedientes', icon: BarChart2, label: 'Expedientes' },
-    { id: 'uso-precario', icon: BarChart2, label: 'Uso Precario' }, 
-    { id: 'revision-planos', icon: BarChart2, label: 'Revisión de Planos' },
-    { id: 'users', icon: Users, label: 'Usuarios' },
+    { id: 'citas', icon: BarChart2, label: 'Citas', endpoint: ApiRoutes.citas.crearcita },
+    { id: 'concesiones', icon: BarChart2, label: 'Concesiones', endpoint: ApiRoutes.concesiones },
+    { id: 'prorrogas', icon: BarChart2, label: 'Prórrogas', endpoint: ApiRoutes.prorrogas },
+    { id: 'denuncias', icon: BarChart2, label: 'Denuncias', endpoint: ApiRoutes.denuncias },
+    { id: 'solicitudes-expedientes', icon: BarChart2, label: 'Expedientes', endpoint: ApiRoutes.expedientes },
+    { id: 'uso-precario', icon: BarChart2, label: 'Uso Precario', endpoint: ApiRoutes.precarios },
+    { id: 'revision-planos', icon: BarChart2, label: 'Revisión de Planos', endpoint: ApiRoutes.planos },
+    { id: 'users', icon: Users, label: 'Usuarios'},
     { id: 'roles', icon: Settings, label: 'Gestión de Roles' },
     { id: 'gestion-denuncias', icon: Settings, label: 'Gestión de Denuncias' },
   ];
+  
 
   return (
     <div className="dashboard">
@@ -465,6 +480,9 @@ const AdminDashboard: React.FC = () => {
             >
               <item.icon size={20} />
               <span>{item.label}</span>
+              {/* {item.endpoint && (
+        <PendingCountBadge endpoint={item.endpoint} status="Pendiente" />
+      )} */}
             </button>
           ))}
         </nav>

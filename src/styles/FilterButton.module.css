@@ -1,0 +1,51 @@
+.filter-buttons-container {
+    display: flex;
+    gap: 0.5rem; /* Espaciado entre botones */
+    margin-bottom: 1rem; /* Separación inferior */
+  }
+  
+  .filter-button {
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem; /* Bordes redondeados */
+    transition: background-color 0.2s, transform 0.1s; /* Transición suave */
+    font-weight: 500;
+  }
+  
+  .filter-button:hover {
+    transform: translateY(-1px); /* Efecto de "levantar" en hover */
+    filter: brightness(1.1); /* Efecto de brillo en hover */
+  }
+  
+  .button-pendiente {
+    background-color: #F59E0B !important; /* Color amarillo */
+  }
+  
+  .button-pendiente:hover {
+    background-color: #D97706 !important; /* Color amarillo oscuro en hover */
+  }
+  
+  .button-aprobada {
+    background-color: #10B981 !important; /* Color verde */
+  }
+  
+  .button-aprobada:hover {
+    background-color: #059669 !important; /* Verde oscuro en hover */
+  }
+  
+  .button-denegada {
+    background-color: #EF4444 !important; /* Color rojo */
+  }
+  
+  .button-denegada:hover {
+    background-color: #B91C1C !important; /* Rojo oscuro en hover */
+  }
+  
+  .button-todos {
+    background-color: #6B7280 !important; /* Color gris */
+  }
+  
+  .button-todos:hover {
+    background-color: #4B5563 !important;  /* Gris oscuro en hover */
+  }
+  

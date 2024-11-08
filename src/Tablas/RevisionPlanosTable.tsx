@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { DecodedToken, RevisionPlano } from '../Types/Types';
 import Paginacion from '../components/Paginacion';
-import FilterButtons from '../components/FilterButton'; // Importar el componente de filtro por estado
+import FilterButtons from '../components/FilterButton';
+import FiltroFecha from '../components/FiltroFecha';
+import SearchBar from '../components/SearchBar';
 import { eliminarEntidad } from '../Helpers/eliminarEntidad';
 import { FaEye, FaTrash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import ApiRoutes from '../components/ApiRoutes';
+import "../styles/TableButtons.css"
 
 interface RevisionplanoTableProps {
   onVerRevisionPlano: (RevisionPlano: RevisionPlano) => void;
@@ -39,6 +42,9 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [filtroEstado, setFiltroEstado] = useState<string>('todos');
+  const [fechaFiltro, setFechaFiltro] = useState<Date | null>(null);
+  const [searchText, setSearchText] = useState<string>('');
+  const [searchBy, setSearchBy] = useState<string>('nombre');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const navigate = useNavigate();
@@ -76,10 +82,10 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
       try {
         const RevisionplanoFromAPI = await fetchRevisionplano();
         setRevisionplano(RevisionplanoFromAPI);
-        setLoading(false);
       } catch (error) {
         console.error('Error al obtener las Revisionplano:', error);
         setError('Error al cargar las Revisionplano.');
+      } finally {
         setLoading(false);
       }
     };
@@ -88,15 +94,32 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
   }, [navigate]);
 
   const obtenerRevisionplanoFiltradas = () => {
-    if (filtroEstado === 'todos') return Revisionplano;
-    return Revisionplano.filter((plano) => plano.status === filtroEstado);
+    let RevisionplanoFiltradas = Revisionplano;
+
+    if (filtroEstado !== 'todos') {
+      RevisionplanoFiltradas = RevisionplanoFiltradas.filter((plano) => plano.status === filtroEstado);
+    }
+
+    if (fechaFiltro) {
+      const fechaSeleccionada = fechaFiltro.toISOString().split('T')[0];
+      RevisionplanoFiltradas = RevisionplanoFiltradas.filter((plano) => plano.Date === fechaSeleccionada);
+    }
+
+    if (searchText) {
+      RevisionplanoFiltradas = RevisionplanoFiltradas.filter((plano) =>
+        searchBy === 'nombre'
+          ? plano.user?.nombre?.toLowerCase().includes(searchText.toLowerCase())
+          : plano.user?.cedula?.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+
+    return RevisionplanoFiltradas;
   };
 
   const RevisionplanoFiltradas = obtenerRevisionplanoFiltradas();
   const indexUltimaRevisionPlano = currentPage * itemsPerPage;
   const indexPrimeraRevisionPlano = indexUltimaRevisionPlano - itemsPerPage;
   const RevisionplanoActuales = RevisionplanoFiltradas.slice(indexPrimeraRevisionPlano, indexUltimaRevisionPlano);
-
   const numeroPaginas = Math.ceil(RevisionplanoFiltradas.length / itemsPerPage);
 
   const manejarEliminarRevisionPlano = async (id: number) => {
@@ -115,8 +138,18 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
     <div className="flex flex-col w-full h-full p-4">
       <h2 className="text-2xl font-semibold mb-4">Solicitudes de Revisión de Planos</h2>
 
+      {/* Barra de búsqueda */}
+      <SearchBar
+        onSearch={setSearchText}
+        searchBy={searchBy}
+        onSearchByChange={setSearchBy}
+      />
+      {/* Filtro por fecha */}
+      <FiltroFecha fechaFiltro={fechaFiltro} onChangeFecha={setFechaFiltro} />
+
       {/* Componente de filtro por estado */}
       <FilterButtons onFilterChange={setFiltroEstado} />
+
 
       <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg">
         <table className="min-w-full divide-y divide-gray-200">
@@ -124,7 +157,6 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
             <tr>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">ID</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Nombre Solicitante</th>
-              {/* <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Apellido Solicitante</th> */}
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Cédula Solicitante</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Fecha Creación</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Estado</th>
@@ -136,15 +168,14 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
               <tr key={RevisionPlano.id}>
                 <td className="px-4 py-2">{RevisionPlano.id}</td>
                 <td className="px-4 py-2">{RevisionPlano.user?.nombre}</td>
-                {/* <td className="px-4 py-2">{RevisionPlano.user?.apellido1}</td> */}
                 <td className="px-4 py-2">{RevisionPlano.user?.cedula}</td>
                 <td className="px-4 py-2">{RevisionPlano.Date}</td>
                 <td className="px-4 py-2">{RevisionPlano.status || 'Pendiente'}</td>
                 <td className="px-4 py-2 space-x-2">
-                  <button onClick={() => onVerRevisionPlano(RevisionPlano)} className="text-green-500 hover:text-green-700">
+                  <button onClick={() => onVerRevisionPlano(RevisionPlano)} className="button-view">
                     <FaEye /> Ver
                   </button>
-                  <button onClick={() => manejarEliminarRevisionPlano(RevisionPlano.id)} className="text-red-500 hover:text-red-700">
+                  <button onClick={() => manejarEliminarRevisionPlano(RevisionPlano.id)} className="button-delete">
                     <FaTrash /> Eliminar
                   </button>
                 </td>
