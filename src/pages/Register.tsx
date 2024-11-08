@@ -34,7 +34,7 @@ function Register() {
     }
 
     try {
-      const response = await fetch(`${ApiRoutes.usuarios.usuariosbase}/register`, {
+      const response = await fetch(`${ApiRoutes.urlBase}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
