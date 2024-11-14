@@ -190,6 +190,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import axios from 'axios';
 import '../styles/Register.css';
 import ApiRoutes from '../components/ApiRoutes';
 
@@ -205,6 +206,8 @@ function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  const origin = "admin"; // Define el origen de la solicitud
 
   // Alternar visibilidad de las contraseñas
   const togglePasswordVisibility = () => {
@@ -223,38 +226,28 @@ function Register() {
     }
 
     try {
-      const response = await fetch(`${ApiRoutes.urlBase}/users/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          nombre,
-          apellido1,
-          apellido2,
-          telefono,
-          cedula,
-          email,
-          password: password.trim(),
-          confirmPassword: confirmPassword.trim(),
-          origin: "user"  // Aquí agregamos el parámetro origin
-        }),
+      // Enviar la solicitud de registro con el origen incluido
+      const response = await axios.post(`${ApiRoutes.urlBase}/users/register`, {
+        nombre,
+        apellido1,
+        apellido2,
+        telefono,
+        cedula,
+        email,
+        password: password.trim(),
+        confirmPassword: confirmPassword.trim(),
+        origin, // Parámetro `origin` agregado en el cuerpo
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Error al registrar');
-      }
 
       // Mostrar alerta de confirmación de registro exitoso
       window.alert('Usuario registrado exitosamente. Por favor, revisa tu correo electrónico para verificar tu cuenta.');
 
       // Redirigir al usuario a la página de inicio de sesión
       navigate('/login');
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        setError(error.message);
+    } catch (error) {
+      // Manejo de errores
+      if (axios.isAxiosError(error) && error.response) {
+        setError(error.response.data.message || 'Error al registrar');
       } else {
         setError("Ocurrió un error inesperado.");
       }
