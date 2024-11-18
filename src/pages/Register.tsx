@@ -227,7 +227,9 @@ function Register() {
 
     try {
       // Enviar la solicitud de registro con el origen incluido
-      const response = await axios.post(`${ApiRoutes.urlBase}/users/register`, {
+      // const response = await axios.post(`${ApiRoutes.urlBase}/users/register`, {
+        await axios.post(`${ApiRoutes.urlBase}/users/register`, {
+
         nombre,
         apellido1,
         apellido2,
