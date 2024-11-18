@@ -207,7 +207,7 @@ function Register() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const origin = "admin"; // Define el origen de la solicitud
+  const origin = "user"; // Define el origen de la solicitud
 
   // Alternar visibilidad de las contraseñas
   const togglePasswordVisibility = () => {
