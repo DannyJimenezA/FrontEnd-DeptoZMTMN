@@ -13,7 +13,7 @@ const ConfirmAccount = () => {
     // Función para confirmar la cuenta
     const confirmAccount = async () => {
       try {
-        const response = await axios.get(`${ApiRoutes.usuarios}/confirm/${token}`);
+        const response = await axios.get(ApiRoutes.usuarios.confirmarusuario);
         setMessage(response.data.message); // Mensaje de éxito
       } catch (error) {
         // Verificación de tipo para AxiosError
