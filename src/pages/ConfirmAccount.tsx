@@ -20,7 +20,7 @@ const ConfirmAccount = () => {
         }
 
         // Realizar la solicitud al backend
-        const response = await axios.get(`${ApiRoutes.urlBase}users/confirm/${token}`);
+        const response = await axios.get(`${ApiRoutes.urlBase}/users/confirm/${token}`);
         setMessage(response.data.message || 'Cuenta confirmada con éxito.'); // Mensaje en caso de éxito
       } catch (error) {
         const err = error as AxiosError<{ message: string }>;
