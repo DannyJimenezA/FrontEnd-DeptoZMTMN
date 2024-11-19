@@ -5,7 +5,7 @@ const ApiRoutes = {
   // Definimos las rutas de cada recurso
   usuarios:  {
     usuariosbase: `${BASE_URL}/users`,
-    confirmarusuario:`${BASE_URL}/users/confirm/:token`
+    confirmarusuario:`${BASE_URL}/users/confirm`
     
   },
   auth: {
