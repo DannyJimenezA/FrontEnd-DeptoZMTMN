@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import axios, { AxiosError } from 'axios';
 import ApiRoutes from '../components/ApiRoutes';
 
@@ -7,7 +7,7 @@ const ConfirmAccount = () => {
   const { token } = useParams<{ token: string }>(); // Captura el token desde la URL
   const [message, setMessage] = useState<string>(''); // Estado para el mensaje
   const [loading, setLoading] = useState<boolean>(true); // Estado para indicar carga
-  const navigate = useNavigate(); // Para redirigir al usuario
+  // const navigate = useNavigate(); // Para redirigir al usuario
 
   useEffect(() => {
     const confirmAccount = async () => {
