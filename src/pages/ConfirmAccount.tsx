@@ -48,7 +48,8 @@ const ConfirmAccount = () => {
       ) : (
         <>
           <h2>{message}</h2> {/* Mostrar mensaje del backend */}
-          <button onClick={() => navigate('/login')}>Ir a Iniciar Sesión</button>
+          {/* <button onClick={() => navigate('/login')}>Ir a Iniciar Sesión</button> */}
+          Puede cerrar esta pestaña
         </>
       )}
     </div>

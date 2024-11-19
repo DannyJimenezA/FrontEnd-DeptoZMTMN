@@ -45,7 +45,7 @@ const ResetPassword = () => {
     setIsSubmitting(true); // Desactiva el botón mientras se envía la solicitud
 
     try {
-      const response = await axios.post(`${ApiRoutes.usuarios}/reset-password`, {
+      const response = await axios.post(`${ApiRoutes.usuarios.usuariosbase}/reset-password`, {
         token, // Incluye el token en el cuerpo si el backend lo requiere
         newPassword,
       });
