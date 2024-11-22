@@ -5,6 +5,9 @@
 // import ApiRoutes from '../components/ApiRoutes';
 // import "../styles/TableButtons.css";
 
+// interface RolesTableProps {
+//   onCrearRol: () => void; // Define la prop para manejar la creación de roles
+// }
 
 // const fetchRoles = async (): Promise<Role[]> => {
 //   const token = localStorage.getItem('token');
@@ -34,7 +37,7 @@
 //   }
 // };
 
-// const RolesTable: React.FC = () => {
+// const RolesTable: React.FC<RolesTableProps> = ({ onCrearRol }) => {
 //   const [roles, setRoles] = useState<Role[]>([]);
 //   const [loading, setLoading] = useState<boolean>(true);
 //   const [error, setError] = useState<string | null>(null);
@@ -137,7 +140,7 @@
 //       <div className="mb-4 flex justify-between">
 //         <button
 //           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-//           onClick={() => setShowModal(true)} // Mostrar el modal
+//           onClick={onCrearRol} // Llama a la función pasada desde el Dashboard
 //         >
 //           <FaPlus className="mr-2" /> Crear Nuevo Rol
 //         </button>
@@ -172,46 +175,6 @@
 //           </tbody>
 //         </table>
 //       </div>
-
-//       {/* Modal para crear un nuevo rol */}
-//       {showModal && (
-//         <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center">
-//           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-//             <h3 className="text-xl font-bold mb-4">Crear Nuevo Rol</h3>
-//             <div className="mb-4">
-//               <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del Rol</label>
-//               <input
-//                 type="text"
-//                 value={nuevoRol.name}
-//                 onChange={(e) => setNuevoRol({ ...nuevoRol, name: e.target.value })}
-//                 className="w-full px-3 py-2 border rounded-lg"
-//               />
-//             </div>
-//             <div className="mb-4">
-//               <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-//               <textarea
-//                 value={nuevoRol.description}
-//                 onChange={(e) => setNuevoRol({ ...nuevoRol, description: e.target.value })}
-//                 className="w-full px-3 py-2 border rounded-lg"
-//               />
-//             </div>
-//             <div className="flex justify-end space-x-2">
-//               <button
-//                 onClick={() => setShowModal(false)}
-//                 className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-//               >
-//                 Cancelar
-//               </button>
-//               <button
-//                 onClick={manejarGuardarNuevoRol}
-//                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-//               >
-//                 Guardar
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       )}
 //     </div>
 //   );
 // };
@@ -226,7 +189,7 @@ import ApiRoutes from '../components/ApiRoutes';
 import "../styles/TableButtons.css";
 
 interface RolesTableProps {
-  onCrearRol: () => void; // Define la prop para manejar la creación de roles
+  onCrearRol: () => void;
 }
 
 const fetchRoles = async (): Promise<Role[]> => {
@@ -257,11 +220,11 @@ const fetchRoles = async (): Promise<Role[]> => {
   }
 };
 
-const RolesTable: React.FC<RolesTableProps> = ({ onCrearRol }) => {
+const RolesTable: React.FC<RolesTableProps> = ({ }) => {
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [rolSeleccionado, setRolSeleccionado] = useState<Role | null>(null); // Estado para almacenar el rol seleccionado
+  const [rolSeleccionado, setRolSeleccionado] = useState<Role | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false); // Estado para mostrar/ocultar el modal
   const [nuevoRol, setNuevoRol] = useState<{ name: string; description: string }>({ name: '', description: '' });
 
@@ -282,7 +245,7 @@ const RolesTable: React.FC<RolesTableProps> = ({ onCrearRol }) => {
   }, []);
 
   const manejarVerDetalles = (rol: Role) => {
-    setRolSeleccionado(rol); // Almacena el rol seleccionado
+    setRolSeleccionado(rol);
   };
 
   const manejarEliminar = async (id: number) => {
@@ -341,13 +304,12 @@ const RolesTable: React.FC<RolesTableProps> = ({ onCrearRol }) => {
   };
 
   const manejarVolverAListaRoles = () => {
-    setRolSeleccionado(null); // Restablece el rol seleccionado a null para volver a la tabla
+    setRolSeleccionado(null);
   };
 
   if (loading) return <p className="text-center">Cargando roles...</p>;
   if (error) return <p className="text-red-500 text-center">{error}</p>;
 
-  // Si se selecciona un rol, renderiza el componente AsignarPermisosForm
   if (rolSeleccionado) {
     return (
       <AsignarPermisosForm rol={rolSeleccionado} onCancelar={manejarVolverAListaRoles} />
@@ -360,7 +322,7 @@ const RolesTable: React.FC<RolesTableProps> = ({ onCrearRol }) => {
       <div className="mb-4 flex justify-between">
         <button
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          onClick={onCrearRol} // Llama a la función pasada desde el Dashboard
+          onClick={() => setShowModal(true)}
         >
           <FaPlus className="mr-2" /> Crear Nuevo Rol
         </button>
@@ -395,6 +357,46 @@ const RolesTable: React.FC<RolesTableProps> = ({ onCrearRol }) => {
           </tbody>
         </table>
       </div>
+
+      {/* Modal para crear un nuevo rol */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h3 className="text-xl font-bold mb-4">Crear Nuevo Rol</h3>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del Rol</label>
+              <input
+                type="text"
+                value={nuevoRol.name}
+                onChange={(e) => setNuevoRol({ ...nuevoRol, name: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+              <textarea
+                value={nuevoRol.description}
+                onChange={(e) => setNuevoRol({ ...nuevoRol, description: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+            </div>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={manejarGuardarNuevoRol}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
