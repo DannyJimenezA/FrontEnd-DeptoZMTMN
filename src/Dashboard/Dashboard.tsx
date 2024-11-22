@@ -395,7 +395,7 @@ const AdminDashboard: React.FC = () => {
     }
 
     if (rolSeleccionado) {
-      return <AsignarPermisosForm rol={rolSeleccionado} onCancelar={manejarVolverRoles} />;
+      return <AsignarPermisosForm rol={rolSeleccionado} onCancelar={manejarVolverRoles}/>;
     }
 
     if (activeSection === 'roles') {
@@ -429,19 +429,7 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  // const menuItems = [
-  //   { id: 'home', icon: Home, label: 'Inicio' },
-  //   { id: 'citas', icon: BarChart2, label: 'Citas' },
-  //   { id: 'concesiones', icon: BarChart2, label: 'Concesiones' },
-  //   { id: 'prorrogas', icon: BarChart2, label: 'Prórrogas' },
-  //   { id: 'denuncias', icon: BarChart2, label: 'Denuncias' },
-  //   { id: 'solicitudes-expedientes', icon: BarChart2, label: 'Expedientes' },
-  //   { id: 'uso-precario', icon: BarChart2, label: 'Uso Precario' }, 
-  //   { id: 'revision-planos', icon: BarChart2, label: 'Revisión de Planos' },
-  //   { id: 'users', icon: Users, label: 'Usuarios' },
-  //   { id: 'roles', icon: Settings, label: 'Gestión de Roles' },
-  //   { id: 'gestion-denuncias', icon: Settings, label: 'Gestión de Denuncias' },
-  // ];
+
   const menuItems = [
     { id: 'home', icon: Home, label: 'Inicio' },
     { id: 'citas', icon: BarChart2, label: 'Citas', endpoint: ApiRoutes.citas.crearcita },
