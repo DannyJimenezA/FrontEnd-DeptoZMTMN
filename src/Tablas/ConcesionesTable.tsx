@@ -12,13 +12,12 @@ interface ConcesionesTableProps {
 
 const fetchConcesiones = async (): Promise<Concesion[]> => {
   const urlBase = 'http://localhost:3000/Concesiones'; // Ajusta la URL de tu API
-  const token = localStorage.getItem('token');
+
   try {
     const response = await fetch(urlBase, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
       },
     });
 
