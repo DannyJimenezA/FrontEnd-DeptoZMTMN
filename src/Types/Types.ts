@@ -1,9 +1,27 @@
-// Interfaz para DecodedToken
+// Interfaz para DecodedToken con roles y permisos incluidos
 export interface DecodedToken {
-  roles: string[];
+  roles: Role[]; // Lista de roles del usuario
+  permissions: Permission[]; // Lista de permisos del usuario
+  sub: number; // ID del usuario (userId)
+  email: string;
+  name: string;
 }
 
-// Interfaz para la entidad Denuncia
+// Interfaz para los permisos
+export interface Permission {
+  id: number;
+  action: string;
+  resource: string;
+}
+
+// Interfaz para los roles
+export interface Role {
+  id: number;
+  name: string;
+  permissions: Permission[]; // Lista de permisos asociados al rol
+}
+
+// Interfaz para las entidades relacionadas
 export interface Denuncia {
   id: number;
   Date: string;
@@ -28,7 +46,6 @@ export interface Denuncia {
   Status: string;
 }
 
-// Interfaz para la entidad Concesion
 export interface Concesion {
   id: number;
   ArchivoAdjunto: string;
@@ -42,11 +59,10 @@ export interface Concesion {
   };
 }
 
-// Interfaz para el uso precario
 export interface Precario {
   id: number;
   ArchivoAdjunto: string;
-  Date: String;
+  Date: string;
   Status?: string;
   user?: {
     cedula: number;
@@ -57,9 +73,8 @@ export interface Precario {
   };
 }
 
-// Interfaz para copia expediente
 export interface CopiaExpediente {
-  id:number,
+  id: number;
   Date: string;
   idExpediente: number;
   nombreSolicitante: string;
@@ -78,7 +93,6 @@ export interface CopiaExpediente {
   };
 }
 
-
 export interface RevisionPlano {
   id: number;
   Date: string;
@@ -96,12 +110,10 @@ export interface RevisionPlano {
   };
 }
 
-
-// Interfaz para las prórrogas
 export interface Prorroga {
   id: number;
   ArchivoAdjunto: string;
-  Date: String; 
+  Date: string; 
   Status?: string;
   user?: {
     id: number;
@@ -113,12 +125,10 @@ export interface Prorroga {
   };
 }
 
-
-// Interfaz para las citas
 export interface Cita {
   id: number;
   description: string;
-  date: string; // Fecha como string (ISO)
+  date: string; 
   time: string;
   user: {
     id: number;
@@ -129,8 +139,6 @@ export interface Cita {
   status: string;
 }
 
-
-// Interfaz para los usuarios
 export interface User {
   id: number;
   nombre: string;
@@ -142,21 +150,7 @@ export interface User {
     id: number;
     name: string;
     permissions: Permission[];
-  };
-}
-
-
-export interface Permission {
-  id: number;
-  action: string;
-  resource: string;
-}
-
- export interface Role {
-  id: number;
-  name: string;
-  users: User[];
-  permissions: Permission[];
+  }[];
 }
 
 export interface Usuario {
@@ -170,6 +164,5 @@ export interface Usuario {
   isActive: boolean;
   roles: {
     name: string;
-  }
-  
+  }[];
 }

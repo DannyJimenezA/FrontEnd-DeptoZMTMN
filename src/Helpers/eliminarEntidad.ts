@@ -7,10 +7,14 @@ export const eliminarEntidad = async <T extends { id: number }>(
   ) => {
     const confirmacion = window.confirm(`¿Estás seguro de que deseas eliminar esta ${entidad}?`);
     if (!confirmacion) return;
-  
+    const token = localStorage.getItem('token'); 
     try {
       const response = await fetch(`http://localhost:3000/${entidad}/${id}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Añadir el token en los encabezados
+        },
       });
   
       if (!response.ok) {
