@@ -70,3 +70,14 @@ body {
     color: #555; /* Oscurece el color del ícono al pasar el cursor */
   }
   
+  /* Oculta el ícono de mostrar contraseña en Microsoft Edge */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+/* Oculta el ícono de mostrar contraseña en Chrome, Safari y otros navegadores basados en WebKit */
+input[type="password"]::-webkit-contacts-auto-fill-button,
+input[type="password"]::-webkit-textfield-decoration-container {
+  display: none !important;
+}
