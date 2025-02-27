@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Importa useNavigate para redirección
 import {jwtDecode} from 'jwt-decode'; // Asegúrate de que jwt-decode esté instalado
 import "../../styles/Administrativos/TablaSolicitudConcesio.css";
+import ApiRoutes from '../../components/ApiRoutes';
 
 // Interfaz para las solicitudes
 interface Solicitud {
@@ -26,10 +27,10 @@ interface Role {
 
 // Función para obtener las solicitudes desde la API
 const fetchSolicitudes = async (): Promise<Solicitud[]> => {
-  const urlBase = 'http://localhost:3000/Users';
+
 
   try {
-    const response = await fetch(urlBase, {
+    const response = await fetch(ApiRoutes.usuarios.usuariosbase, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -61,7 +62,7 @@ const fetchSolicitudes = async (): Promise<Solicitud[]> => {
 
 // Función para obtener los roles de un usuario
 const fetchUserRoles = async (userId: number): Promise<Role[]> => {
-  const urlBase = `http://localhost:3000/users/${userId}/roles`;
+  const urlBase = ` ${ApiRoutes.usuarios}/${userId}/roles`;
 
   try {
     const response = await fetch(urlBase, {
@@ -86,7 +87,7 @@ const fetchUserRoles = async (userId: number): Promise<Role[]> => {
 
 // Función para asignar roles a un usuario utilizando PATCH
 const assignRolesToUser = async (userId: number, roles: number[]) => {
-  const urlBase = `http://localhost:3000/users/${userId}/roles`;
+  const urlBase = `${ApiRoutes.usuarios}/${userId}/roles`;
 
   try {
     const response = await fetch(urlBase, {

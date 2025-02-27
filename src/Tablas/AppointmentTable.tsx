@@ -1,21 +1,26 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import '../styles/Global.css';
 import { Cita, DecodedToken } from '../Types/Types';
 import { FaEye, FaTrash } from 'react-icons/fa';
 import Paginacion from '../components/Paginacion';
-import FilterButtons from '../components/FilterButton'; // Importa el componente de filtro por estado
+import FilterButtons from '../components/FilterButton';
+import ApiRoutes from '../components/ApiRoutes';
+import FiltroFecha from '../components/FiltroFecha';
+import SearchBar from '../components/SearchBar'; // Importa el componente de búsqueda
+import "../styles/TableButtons.css"
 
 interface CitasTableProps {
   onVerCita: (cita: Cita) => void;
 }
 
 const fetchCitas = async (): Promise<Cita[]> => {
-  const urlBase = 'http://localhost:3000/appointments';
   const token = localStorage.getItem('token');
+  if (!token) throw new Error('Token no encontrado');
+  
   try {
-    const response = await fetch(urlBase, {
+    const response = await fetch(ApiRoutes.citas.crearcita, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -39,7 +44,10 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
   const [citas, setCitas] = useState<Cita[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [filtroEstado, setFiltroEstado] = useState<string>('todos'); // Estado para el filtro
+  const [filtroEstado, setFiltroEstado] = useState<string>('todos');
+  const [fechaFiltro, setFechaFiltro] = useState<Date | null>(null);
+  const [searchText, setSearchText] = useState<string>(''); // Estado para el texto de búsqueda
+  const [searchBy, setSearchBy] = useState<string>('nombre'); // Estado para el criterio de búsqueda
   const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,49 +55,42 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-
-    if (token) {
-      try {
-        const decodedToken = jwtDecode<DecodedToken>(token);
-        console.log(decodedToken.permissions);
-        console.log(decodedToken); // Imprime el token decodificado
-  
-        // Validar que 'permissions' exista y sea un array
-        const hasPermission = decodedToken.permissions.some(
-          (permission: { action: string; resource: string }) =>
-            permission.action === 'GET' && permission.resource === 'appointments'
-        );
-  
-        if (!hasPermission) {
-          window.alert('No tienes permiso para acceder a esta página.');
-          navigate('/');
-          return;
-        }
-      } catch (error) {
-        console.error('Error al decodificar el token:', error);
-        window.alert('Ha ocurrido un error. Por favor, inicie sesión nuevamente.');
-        navigate('/login');
-        return;
-      }
-    } else {
+    if (!token) {
       window.alert('No se ha encontrado un token de acceso. Por favor, inicie sesión.');
       navigate('/login');
       return;
     }
-  
-    // Función para obtener las citas desde la API
+
+    try {
+      const decodedToken = jwtDecode<DecodedToken>(token);
+      const hasPermission = decodedToken.permissions.some(
+        (permission) => permission.action === 'GET' && permission.resource === 'appointments'
+      );
+
+      if (!hasPermission) {
+        window.alert('No tienes permiso para acceder a esta página.');
+        navigate('/');
+        return;
+      }
+    } catch (error) {
+      console.error('Error al decodificar el token:', error);
+      window.alert('Ha ocurrido un error. Por favor, inicie sesión nuevamente.');
+      navigate('/login');
+      return;
+    }
+
     const obtenerCitas = async () => {
       try {
         const citasFromAPI = await fetchCitas();
         setCitas(citasFromAPI);
-        setLoading(false);
       } catch (error) {
         console.error('Error al obtener las citas:', error);
         setError('Error al cargar las citas.');
+      } finally {
         setLoading(false);
       }
     };
-  
+
     obtenerCitas();
   }, [navigate]);
 
@@ -100,11 +101,12 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
     const token = localStorage.getItem('token');
     if (!token) {
       console.error('Token no encontrado');
+      alert('No tienes permisos para realizar esta acción.');
       return;
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/appointments/${id}`, {
+      const response = await fetch(`${ApiRoutes.citas.crearcita}/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -113,6 +115,11 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
       });
 
       if (!response.ok) {
+        if (response.status === 403) {
+          alert('No tienes permisos para eliminar esta cita.');
+        } else {
+          alert('Error al eliminar la cita.');
+        }
         throw new Error(`Error al eliminar la cita con ID: ${id}`);
       }
 
@@ -126,62 +133,85 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
   if (loading) return <p>Cargando citas...</p>;
   if (error) return <p>{error}</p>;
 
-  // Filtrar las citas según el estado seleccionado
   const obtenerCitasFiltradas = () => {
-    if (filtroEstado === 'todos') return citas;
-    return citas.filter((cita) => cita.status === filtroEstado);
+    let citasFiltradas = citas;
+
+    if (filtroEstado !== 'todos') {
+      citasFiltradas = citasFiltradas.filter((cita) => cita.status === filtroEstado);
+    }
+
+    if (fechaFiltro) {
+      const fechaSeleccionada = fechaFiltro.toISOString().split('T')[0];
+      citasFiltradas = citasFiltradas.filter((cita) => cita.date === fechaSeleccionada);
+    }
+
+    if (searchText) {
+      citasFiltradas = citasFiltradas.filter((cita) =>
+        searchBy === 'nombre'
+          ? cita.user?.nombre?.toLowerCase().includes(searchText.toLowerCase())
+          : cita.user?.cedula?.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+
+    return citasFiltradas;
   };
 
-  // Cálculo de citas a mostrar según la paginación
   const citasFiltradas = obtenerCitasFiltradas();
-
   const indexUltimaCita = currentPage * itemsPerPage;
   const indexPrimeraCita = indexUltimaCita - itemsPerPage;
   const citasActuales = citasFiltradas.slice(indexPrimeraCita, indexUltimaCita);
-
   const totalPages = Math.ceil(citasFiltradas.length / itemsPerPage);
 
   return (
-    <div className="tabla-container">
-      <h2>Citas Programadas</h2>
+    <div className="flex flex-col w-full h-full p-4">
+      <h2 className="text-2xl font-semibold mb-4">Citas Programadas</h2>
 
-      {/* Componente de filtro por estado */}
+      {/* Barra de búsqueda */}
+      <SearchBar
+        onSearch={setSearchText}
+        searchBy={searchBy}
+        onSearchByChange={setSearchBy}
+      />
+      {/* Filtro por fecha */}
+      <FiltroFecha fechaFiltro={fechaFiltro} onChangeFecha={setFechaFiltro} />
+
+      {/* Filtro por estado */}
       <FilterButtons onFilterChange={setFiltroEstado} />
 
-      <table className="tabla-solicitudes">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Fecha Y Hora</th>
-            <th>Cédula Solicitante</th>
-            <th>Nombre Solicitante</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {citasActuales.map((cita) => (
-            <tr key={cita.id}>
-              <td>{cita.id}</td>
-              <td>{new Date(cita.date).toLocaleDateString()}  {cita.time}</td>
-              <td>{cita.user?.cedula || 'No disponible'}</td>
-              <td>{cita.user?.nombre || 'No disponible'}</td>
-              <td>{cita.status}</td>
-              <td>
-                <button
-                  className="boton-ver"
-                  onClick={() => onVerCita(cita)}
-                >
-                  <FaEye /> Ver
-                </button>
-                <button onClick={() => manejarEliminar(cita.id)}>
-                  <FaTrash /> Eliminar
-                </button>
-              </td>
+
+      <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">ID</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Fecha y Hora</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Cédula Solicitante</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Nombre Solicitante</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Estado</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {citasActuales.map((cita) => (
+              <tr key={cita.id}>
+                <td className="px-4 py-2">{cita.id}</td>
+                <td className="px-4 py-2">{cita.date} {cita.time}</td>
+                <td className="px-4 py-2">{cita.user?.cedula || 'No disponible'}</td>
+                <td className="px-4 py-2">{cita.user?.nombre || 'No disponible'}</td>
+                <td className="px-4 py-2">{cita.status}</td>
+                <td className="px-4 py-2 space-x-2">
+                  <button onClick={() => onVerCita(cita)} className="button-view">
+                    <FaEye /> Ver
+                  </button>
+                  <button onClick={() => manejarEliminar(cita.id)} className="button-delete">
+                    <FaTrash /> Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <Paginacion
         currentPage={currentPage}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CopiaExpediente } from '../Types/Types';
+import ApiRoutes from '../components/ApiRoutes';
 
 interface DetalleExpedienteProps {
   expediente: CopiaExpediente;
@@ -18,7 +19,7 @@ const DetalleExpediente: React.FC<DetalleExpedienteProps> = ({ expediente, onVol
     }
 
     try {
-      const response = await fetch('http://localhost:3000/mailer/send-custom-message', {
+      const response = await fetch(`${ApiRoutes.urlBase}/mailer/send-custom-message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

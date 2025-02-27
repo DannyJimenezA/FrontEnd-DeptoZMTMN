@@ -18,8 +18,11 @@ export interface Permission {
 export interface Role {
   id: number;
   name: string;
-  permissions: Permission[]; // Lista de permisos asociados al rol
-}
+  description: string;
+  permissions: Permission[]; 
+  users: {
+    
+  }}
 
 // Interfaz para las entidades relacionadas
 export interface Denuncia {
@@ -52,7 +55,7 @@ export interface Concesion {
   Date: string;
   Status?: string;
   user?: {
-    cedula: number;
+    cedula: string;
     nombre: string;
     apellido1: string;
     email: string;
@@ -65,7 +68,7 @@ export interface Precario {
   Date: string;
   Status?: string;
   user?: {
-    cedula: number;
+    cedula: string;
     nombre: string;
     apellido1: string;
     apellido2: string;
@@ -141,6 +144,7 @@ export interface Cita {
 
 export interface User {
   id: number;
+  cedula: string;
   nombre: string;
   apellido1: string;
   apellido2: string;
@@ -155,7 +159,7 @@ export interface User {
 
 export interface Usuario {
   id: number;
-  cedula: number;
+  cedula: string;
   nombre: string;
   apellido1: string;
   apellido2: string;
@@ -163,6 +167,7 @@ export interface Usuario {
   telefono: number;
   isActive: boolean;
   roles: {
+    id: number,
     name: string;
   }[];
 }

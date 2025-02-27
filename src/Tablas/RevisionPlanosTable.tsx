@@ -1,21 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { DecodedToken, RevisionPlano } from '../Types/Types';
 import Paginacion from '../components/Paginacion';
-import FilterButtons from '../components/FilterButton'; // Importar el componente de filtro por estado
+import FilterButtons from '../components/FilterButton';
+import FiltroFecha from '../components/FiltroFecha';
+import SearchBar from '../components/SearchBar';
 import { eliminarEntidad } from '../Helpers/eliminarEntidad';
 import { FaEye, FaTrash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import ApiRoutes from '../components/ApiRoutes';
+import "../styles/TableButtons.css"
 
 interface RevisionplanoTableProps {
   onVerRevisionPlano: (RevisionPlano: RevisionPlano) => void;
 }
 
 const fetchRevisionplano = async (): Promise<RevisionPlano[]> => {
-  const urlBase = 'http://localhost:3000/Revision-Plano';
   const token = localStorage.getItem('token');
   try {
-    const response = await fetch(urlBase, {
+    const response = await fetch(ApiRoutes.planos, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -38,25 +41,26 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
   const [Revisionplano, setRevisionplano] = useState<RevisionPlano[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [filtroEstado, setFiltroEstado] = useState<string>('todos'); // Estado para el filtro de estado
+  const [filtroEstado, setFiltroEstado] = useState<string>('todos');
+  const [fechaFiltro, setFechaFiltro] = useState<Date | null>(null);
+  const [searchText, setSearchText] = useState<string>('');
+  const [searchBy, setSearchBy] = useState<string>('nombre');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const navigate = useNavigate();
+
   useEffect(() => {
     const token = localStorage.getItem('token');
 
     if (token) {
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
-        console.log(decodedToken.permissions);
-        console.log(decodedToken); // Imprime el token decodificado
-  
-        // Validar que 'permissions' exista y sea un array
+
         const hasPermission = decodedToken.permissions.some(
           (permission: { action: string; resource: string }) =>
             permission.action === 'GET' && permission.resource === 'revisionplano'
         );
-  
+
         if (!hasPermission) {
           window.alert('No tienes permiso para acceder a esta página.');
           navigate('/');
@@ -73,35 +77,51 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
       navigate('/login');
       return;
     }
+
     const obtenerRevisionplano = async () => {
       try {
         const RevisionplanoFromAPI = await fetchRevisionplano();
         setRevisionplano(RevisionplanoFromAPI);
-        setLoading(false);
       } catch (error) {
         console.error('Error al obtener las Revisionplano:', error);
         setError('Error al cargar las Revisionplano.');
+      } finally {
         setLoading(false);
       }
     };
 
     obtenerRevisionplano();
-  }, []);
+  }, [navigate]);
 
-  // Filtrar las solicitudes de revisión de planos según el estado seleccionado
   const obtenerRevisionplanoFiltradas = () => {
-    if (filtroEstado === 'todos') return Revisionplano;
-    return Revisionplano.filter((plano) => plano.status === filtroEstado);
+    let RevisionplanoFiltradas = Revisionplano;
+
+    if (filtroEstado !== 'todos') {
+      RevisionplanoFiltradas = RevisionplanoFiltradas.filter((plano) => plano.status === filtroEstado);
+    }
+
+    if (fechaFiltro) {
+      const fechaSeleccionada = fechaFiltro.toISOString().split('T')[0];
+      RevisionplanoFiltradas = RevisionplanoFiltradas.filter((plano) => plano.Date === fechaSeleccionada);
+    }
+
+    if (searchText) {
+      RevisionplanoFiltradas = RevisionplanoFiltradas.filter((plano) =>
+        searchBy === 'nombre'
+          ? plano.user?.nombre?.toLowerCase().includes(searchText.toLowerCase())
+          : plano.user?.cedula?.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+
+    return RevisionplanoFiltradas;
   };
 
   const RevisionplanoFiltradas = obtenerRevisionplanoFiltradas();
   const indexUltimaRevisionPlano = currentPage * itemsPerPage;
   const indexPrimeraRevisionPlano = indexUltimaRevisionPlano - itemsPerPage;
   const RevisionplanoActuales = RevisionplanoFiltradas.slice(indexPrimeraRevisionPlano, indexUltimaRevisionPlano);
-
   const numeroPaginas = Math.ceil(RevisionplanoFiltradas.length / itemsPerPage);
 
-  // Función para eliminar una solicitud de revisión de plano
   const manejarEliminarRevisionPlano = async (id: number) => {
     await eliminarEntidad<RevisionPlano>('Revision-Plano', id, setRevisionplano);
   };
@@ -115,52 +135,63 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
   }
 
   return (
-    <div>
-      <div className="tabla-container">
-        <h2>Solicitudes de Revisión de Planos</h2>
+    <div className="flex flex-col w-full h-full p-4">
+      <h2 className="text-2xl font-semibold mb-4">Solicitudes de Revisión de Planos</h2>
 
-        {/* Componente de filtro por estado */}
-        <FilterButtons onFilterChange={setFiltroEstado} />
+      {/* Barra de búsqueda */}
+      <SearchBar
+        onSearch={setSearchText}
+        searchBy={searchBy}
+        onSearchByChange={setSearchBy}
+      />
+      {/* Filtro por fecha */}
+      <FiltroFecha fechaFiltro={fechaFiltro} onChangeFecha={setFechaFiltro} />
 
-        <table className="tabla-solicitudes">
-          <thead>
+      {/* Componente de filtro por estado */}
+      <FilterButtons onFilterChange={setFiltroEstado} />
+
+
+      <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
             <tr>
-              <th>ID</th>
-              <th>Nombre Solicitante</th>
-              <th>Apellidos Solicitante</th>
-              <th>Cédula Solicitante</th>
-              <th>Fecha Creacion</th>
-              <th>Estado</th>
-              <th>Acciones</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">ID</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Nombre Solicitante</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Cédula Solicitante</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Fecha Creación</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Estado</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Acciones</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-200">
             {RevisionplanoActuales.map((RevisionPlano) => (
               <tr key={RevisionPlano.id}>
-                <td>{RevisionPlano.id}</td>
-                <td>{RevisionPlano.user?.nombre}</td>
-                <td>{RevisionPlano.user?.apellido1}</td>
-                <td>{RevisionPlano.user?.cedula}</td>
-                <td>{RevisionPlano.Date}</td>
-                <td>{RevisionPlano.status || 'Pendiente'}</td>
-                <td>
-                  <button onClick={() => onVerRevisionPlano(RevisionPlano)}><FaEye /> Ver</button>
-                  <button onClick={() => manejarEliminarRevisionPlano(RevisionPlano.id)}><FaTrash /> Eliminar</button>
+                <td className="px-4 py-2">{RevisionPlano.id}</td>
+                <td className="px-4 py-2">{RevisionPlano.user?.nombre}</td>
+                <td className="px-4 py-2">{RevisionPlano.user?.cedula}</td>
+                <td className="px-4 py-2">{RevisionPlano.Date}</td>
+                <td className="px-4 py-2">{RevisionPlano.status || 'Pendiente'}</td>
+                <td className="px-4 py-2 space-x-2">
+                  <button onClick={() => onVerRevisionPlano(RevisionPlano)} className="button-view">
+                    <FaEye /> Ver
+                  </button>
+                  <button onClick={() => manejarEliminarRevisionPlano(RevisionPlano.id)} className="button-delete">
+                    <FaTrash /> Eliminar
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-
-        {/* Componente de Paginación */}
-        <Paginacion
-          currentPage={currentPage}
-          totalPages={numeroPaginas}
-          itemsPerPage={itemsPerPage}
-          onPageChange={setCurrentPage}
-          onItemsPerPageChange={setItemsPerPage}
-        />
       </div>
+
+      <Paginacion
+        currentPage={currentPage}
+        totalPages={numeroPaginas}
+        itemsPerPage={itemsPerPage}
+        onPageChange={setCurrentPage}
+        onItemsPerPageChange={setItemsPerPage}
+      />
     </div>
   );
 };

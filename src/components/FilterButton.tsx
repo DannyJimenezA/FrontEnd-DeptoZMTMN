@@ -1,34 +1,79 @@
-// src/components/FilterButtons.tsx
-import React from 'react';
+// import React from 'react';
+// import styles from '../styles/FilterButton.module.css';
+
+// interface FilterButtonsProps {
+//   onFilterChange: (estado: string) => void;
+// }
+
+// const FilterButtons: React.FC<FilterButtonsProps> = ({ onFilterChange }) => {
+//   return (
+//     <div className={styles['filter-buttons-container']}>
+//       <button
+//         onClick={() => onFilterChange('Pendiente')}
+//         className={`${styles['filter-button']} ${styles['button-pendiente']}`}
+//       >
+//         Pendiente
+//       </button>
+//       <button
+//         onClick={() => onFilterChange('Aprobada')}
+//         className={`${styles['filter-button']} ${styles['button-aprobada']}`}
+//       >
+//         Aprobada
+//       </button>
+//       <button
+//         onClick={() => onFilterChange('Denegada')}
+//         className={`${styles['filter-button']} ${styles['button-denegada']}`}
+//       >
+//         Denegada
+//       </button>
+//       <button
+//         onClick={() => onFilterChange('todos')}
+//         className={`${styles['filter-button']} ${styles['button-todos']}`}
+//       >
+//         Todos
+//       </button>
+//     </div>
+//   );
+// };
+
+// export default FilterButtons;
+
+import React, { useEffect } from 'react';
+import styles from '../styles/FilterButton.module.css';
 
 interface FilterButtonsProps {
   onFilterChange: (estado: string) => void;
 }
 
 const FilterButtons: React.FC<FilterButtonsProps> = ({ onFilterChange }) => {
+  useEffect(() => {
+    // Llama a onFilterChange con "Pendiente" al montar el componente para aplicar el filtro por defecto
+    onFilterChange('Pendiente');
+  }, [onFilterChange]);
+
   return (
-    <div className="flex space-x-2 mb-4">
+    <div className={styles['filter-buttons-container']}>
       <button
         onClick={() => onFilterChange('Pendiente')}
-        className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+        className={`${styles['filter-button']} ${styles['button-pendiente']}`}
       >
         Pendiente
       </button>
       <button
         onClick={() => onFilterChange('Aprobada')}
-        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+        className={`${styles['filter-button']} ${styles['button-aprobada']}`}
       >
         Aprobada
       </button>
       <button
         onClick={() => onFilterChange('Denegada')}
-        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+        className={`${styles['filter-button']} ${styles['button-denegada']}`}
       >
         Denegada
       </button>
       <button
         onClick={() => onFilterChange('todos')}
-        className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+        className={`${styles['filter-button']} ${styles['button-todos']}`}
       >
         Todos
       </button>

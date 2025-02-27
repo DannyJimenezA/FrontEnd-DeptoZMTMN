@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaFilePdf } from 'react-icons/fa';
 import { Precario } from '../Types/Types';
+import ApiRoutes from '../components/ApiRoutes';
 
 interface DetallePrecarioProps {
   precario: Precario;
@@ -18,7 +19,7 @@ const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver, o
       return;
     }
     try {
-      const response = await fetch('http://localhost:3000/mailer/send-custom-message', {
+      const response = await fetch(`${ApiRoutes.urlBase}/mailer/send-custom-message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -46,7 +47,7 @@ const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver, o
   const manejarVerArchivo = (archivo: string) => {
     const archivoFinal = archivo.replace(/[\[\]"]/g, '');
     if (archivoFinal) {
-      const fileUrl = `http://localhost:3000/${archivoFinal}`;
+      const fileUrl = `${ApiRoutes.urlBase}/${archivoFinal}`;
       window.open(fileUrl, '_blank');
     }
   };

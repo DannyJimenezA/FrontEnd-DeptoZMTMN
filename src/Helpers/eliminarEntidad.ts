@@ -1,5 +1,7 @@
 // src/helpers/eliminarEntidad.ts
 
+import ApiRoutes from "../components/ApiRoutes";
+
 export const eliminarEntidad = async <T extends { id: number }>(
     entidad: string,       // Nombre de la entidad (por ejemplo, "denuncia", "concesion")
     id: number,            // ID de la entidad a eliminar
@@ -9,7 +11,7 @@ export const eliminarEntidad = async <T extends { id: number }>(
     if (!confirmacion) return;
     const token = localStorage.getItem('token'); 
     try {
-      const response = await fetch(`http://localhost:3000/${entidad}/${id}`, {
+      const response = await fetch(`${ApiRoutes.urlBase}/${entidad}/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

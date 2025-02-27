@@ -1,24 +1,25 @@
-import{ useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { DecodedToken, Prorroga } from '../Types/Types';
 import { eliminarEntidad } from '../Helpers/eliminarEntidad';
 import Paginacion from '../components/Paginacion';
-import FilterButtons from '../components/FilterButton'; // Importa el componente de filtro por estado
+import FilterButtons from '../components/FilterButton';
+import FiltroFecha from '../components/FiltroFecha';
+import SearchBar from '../components/SearchBar';
 import { FaEye, FaTrash } from 'react-icons/fa';
+import ApiRoutes from '../components/ApiRoutes';
+import "../styles/TableButtons.css"
 
 interface ProrrogasTableProps {
   onVerProrroga: (prorroga: Prorroga) => void;
 }
 
-const baseUrl = 'http://localhost:3000/';
-
 // Función para obtener las prórrogas desde la API
 const fetchProrrogas = async (): Promise<Prorroga[]> => {
-  const urlBase = `${baseUrl}Prorrogas/`;
   const token = localStorage.getItem('token');
   try {
-    const response = await fetch(urlBase, {
+    const response = await fetch(ApiRoutes.prorrogas, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -41,24 +42,24 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
   const [prorrogas, setProrrogas] = useState<Prorroga[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [filtroEstado, setFiltroEstado] = useState<string>('todos'); // Estado para el filtro de estado
+  const [filtroEstado, setFiltroEstado] = useState<string>('todos');
+  const [fechaFiltro, setFechaFiltro] = useState<Date | null>(null);
+  const [searchText, setSearchText] = useState<string>('');
+  const [searchBy, setSearchBy] = useState<string>('nombre');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-  
     if (token) {
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
-  
-        // Verificar si el usuario tiene permiso para acceder a 'prorrogas'
         const hasPermission = decodedToken.permissions.some(
           (permission: { action: string; resource: string }) =>
             permission.action === 'GET' && permission.resource === 'prorroga'
         );
-  
+
         if (!hasPermission) {
           window.alert('No tienes permiso para acceder a esta página.');
           navigate('/');
@@ -75,106 +76,114 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
       navigate('/login');
       return;
     }
-  
+
     const obtenerProrrogas = async () => {
       try {
         const prorrogasFromAPI = await fetchProrrogas();
         setProrrogas(prorrogasFromAPI);
-        setLoading(false);
       } catch (error) {
         console.error('Error al obtener las prórrogas:', error);
         setError('Error al cargar las prórrogas.');
+      } finally {
         setLoading(false);
       }
     };
-  
+
     obtenerProrrogas();
   }, [navigate]);
 
-    // Cálculo de las prorrogas que se mostrarán en la página actual
-    //const indexUltimaProrroga = currentPage * itemsPerPage;
-   // const indexPrimeraProrroga = indexUltimaProrroga - itemsPerPage;
-   // const prorrogasActuales = prorrogas.slice(indexPrimeraProrroga, indexUltimaProrroga);
-  
-   // const numeroPaginas = Math.ceil(prorrogas.length / itemsPerPage);
-
-
-  // Filtrar las prórrogas según el estado seleccionado
   const obtenerProrrogasFiltradas = () => {
-    if (filtroEstado === 'todos') return prorrogas;
-    return prorrogas.filter((prorroga) => prorroga.Status === filtroEstado);
+    let prorrogasFiltradas = prorrogas;
+
+    if (filtroEstado !== 'todos') {
+      prorrogasFiltradas = prorrogasFiltradas.filter((prorroga) => prorroga.Status === filtroEstado);
+    }
+
+    if (fechaFiltro) {
+      const fechaSeleccionada = fechaFiltro.toISOString().split('T')[0];
+      prorrogasFiltradas = prorrogasFiltradas.filter((prorroga) => prorroga.Date === fechaSeleccionada);
+    }
+
+    if (searchText) {
+      prorrogasFiltradas = prorrogasFiltradas.filter((prorroga) =>
+        searchBy === 'nombre'
+          ? prorroga.user?.nombre?.toLowerCase().includes(searchText.toLowerCase())
+          : prorroga.user?.cedula?.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+
+    return prorrogasFiltradas;
   };
 
-
-  // Cálculo de las prórrogas que se mostrarán en la página actual
   const prorrogasFiltradas = obtenerProrrogasFiltradas();
   const indexUltimaProrroga = currentPage * itemsPerPage;
   const indexPrimeraProrroga = indexUltimaProrroga - itemsPerPage;
   const prorrogasActuales = prorrogasFiltradas.slice(indexPrimeraProrroga, indexUltimaProrroga);
-
   const numeroPaginas = Math.ceil(prorrogasFiltradas.length / itemsPerPage);
 
-  // Función para eliminar una prórroga usando el helper eliminarEntidad
   const manejarEliminarProrroga = async (id: number) => {
-    await eliminarEntidad<Prorroga>('Prorrogas', id, setProrrogas); // Usamos el helper para eliminar
+    await eliminarEntidad<Prorroga>('Prorrogas', id, setProrrogas);
   };
 
-  // Mostrar pantalla de carga
   if (loading) {
     return <p>Cargando prórrogas...</p>;
   }
 
-  // Mostrar errores si los hay
   if (error) {
     return <p>Error: {error}</p>;
   }
 
   return (
-    <div className="tabla-container">
-      <h2>Prórrogas de Concesiones</h2>
+    <div className="flex flex-col w-full h-full p-4">
+      <h2 className="text-2xl font-semibold mb-4">Prórrogas de Concesiones</h2>
+
+      {/* Barra de búsqueda */}
+      <SearchBar
+        onSearch={setSearchText}
+        searchBy={searchBy}
+        onSearchByChange={setSearchBy}
+      />
+      {/* Filtro por fecha */}
+      <FiltroFecha fechaFiltro={fechaFiltro} onChangeFecha={setFechaFiltro} />
 
       {/* Componente de filtro por estado */}
       <FilterButtons onFilterChange={setFiltroEstado} />
 
-      <table className="tabla-solicitudes">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nombre Solicitante</th>
-            <th>Apellidos Solicitante</th>
-            <th>Cédula Solicitante</th>
-            <th>Fecha Creacion</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {prorrogasActuales.map((prorroga) => (
-            <tr key={prorroga.id}>
-              <td>{prorroga.id}</td>
-              <td>{prorroga.user?.nombre || 'Nombre no disponible'}</td>
-              <td>
-                {prorroga.user?.apellido1 && prorroga.user?.apellido2
-                  ? `${prorroga.user.apellido1} ${prorroga.user.apellido2}`
-                  : 'Apellidos no disponibles'}
-              </td>
-              <td>{prorroga.user?.cedula}</td>
-              <td>{prorroga.Date}</td>
-              <td>{prorroga.Status || 'Pendiente'}</td>
-              <td>
-                <button onClick={() => onVerProrroga(prorroga)}>
-                  <FaEye /> Ver
-                </button>
-                <button onClick={() => manejarEliminarProrroga(prorroga.id)}>
-                  <FaTrash /> Eliminar
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
 
-      {/* Componente de Paginación */}
+      <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">ID</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Nombre Solicitante</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Cédula Solicitante</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Fecha Creación</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Estado</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Acciones</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {prorrogasActuales.map((prorroga) => (
+              <tr key={prorroga.id}>
+                <td className="px-4 py-2">{prorroga.id}</td>
+                <td className="px-4 py-2">{prorroga.user?.nombre || 'Nombre no disponible'}</td>
+                <td className="px-4 py-2">{prorroga.user?.cedula}</td>
+                <td className="px-4 py-2">{prorroga.Date}</td>
+                <td className="px-4 py-2">{prorroga.Status || 'Pendiente'}</td>
+                <td className="px-4 py-2 space-x-2">
+                  <button onClick={() => onVerProrroga(prorroga)} className="button-view">
+                    <FaEye /> Ver
+                  </button>
+                  <button onClick={() => manejarEliminarProrroga(prorroga.id)} className="button-delete">
+                    <FaTrash /> Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
       <Paginacion
         currentPage={currentPage}
         totalPages={numeroPaginas}

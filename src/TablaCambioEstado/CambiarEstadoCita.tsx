@@ -1,4 +1,5 @@
 import React from 'react';
+import ApiRoutes from '../components/ApiRoutes';
 
 interface CambiarEstadoCitaProps {
   id: number;
@@ -16,7 +17,7 @@ const CambiarEstadoCita: React.FC<CambiarEstadoCitaProps> = ({ id, nuevoEstado, 
         throw new Error('Token de autenticación no encontrado.');
       }
 
-      const response = await fetch(`http://localhost:3000/appointments/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.citas}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

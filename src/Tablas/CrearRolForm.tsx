@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ApiRoutes from '../components/ApiRoutes';
 
 // Interfaz para el nuevo rol
 interface CrearRolFormProps {
@@ -26,7 +27,7 @@ const CrearRolForm: React.FC<CrearRolFormProps> = ({ onRolCreado, onCancelar }) 
     const fetchPermisos = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await fetch('http://localhost:3000/permissions', {
+        const response = await fetch(`${ApiRoutes.urlBase}/permissions`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -54,7 +55,7 @@ const CrearRolForm: React.FC<CrearRolFormProps> = ({ onRolCreado, onCancelar }) 
     const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch('http://localhost:3000/roles', {
+      const response = await fetch(`${ApiRoutes.urlBase}/roles`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

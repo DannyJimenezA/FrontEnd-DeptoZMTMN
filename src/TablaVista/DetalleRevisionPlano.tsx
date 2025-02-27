@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaFilePdf } from 'react-icons/fa';
 import { RevisionPlano } from '../Types/Types';
+import ApiRoutes from '../components/ApiRoutes';
 
 interface DetalleRevisionPlanoProps {
   revisionPlano: RevisionPlano;
@@ -19,7 +20,7 @@ const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPla
     }
 
     try {
-      const response = await fetch('http://localhost:3000/mailer/send-custom-message', {
+      const response = await fetch(`${ApiRoutes.urlBase}/mailer/send-custom-message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,7 +43,7 @@ const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPla
 
   const manejarVerArchivo = (archivo: { nombre: string; ruta: string }) => {
     if (archivo && archivo.ruta) {
-      const fileUrl = `http://localhost:3000/${archivo.ruta.replace(/\\/g, '/')}`;
+      const fileUrl = `${ApiRoutes.urlBase}/${archivo.ruta.replace(/\\/g, '/')}`;
       window.open(fileUrl, '_blank');
     } else {
       console.error('El archivo no tiene una ruta válida:', archivo);

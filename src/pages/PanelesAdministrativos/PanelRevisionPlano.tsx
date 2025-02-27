@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import "../../styles/Administrativos/PanelRevisionPlano.css";
 import { FaFileDownload } from 'react-icons/fa';
+import ApiRoutes from '../../components/ApiRoutes';
 
 // Interfaz para la solicitud de revisión de plano
 interface RevisionPlano {
@@ -25,14 +26,12 @@ interface DecodedToken {
   roles: string[];
 }
 
-const baseUrl = 'http://localhost:3000/'; // URL base del servidor
 
 // Función para obtener las solicitudes de revisión de plano desde la API
 const fetchRevisionPlano = async (): Promise<RevisionPlano[]> => {
-  const urlBase = `${baseUrl}revision-plano/`;
 
   try {
-    const response = await fetch(urlBase, {
+    const response = await fetch(ApiRoutes.planos, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -108,7 +107,7 @@ const PanelRevisionPlano: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/revision-plano/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.planos}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -133,7 +132,7 @@ const PanelRevisionPlano: React.FC = () => {
   // Función para descargar el archivo adjunto
   const manejarDescargaArchivo = (archivoUrl: string | undefined) => {
     if (archivoUrl && archivoUrl !== 'undefined') {
-      window.open(`${baseUrl}${archivoUrl}`, '_blank');
+      window.open(`${ApiRoutes}${archivoUrl}`, '_blank');
     } else {
       alert('El archivo no está disponible.');
     }
@@ -145,7 +144,7 @@ const PanelRevisionPlano: React.FC = () => {
     if (!confirmacion) return;
 
     try {
-      const response = await fetch(`${baseUrl}revision-plano/${id}`, {
+      const response = await fetch(`${ApiRoutes.planos}/${id}`, {
         method: 'DELETE',
       });
 

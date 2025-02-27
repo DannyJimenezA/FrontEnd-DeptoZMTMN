@@ -29,6 +29,8 @@ import AsignarPermisosForm from '../TablaVista/AsignarPermisosForm';
 import DetalleUsuario from '../TablaVista/DetalleUsuario';
 import GestionDenunciasTable from '../Tablas/GestionDenunciasTable';
 import TablaDenunciasDashboard from '../Tablas/TablaDenuncia';
+import ApiRoutes from '../components/ApiRoutes';
+
 
 
 const AdminDashboard: React.FC = () => {
@@ -114,7 +116,7 @@ const AdminDashboard: React.FC = () => {
         throw new Error('Token de autenticación no encontrado.');
       }
 
-      const response = await fetch(`http://localhost:3000/appointments/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.citas.crearcita}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -145,7 +147,7 @@ const AdminDashboard: React.FC = () => {
         throw new Error('Token de autenticación no encontrado.');
       }
 
-      const response = await fetch(`http://localhost:3000/Concesiones/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.concesiones}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -176,7 +178,7 @@ const AdminDashboard: React.FC = () => {
         throw new Error('Token de autenticación no encontrado.');
       }
 
-      const response = await fetch(`http://localhost:3000/expedientes/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.expedientes}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -207,7 +209,7 @@ const AdminDashboard: React.FC = () => {
         throw new Error('Token de autenticación no encontrado.');
       }
   
-      const response = await fetch(`http://localhost:3000/Precario/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.precarios}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -235,7 +237,7 @@ const AdminDashboard: React.FC = () => {
         throw new Error('Token de autenticación no encontrado.');
       }
   
-      const response = await fetch(`http://localhost:3000/denuncia/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.denuncias}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -266,7 +268,7 @@ const AdminDashboard: React.FC = () => {
         throw new Error('Token de autenticación no encontrado.');
       }
   
-      const response = await fetch(`http://localhost:3000/revision-plano/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.planos}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -297,7 +299,7 @@ const AdminDashboard: React.FC = () => {
         throw new Error('Token de autenticación no encontrado.');
       }
   
-      const response = await fetch(`http://localhost:3000/prorrogas/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.prorrogas}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -328,7 +330,7 @@ const AdminDashboard: React.FC = () => {
         throw new Error('Token de autenticación no encontrado.');
       }
   
-      const response = await fetch(`http://localhost:3000/users/${id}/status`, {
+      const response = await fetch(`${ApiRoutes.usuarios}/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -393,7 +395,7 @@ const AdminDashboard: React.FC = () => {
     }
 
     if (rolSeleccionado) {
-      return <AsignarPermisosForm rol={rolSeleccionado} onCancelar={manejarVolverRoles} />;
+      return <AsignarPermisosForm rol={rolSeleccionado} onCancelar={manejarVolverRoles}/>;
     }
 
     if (activeSection === 'roles') {
@@ -427,19 +429,21 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+
   const menuItems = [
     { id: 'home', icon: Home, label: 'Inicio' },
-    { id: 'citas', icon: BarChart2, label: 'Citas' },
-    { id: 'concesiones', icon: BarChart2, label: 'Concesiones' },
-    { id: 'prorrogas', icon: BarChart2, label: 'Prórrogas' },
-    { id: 'denuncias', icon: BarChart2, label: 'Denuncias' },
-    { id: 'solicitudes-expedientes', icon: BarChart2, label: 'Expedientes' },
-    { id: 'uso-precario', icon: BarChart2, label: 'Uso Precario' }, 
-    { id: 'revision-planos', icon: BarChart2, label: 'Revisión de Planos' },
-    { id: 'users', icon: Users, label: 'Usuarios' },
+    { id: 'citas', icon: BarChart2, label: 'Citas', endpoint: ApiRoutes.citas.crearcita },
+    { id: 'concesiones', icon: BarChart2, label: 'Concesiones', endpoint: ApiRoutes.concesiones },
+    { id: 'prorrogas', icon: BarChart2, label: 'Prórrogas', endpoint: ApiRoutes.prorrogas },
+    { id: 'denuncias', icon: BarChart2, label: 'Denuncias', endpoint: ApiRoutes.denuncias },
+    { id: 'solicitudes-expedientes', icon: BarChart2, label: 'Expedientes', endpoint: ApiRoutes.expedientes },
+    { id: 'uso-precario', icon: BarChart2, label: 'Uso Precario', endpoint: ApiRoutes.precarios },
+    { id: 'revision-planos', icon: BarChart2, label: 'Revisión de Planos', endpoint: ApiRoutes.planos },
+    { id: 'users', icon: Users, label: 'Usuarios'},
     { id: 'roles', icon: Settings, label: 'Gestión de Roles' },
     { id: 'gestion-denuncias', icon: Settings, label: 'Gestión de Denuncias' },
   ];
+  
 
   return (
     <div className="dashboard">
@@ -464,6 +468,9 @@ const AdminDashboard: React.FC = () => {
             >
               <item.icon size={20} />
               <span>{item.label}</span>
+              {/* {item.endpoint && (
+        <PendingCountBadge endpoint={item.endpoint} status="Pendiente" />
+      )} */}
             </button>
           ))}
         </nav>
