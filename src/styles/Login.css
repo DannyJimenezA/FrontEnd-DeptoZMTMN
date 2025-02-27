@@ -48,6 +48,7 @@ input {
   position: absolute;
   right: 10px; /* Asegura que el botón esté alineado a la derecha dentro del input */
   top:calc(50% - 15px) ;
+  display: none;
 }
 
 .password-form-container{
