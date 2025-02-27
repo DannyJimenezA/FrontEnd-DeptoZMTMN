@@ -96,32 +96,32 @@ function Login() {
             className="email-input"
           />
         </div>
-
         <div className="input-wrapper">
-          <div className="icon-container">
-            <FaLock className="icon" />
-          </div>
+  <div className="icon-container">
+    <FaLock className="icon" />
+  </div>
 
-          <div className='password-form-container'>
-          <input
-            type={showPassword ? 'text' : 'password'}
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Contraseña"
-            required
-            className="password-input"
-          />
-          <button
-            type="button"
-            onClick={togglePasswordVisibility}
-            className="toggle-password"
-            aria-label={showPassword ? "Ocultar contraseña" : "Ver contraseña"}
-          >
-            {showPassword ? <FaEyeSlash /> : <FaEye />}
-          </button>
-          </div>
-        </div>
+  <input
+    type={showPassword ? 'text' : 'password'}
+    id="password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    placeholder="Contraseña"
+    required
+    className="password-input"
+    autoComplete="off"  // Desactiva autocompletado del navegador
+  />
+
+  <button
+    type="button"
+    onClick={togglePasswordVisibility}
+    className="toggle-password"
+    aria-label={showPassword ? "Ocultar contraseña" : "Ver contraseña"}
+  >
+    {showPassword ? <FaEyeSlash /> : <FaEye />}
+  </button>
+</div>
+
 
         {error && <p className="text-red-600 text-center">{error}</p>}
 
