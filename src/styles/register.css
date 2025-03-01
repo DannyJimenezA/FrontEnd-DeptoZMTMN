@@ -1,72 +1,222 @@
 /* Register.css */
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f7f7f7;
-  }
-  
-  .login-container {
-    width: 350px;
-    margin: 100px auto;
-    padding: 2rem;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  h2 {
-    text-align: center;
-    margin-bottom: 1rem;
-    font-size: 1.8rem;
-  }
-  
-  .login-form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .form-group {
-    margin-bottom: 1.2rem;
-  }
-  
-  label {
-    margin-bottom: 0.5rem;
-    font-size: 1rem;
-    color: #333;
-  }
-  
-  input {
-    padding: 0.7rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
-  }
-  
-  /* Contenedor de la entrada de contraseña con el botón de visibilidad */
-  .password-input-container {
-    position: relative; /* Para permitir la posición absoluta del botón de toggle */
-  }
-  
-  .password-input-container input {
-    width: 100%;
-    padding-right: 30px; /* Espacio para el ícono de mostrar/ocultar */
-  }
-  
-  /* Estilo del botón de mostrar/ocultar contraseña */
-  .password-toggle {
-    position: absolute; /* Posiciona el ícono dentro del campo de entrada */
-    right: 10px; /* Alineado al lado derecho del campo de entrada */
-    top: 50%;
-    transform: translateY(-50%); /* Centrado verticalmente */
-    background: none; /* Sin fondo */
-    border: none; /* Sin borde */
-    cursor: pointer; /* Cursor tipo puntero */
-    color: #888; /* Color del ícono */
-    font-size: 1.2rem; /* Tamaño del ícono */
-  }
-  
-  .password-toggle:hover {
-    color: #555; /* Oscurece el color del ícono al pasar el cursor */
-  }
-  
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f7f7f7;
+}
+
+.register-container {
+  width: 500px;
+  margin: 100px auto;
+  padding: 2.5rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+input {
+  padding: 0.8rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+  height: 3.5rem;
+  box-sizing: border-box;
+  color: #000;
+}
+
+input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+input[type="email"],
+input[type="password"] {
+  border: 1px solid #aaa;
+}
+
+.password-input-container {
+  position: relative;
+}
+
+.password-input-container input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  font-size: 1.4rem;
+}
+
+.password-toggle:hover {
+  color: #555;
+}
+
+/* Estilo adicional para los campos de entrada con la nueva clase */
+.w-full {
+  width: 100%;
+}
+
+.p-3 {
+  padding: 0.75rem;
+}
+
+.border {
+  border: 1px solid #ccc;
+}
+
+.border-gray-300 {
+  border-color: #e2e8f0;
+}
+
+.rounded-lg {
+  border-radius: 8px;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-blue-500 {
+  color: #3b82f6;
+}
+
+.hover\:underline:hover {
+  text-decoration: underline;
+}
+
+.transition {
+  transition: all 0.3s ease;
+}
+
+.duration-300 {
+  transition-duration: 300ms;
+}
+
+.bg-blue-500 {
+  background-color: #3b82f6;
+}
+
+.bg-blue-600 {
+  background-color: #2563eb;
+}
+
+.bg-gray-300 {
+  background-color: #e2e8f0;
+}
+
+.text-white {
+  color: white;
+}
+
+.text-gray-700 {
+  color: #374151;
+}
+
+.hover\:bg-blue-600:hover {
+  background-color: #2563eb;
+}
+
+.hover\:bg-gray-400:hover {
+  background-color: #cbd5e0;
+}
+
+.ml-4 {
+  margin-left: 1rem;
+}
+
+.mt-6 {
+  margin-top: 1.5rem;
+}
+
+.mt-8 {
+  margin-top: 2rem;
+}
+
+.space-y-6 {
+  margin-top: 1.5rem;
+}
+
+.grid {
+  display: grid;
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.gap-6 {
+  gap: 1.5rem;
+}
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+/* Register.css */
+.top-1-2 {
+  top: 50%;
+}
+
+
+.transform {
+  transform: translateY(-50%);
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.text-red-500 {
+  color: #ef4444;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
