@@ -128,18 +128,44 @@ export interface Prorroga {
   };
 }
 
+// export interface Cita {
+//   id: number;
+//   description: string;
+//   date: string; 
+//   time: string;
+//   user: {
+//     id: number;
+//     nombre: string;
+//     cedula: string;
+//     email: string;
+//   };
+//   status: string;
+// }
+
 export interface Cita {
   id: number;
   description: string;
-  date: string; 
-  time: string;
+  status: string;
   user: {
     id: number;
-    nombre: string;
     cedula: string;
+    nombre: string;
+    apellido1: string;
+    apellido2: string;
+    telefono: string;
     email: string;
+    password: string;
+    isActive: boolean;
   };
-  status: string;
+  availableDate: {
+    id: number;
+    date: string; // Formato: 'YYYY-MM-DD'
+  };
+  horaCita: { // Cambiado de 'horaCita' a 'hozaCita'
+    id: number;
+    hora: string; // Formato: 'HH:MM:SS'
+    disponibilidad: boolean;
+  };
 }
 
 export interface User {

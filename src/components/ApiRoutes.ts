@@ -1,6 +1,6 @@
-const BASE_URL = 'https://backend-deptozmtmn.onrender.com';  // URL base de tu API
+const BASE_URL = 'http://localhost:3000';  // URL base de tu API
 // https://backend-deptozmtmn.onrender.com
-
+// 
 const ApiRoutes = {
   // Definimos las rutas de cada recurso
   usuarios:  {
@@ -18,8 +18,13 @@ const ApiRoutes = {
   denuncias: `${BASE_URL}/denuncia`,
   citas:{
     crearcita: `${BASE_URL}/appointments`,
-    miscitas: `${BASE_URL}/appointments/my-appointments`
+    miscitas: `${BASE_URL}/appointments/my-appointments`,
+    obtenerCitasOcupadas: `${BASE_URL}/citas-ocupadas`,
+
   },
+  horasCitas: `${BASE_URL}/horas-cita`,
+  fechaCitas: `${BASE_URL}/available-dates`,
+  horasDisponibles: `${BASE_URL}/horas-cita/disponibles`,
   roles: `${BASE_URL}/roles`,
   expedientes: `${BASE_URL}/expedientes`,
   urlBase: `${BASE_URL}`,
