@@ -120,7 +120,6 @@ export interface Cita {
   description: string;
   date: string; // Fecha como string (ISO)
   time: string;
-
   user: {
     id: number;
     cedula: string;
@@ -129,22 +128,19 @@ export interface Cita {
     apellido2: string;
     telefono: string;
     email: string;
-    password: string;
-    isActive: boolean;
   };
-  availableDate: {
-    id: number;
-    date: string; // Formato: 'YYYY-MM-DD'
+  status: string;
+  availableDate:
+  {id: number,
+    date: string
   };
-  horaCita: { // Cambiado de 'horaCita' a 'hozaCita'
-    id: number;
-    hora: string; // Formato: 'HH:MM:SS'
-    disponibilidad: boolean;
+  horaCita:
+  {id: number,
+    hora: string,
+    disponibilidad: boolean,
   };
 }
 
-
-// Interfaz para los usuarios
 export interface User {
   id: number;
   nombre: string;
