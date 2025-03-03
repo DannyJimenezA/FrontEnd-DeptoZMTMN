@@ -36,7 +36,7 @@ export interface Concesion {
   Date: string;
   Status?: string;
   user?: {
-    cedula: number;
+    cedula: string;
     nombre: string;
     apellido1: string;
     email: string;
@@ -50,7 +50,7 @@ export interface Precario {
   Date: String;
   Status?: string;
   user?: {
-    cedula: number;
+    cedula: string;
     nombre: string;
     apellido1: string;
     apellido2: string;
@@ -167,20 +167,24 @@ export interface Permission {
   name: string;
   users: User[];
   permissions: Permission[];
+  description: string;
 }
 
 export interface Usuario {
   id: number;
-  cedula: number;
+  cedula: string;
   nombre: string;
   apellido1: string;
   apellido2: string;
   email: string;
   telefono: number;
   isActive: boolean;
-  roles: {
-    name: string;
-  }
+  // roles: {
+  //   length: number;
+  //   map(arg0: (rol: any) => any): unknown;
+  //   name: string;
+  // }
+  roles: Role[];
 
 
   

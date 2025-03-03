@@ -25,6 +25,7 @@ const ApiRoutes = {
   horasCitas: `${BASE_URL}/horas-cita`,
   fechaCitas: `${BASE_URL}/available-dates`,
   horasDisponibles: `${BASE_URL}/horas-cita/disponibles`,
+  horasCreadas: `${BASE_URL}/horas-cita/fecha`,
   roles: `${BASE_URL}/roles`,
   expedientes: `${BASE_URL}/expedientes`,
   urlBase: `${BASE_URL}`,

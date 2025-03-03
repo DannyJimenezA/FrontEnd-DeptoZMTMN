@@ -17,16 +17,13 @@ interface ConcesionesTableProps {
 }
 
 const fetchConcesiones = async (): Promise<Concesion[]> => {
-
-  const urlBase = 'http://localhost:3000/Concesiones'; // Ajusta la URL de tu API
-
-
   const token = localStorage.getItem('token');
   try {
     const response = await fetch(ApiRoutes.concesiones, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
     });
 
@@ -59,7 +56,7 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
         const hasPermission = decodedToken.permissions.some(
-          (permission) => permission.action === 'GET' && permission.resource === 'concesion'
+          (permission: { action: string; resource: string; }) => permission.action === 'GET' && permission.resource === 'concesion'
         );
 
         if (!hasPermission) {

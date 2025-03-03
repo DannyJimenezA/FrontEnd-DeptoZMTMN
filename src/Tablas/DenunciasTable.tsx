@@ -225,7 +225,7 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
         const hasPermission = decodedToken.permissions.some(
-          (permission) => permission.action === 'GET' && permission.resource === 'denuncia'
+          (permission: { action: string; resource: string; }) => permission.action === 'GET' && permission.resource === 'denuncia'
         );
 
         if (!hasPermission) {
