@@ -11,7 +11,7 @@ interface DetallePrecarioProps {
 
 const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver, onEstadoCambiado }) => {
   const [mensaje, setMensaje] = useState<string>('');
-  const [estado, setEstado] = useState<string>(precario.Status || 'Pendiente'); // Estado local para el status
+  const [estado, setEstado] = useState<string>(precario?.status || 'Pendiente'); // Estado local para el status
 
   const enviarCorreo = async () => {
     if (!precario.user?.email || !mensaje) {

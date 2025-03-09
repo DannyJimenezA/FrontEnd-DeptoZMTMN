@@ -55,7 +55,7 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, o
           <p><strong>Lugar de Denuncia:</strong> {denuncia.lugarDenuncia?.descripcion}</p>
           <p><strong>Ubicación Exacta:</strong> {denuncia.ubicacion}</p>
           <p><strong>Detalles de Evidencia:</strong> {denuncia.detallesEvidencia || 'No disponible'}</p>
-          <p><strong>Estado</strong> {denuncia.Status}</p>
+          <p><strong>Estado</strong> {denuncia.status}</p>
         </div>
         <div className="detalle-archivos">
           <p><strong>Archivos de Evidencia:</strong></p>
