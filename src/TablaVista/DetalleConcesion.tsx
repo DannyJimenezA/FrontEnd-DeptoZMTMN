@@ -64,7 +64,7 @@ const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver
           <p><strong>Nombre:</strong> {concesion.user?.nombre}</p>
           <p><strong>Apellidos:</strong> {concesion.user?.apellido1}</p>
           <p><strong>Cédula:</strong> {concesion.user?.cedula}</p>
-          <p><strong>Estado:</strong> {concesion.Status || 'Pendiente'}</p>
+          <p><strong>Estado:</strong> {concesion.status || 'Pendiente'}</p>
         </div>
         <div className="detalle-archivos">
           <p><strong>Archivo Adjunto:</strong></p>

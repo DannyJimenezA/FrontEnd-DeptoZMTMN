@@ -154,7 +154,7 @@ const AdminDashboard: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ Status: nuevoEstado }),
+        body: JSON.stringify({ status: nuevoEstado }),
       });
 
       if (!response.ok) {
@@ -162,7 +162,7 @@ const AdminDashboard: React.FC = () => {
       }
 
       if (concesionSeleccionada && concesionSeleccionada.id === id) {
-        setConcesionSeleccionada({ ...concesionSeleccionada, Status: nuevoEstado });
+        setConcesionSeleccionada({ ...concesionSeleccionada, status: nuevoEstado });
       }
 
       alert(`El estado de la concesión ha sido actualizado a: ${nuevoEstado}`);
@@ -216,7 +216,7 @@ const AdminDashboard: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ Status: nuevoEstado }), // Asegúrate de que el campo coincide con la API
+        body: JSON.stringify({ status: nuevoEstado }), // Asegúrate de que el campo coincide con la API
       });
   
       if (!response.ok) {
@@ -244,7 +244,7 @@ const AdminDashboard: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ Status: nuevoEstado }),
+        body: JSON.stringify({ status: nuevoEstado }),
       });
   
       if (!response.ok) {
@@ -252,7 +252,7 @@ const AdminDashboard: React.FC = () => {
       }
   
       if (denunciaSeleccionada && denunciaSeleccionada.id === id) {
-        setDenunciaSeleccionada({ ...denunciaSeleccionada, Status: nuevoEstado });
+        setDenunciaSeleccionada({ ...denunciaSeleccionada, status: nuevoEstado });
       }
   
       alert(`El estado de la denuncia ha sido actualizado a: ${nuevoEstado}`);
@@ -275,7 +275,7 @@ const AdminDashboard: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ Status: nuevoEstado }),
+        body: JSON.stringify({ status: nuevoEstado }),
       });
   
       if (!response.ok) {
@@ -306,7 +306,7 @@ const AdminDashboard: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ Status: nuevoEstado }),
+        body: JSON.stringify({ status: nuevoEstado }),
       });
   
       if (!response.ok) {
@@ -314,7 +314,7 @@ const AdminDashboard: React.FC = () => {
       }
   
       if (prorrogaSeleccionada && prorrogaSeleccionada.id === id) {
-        setProrrogaSeleccionada({ ...prorrogaSeleccionada, Status: nuevoEstado });
+        setProrrogaSeleccionada({ ...prorrogaSeleccionada, status: nuevoEstado });
       }
   
       alert(`El estado de la prórroga ha sido actualizado a: ${nuevoEstado}`);
