@@ -30,6 +30,7 @@ import DetalleUsuario from '../TablaVista/DetalleUsuario';
 import GestionDenunciasTable from '../Tablas/GestionDenunciasTable';
 import TablaDenunciasDashboard from '../Tablas/TablaDenuncia';
 import ApiRoutes from '../components/ApiRoutes';
+import DashboardHome from './DashboardHome';
 
 
 
@@ -425,7 +426,7 @@ const AdminDashboard: React.FC = () => {
       case 'denuncias': // Añadido: Renderiza la tabla de denuncias
         return <TablaDenunciasDashboard />;
       default:
-        return <p>Bienvenido al dashboard</p>;
+        return <DashboardHome/>;
     }
   };
 

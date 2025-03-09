@@ -36,7 +36,7 @@ export interface Concesion {
   Date: string;
   Status?: string;
   user?: {
-    cedula: number;
+    cedula: string;
     nombre: string;
     apellido1: string;
     email: string;
@@ -50,7 +50,7 @@ export interface Precario {
   Date: String;
   Status?: string;
   user?: {
-    cedula: number;
+    cedula: string;
     nombre: string;
     apellido1: string;
     apellido2: string;
@@ -114,7 +114,6 @@ export interface Prorroga {
   };
 }
 
-
 // Interfaz para las citas
 export interface Cita {
   id: number;
@@ -123,15 +122,25 @@ export interface Cita {
   time: string;
   user: {
     id: number;
-    nombre: string;
     cedula: string;
+    nombre: string;
+    apellido1: string;
+    apellido2: string;
+    telefono: string;
     email: string;
   };
   status: string;
+  availableDate:
+  {id: number,
+    date: string
+  };
+  horaCita:
+  {id: number,
+    hora: string,
+    disponibilidad: boolean,
+  };
 }
 
-
-// Interfaz para los usuarios
 export interface User {
   id: number;
   nombre: string;
@@ -158,20 +167,24 @@ export interface Permission {
   name: string;
   users: User[];
   permissions: Permission[];
+  description: string;
 }
 
 export interface Usuario {
   id: number;
-  cedula: number;
+  cedula: string;
   nombre: string;
   apellido1: string;
   apellido2: string;
   email: string;
   telefono: number;
   isActive: boolean;
-  roles: {
-    name: string;
-  }
+  // roles: {
+  //   length: number;
+  //   map(arg0: (rol: any) => any): unknown;
+  //   name: string;
+  // }
+  roles: Role[];
 
 
   

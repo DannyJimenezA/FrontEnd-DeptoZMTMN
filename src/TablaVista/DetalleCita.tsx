@@ -49,8 +49,9 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita, onVolver, onEstadoCambi
           <p><strong>ID Cita:</strong> {cita.id}</p>
           <p><strong>Nombre:</strong> {cita.user?.nombre}</p>
           <p><strong>Cédula:</strong> {cita.user?.cedula}</p>
-          <p><strong>Fecha:</strong> {new Date(cita.date).toLocaleDateString()}</p>
-          <p><strong>Hora:</strong> {cita.time}</p>
+          <p><strong>Fecha:</strong> {new Date(cita.availableDate.date).toLocaleDateString()}</p>
+          <p><strong>Hora:</strong> {cita.horaCita.hora}</p>
+          <p><strong>Descripcion: </strong> {cita.description}</p>
           <p><strong>Estado:</strong> {cita.status || 'Pendiente'}</p>
         </div>
       </div>
