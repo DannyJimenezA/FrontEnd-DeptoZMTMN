@@ -1,6 +1,6 @@
 const BASE_URL = 'https://backend-deptozmtmn.onrender.com';  // URL base de tu API
 // http://localhost:3000
-// 
+// https://backend-deptozmtmn.onrender.com
 const ApiRoutes = {
   // Definimos las rutas de cada recurso
   usuarios:  {
