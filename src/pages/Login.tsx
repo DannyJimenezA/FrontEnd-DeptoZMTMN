@@ -125,17 +125,6 @@ function Login() {
 
         {error && <p className="text-red-600 text-center">{error}</p>}
 
-        <p className="text-center">
-          ¿No tienes cuenta?{' '}
-          <Link to="/register" className="text-blue-600 hover:underline">
-            Regístrate aquí
-          </Link>
-        </p>
-        <p className="text-center">
-          <Link to="/forgot-password" className="text-blue-600 hover:underline">
-            Olvidaste tu contraseña?
-          </Link>
-        </p>
 
         <div className="flex flex-col space-y-2">
           <button
@@ -152,6 +141,17 @@ function Login() {
             Cancelar
           </button>
         </div>
+        <p className="text-center">
+          <Link to="/forgot-password" className="text-blue-600 hover:underline">
+            Olvidaste tu contraseña?
+          </Link>
+        </p>
+        <p className="text-center">
+          ¿No tienes cuenta?{' '}
+          <Link to="/register" className="text-blue-600 hover:underline">
+            Regístrate aquí
+          </Link>
+        </p>
       </form>
     </div>
   </div>

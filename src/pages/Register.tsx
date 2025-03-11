@@ -206,11 +206,6 @@ function Register() {
           {/* Mensaje de error */}
           {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
   
-          {/* Enlace para iniciar sesión */}
-          <p className="text-center text-sm mt-6">
-            ¿Ya tienes cuenta? <Link to="/login" className="text-blue-500 hover:underline">Inicia sesión aquí</Link>
-          </p>
-  
           {/* Botones de Registrarse y Cancelar */}
           <div className="flex justify-between mt-8">
             <button
@@ -227,6 +222,11 @@ function Register() {
               Cancelar
             </button>
           </div>
+          {/* Enlace para iniciar sesión */}
+          <p className="text-center text-sm mt-6">
+            ¿Ya tienes cuenta? <Link to="/login" className="text-blue-500 hover:underline">Inicia sesión aquí</Link>
+          </p>
+  
         </form>
       </div>
     </div>
