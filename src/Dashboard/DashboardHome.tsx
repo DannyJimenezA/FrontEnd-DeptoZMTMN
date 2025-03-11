@@ -65,7 +65,7 @@ export default function DashboardHome() {
           if (permisos.precarios) requests.push(fetch(ApiRoutes.precarios, {headers}));
           if (permisos.precarios) requests.push(fetch(ApiRoutes.planos, {headers}));
 
-          const res = await Promise.all(requests.map(req => req.catch(err => null)));
+          const res = await Promise.all(requests.map(req => req.catch(() => null)));
           const data = await Promise.all(res.map(r => (r ? r.json().catch(() => []) : [])));
           console.log("Datos obtenidos:", data);
 
@@ -104,7 +104,7 @@ export default function DashboardHome() {
       <ResponsiveContainer width= "100%" height={160}>
         <PieChart>
           <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={60} fill="#8884d8">
-            {data.map((entry: { name: string; value: number }, index: number) => (
+            {data.map((_entry: { name: string; value: number }, index: number) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
