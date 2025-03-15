@@ -260,6 +260,7 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
+
             {citasActuales.map((cita) => {
               const fecha = cita.availableDate ? cita.availableDate.date : 'No disponible';
               const hora = cita.horaCita ? cita.horaCita.hora : 'No disponible';
@@ -284,6 +285,7 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
                 </tr>
               );
             })}
+
           </tbody>
         </table>
       </div>

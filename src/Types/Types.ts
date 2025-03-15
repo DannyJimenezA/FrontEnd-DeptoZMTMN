@@ -103,6 +103,7 @@ export interface Prorroga {
   id: number;
   ArchivoAdjunto: string;
   Date: String; 
+
   status?: string;
   user?: {
     id: number;

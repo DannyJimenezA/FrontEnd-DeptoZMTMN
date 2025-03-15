@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FaFilePdf } from 'react-icons/fa';
 import { Concesion } from '../Types/Types';
 import ApiRoutes from '../components/ApiRoutes';
+import  '../styles/DetalleSolicitud.css'
 
 interface DetalleConcesionProps {
   concesion: Concesion;
@@ -98,17 +99,17 @@ const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver
 
       {/* Botones para cambiar el estado de la concesión */}
       <div className="estado-botones">
-        <button className="btn-aprobar" onClick={() => manejarCambioEstado('Aprobada')}>
-          Aprobar Concesión
+        <button className="boton-aprobar" onClick={() => manejarCambioEstado('Aprobada')}>
+          Aprobar
         </button>
-        <button className="btn-denegar" onClick={() => manejarCambioEstado('Denegada')}>
-          Denegar Concesión
+        <button className="boton-denegar" onClick={() => manejarCambioEstado('Denegada')}>
+          Denegar
         </button>
       </div>
 
       {/* Botón para volver a la lista */}
       <button className="volver-btn" onClick={onVolver}>
-        Volver a la lista de concesiones
+        Volver
       </button>
     </div>
   );

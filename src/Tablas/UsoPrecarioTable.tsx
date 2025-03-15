@@ -175,13 +175,13 @@ const TablaUsoPrecario: React.FC<PrecarioTableProps> = ({ onVerPrecario }) => {
                     onClick={() => onVerPrecario(precario)}
                     className="button-view"
                   >
-                    <FaEye /> Ver
+                    <FaEye />
                   </button>
                   <button
                     onClick={() => manejarEliminarPrecario(precario.id)}
                     className="button-delete"
                   >
-                    <FaTrash /> Eliminar
+                    <FaTrash />
                   </button>
                 </td>
               </tr>

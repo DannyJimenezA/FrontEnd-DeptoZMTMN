@@ -349,10 +349,10 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
                 <td className="px-4 py-2">{denuncia.status}</td>
                 <td className="px-4 py-2 space-x-2">
                   <button onClick={() => manejarVer(denuncia)} className="button-view">
-                    <FaEye /> Ver
+                    <FaEye />
                   </button>
                   <button onClick={() => manejarEliminarDenuncia(denuncia.id)} className="button-delete">
-                    <FaTrash /> Eliminar
+                    <FaTrash />
                   </button>
                 </td>
               </tr>

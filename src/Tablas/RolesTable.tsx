@@ -346,10 +346,10 @@ const RolesTable: React.FC<RolesTableProps> = ({ }) => {
                 <td className="py-2 px-4 border-b">{rol.description || 'Sin descripción'}</td>
                 <td className="py-2 px-4 border-b flex space-x-2">
                   <button onClick={() => manejarVerDetalles(rol)} className="button-view">
-                    <FaEye /> Ver
+                    <FaEye />
                   </button>
                   <button onClick={() => manejarEliminar(rol.id)} className="button-delete">
-                    <FaTrash /> Eliminar
+                    <FaTrash />
                   </button>
                 </td>
               </tr>

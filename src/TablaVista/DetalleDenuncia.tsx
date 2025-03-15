@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaFilePdf } from 'react-icons/fa';
 import { Denuncia } from '../Types/Types';
-
+import  '../styles/DetalleSolicitud.css'
 interface DetalleDenunciaProps {
   denuncia: Denuncia;
   onVolver: () => void;
@@ -75,17 +75,17 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, o
       </div>
 
       <div className="estado-botones">
-        <button className="btn-aprobar" onClick={() => cambiarEstado('Aprobada')}>
-          Aprobar Denuncia
+        <button className="boton-aprobar" onClick={() => cambiarEstado('Aprobada')}>
+          Aprobar
         </button>
-        <button className="btn-denegar" onClick={() => cambiarEstado('Denegada')}>
-          Denegar Denuncia
+        <button className="boton-denegar" onClick={() => cambiarEstado('Denegada')}>
+          Denegar
         </button>
       </div>
 
       {/* Botón de Volver */}
       <button className="volver-btn" onClick={onVolver}>
-        Volver a la lista de denuncias
+        Volver
       </button>
 
 
