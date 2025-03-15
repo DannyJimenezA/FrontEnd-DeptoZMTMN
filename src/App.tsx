@@ -29,6 +29,7 @@ import { AuthProvider } from './context/AuthContext';
 
 
 
+
 function App () {
   return (
     <AuthProvider>
@@ -61,6 +62,7 @@ function App () {
         <Route path="/mis-solicitudes-expediente" element={<VistaSolicitudesExpediente />} />
         <Route path="/admin/denuncias" element={<PanelDenunciasAdmin />} /> 
         <Route path="/admin/revision-plano" element={<PanelRevisionPlano />} /> 
+
       </Routes>
     </Router>
     </AuthProvider>

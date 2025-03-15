@@ -65,6 +65,7 @@ export default function DashboardHome() {
           if (permisos.planos) {requests.push(fetch(ApiRoutes.planos, { headers }));
 }
 
+
           
           
           const res = await Promise.all(requests.map(req => req.catch(err => null)));
@@ -81,9 +82,7 @@ export default function DashboardHome() {
               }
             })
           );
-          
-          console.log("Datos obtenidos:", data);
-
+         
           const procesarDatos = (items: any[]) => ({
             pendiente: items.filter(item => item.status === "Pendiente").length,
             aprobada: items.filter(item => item.status === "Aprobada").length,
@@ -118,7 +117,7 @@ export default function DashboardHome() {
       <ResponsiveContainer width= "100%" height={160}>
         <PieChart>
           <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={60} fill="#8884d8">
-            {data.map((entry: { name: string; value: number }, index: number) => (
+            {data.map((_entry: { name: string; value: number }, index: number) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>

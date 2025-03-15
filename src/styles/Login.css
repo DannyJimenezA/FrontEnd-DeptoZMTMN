@@ -27,15 +27,13 @@ input {
   outline: none;
   font-size: 1rem;
   padding: 10px;
-  padding-right: 40px;  /* Reserva espacio en el lado derecho para el ícono */
+  padding-right: 50px;  /* Ajustamos el padding derecho para no solapar el botón */
   width: 100%;
   box-sizing: border-box; /* Asegura que el input no se desborde */
 }
 
 .password-input {
-  padding-right: 50px;
-  position: relative;
-   /* Aumenta el padding para que el botón de ver contraseña se acomode */
+  padding-right: 50px; /* Asegura espacio suficiente para el botón */
 }
 
 .toggle-password {
@@ -46,14 +44,34 @@ input {
   font-size: 1.2rem;
   color: #777;
   position: absolute;
-  right: 10px; /* Asegura que el botón esté alineado a la derecha dentro del input */
-  top:calc(50% - 15px) ;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: block; /* Asegura que el botón siempre sea visible */
 }
 
-.password-form-container{
+
+.toggle-password:hover {
+  color: #333; /* Oscurecemos el color cuando el usuario pasa el cursor */
+}
+
+.password-form-container {
   width: 100%;
   height: 100%;
   padding: 0;
   margin: 0;
   position: relative;
 }
+
+/* Oculta el ícono de mostrar contraseña en Microsoft Edge */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+/* Oculta el ícono de mostrar contraseña en Chrome, Safari y otros navegadores basados en WebKit */
+input[type="password"]::-webkit-contacts-auto-fill-button,
+input[type="password"]::-webkit-textfield-decoration-container {
+  display: none !important;
+}
+

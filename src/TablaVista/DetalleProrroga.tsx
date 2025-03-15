@@ -61,7 +61,8 @@ const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver, o
           <p><strong>ID:</strong> {prorroga.id}</p>
           <p><strong>Nombre:</strong> {prorroga.user?.nombre || 'No disponible'}</p>
           <p><strong>Apellidos:</strong> {prorroga.user?.apellido1 || 'No disponible'} {prorroga.user?.apellido2 || ''}</p>
-          <p><strong>Estado:</strong> {prorroga.status || 'Pendiente'}</p>
+          <p><strong>Estado:</strong> {prorroga?.status || 'Pendiente'}</p>
+
         </div>
         <div className="detalle-archivos">
           <p><strong>Archivo Adjunto:</strong></p>

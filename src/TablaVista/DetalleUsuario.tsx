@@ -72,15 +72,28 @@ const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({ usuario, onVolver }) =>
       setError(null); // Limpiar errores
 
       // Actualizar la información del usuario localmente
+      // setUsuarioActualizado((prev) => ({
+      //   ...prev,
+      //   roles: [
+      //     {
+      //       id: parseInt(nuevoRol),
+      //       name: rolesDisponibles.find((rol) => rol.id.toString() === nuevoRol)?.name || '',
+      //     },
+      //   ],
+      // }));
       setUsuarioActualizado((prev) => ({
         ...prev,
         roles: [
           {
             id: parseInt(nuevoRol),
             name: rolesDisponibles.find((rol) => rol.id.toString() === nuevoRol)?.name || '',
+            users: [], // Se requiere para cumplir con la interfaz Role
+            permissions: [], // Se requiere para cumplir con la interfaz Role
+            description: '', // Se requiere para cumplir con la interfaz Role
           },
         ],
       }));
+      
 
       console.log(response.data); // Depuración
     } catch (error) {
