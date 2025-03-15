@@ -46,14 +46,14 @@ export interface Denuncia {
   evidencia: boolean;
   archivosEvidencia?: string | string[];
   detallesEvidencia?: string;
-  Status: string;
+  status: string;
 }
 
 export interface Concesion {
   id: number;
   ArchivoAdjunto: string;
   Date: string;
-  Status?: string;
+  status?: string;
   user?: {
     cedula: string;
     nombre: string;
@@ -66,7 +66,7 @@ export interface Precario {
   id: number;
   ArchivoAdjunto: string;
   Date: string;
-  Status?: string;
+  status?: string;
   user?: {
     cedula: string;
     nombre: string;
@@ -117,7 +117,7 @@ export interface Prorroga {
   id: number;
   ArchivoAdjunto: string;
   Date: string; 
-  Status?: string;
+  status?: string;
   user?: {
     id: number;
     nombre: string;

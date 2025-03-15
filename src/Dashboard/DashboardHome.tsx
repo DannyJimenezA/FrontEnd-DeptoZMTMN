@@ -10,7 +10,7 @@ interface DecodedToken {
   permissions: { action: string; resource: string }[];
 }
 
-const COLORS = ["#8884d8", "#82ca9d", "#ff7300"];
+const COLORS = ["#FFB74D", "#4CAF50", "#E53935"];
 
 export default function DashboardHome() {
   const [stats, setStats] = useState({
@@ -56,17 +56,32 @@ export default function DashboardHome() {
         try {
           const requests = [];
           const headers = { Authorization: `Bearer ${token}`};
-
           if (permisos.citas) requests.push(fetch(ApiRoutes.citas.crearcita, { headers }));
           if (permisos.expedientes) requests.push(fetch(ApiRoutes.expedientes, { headers }));
           if (permisos.prorrogas) requests.push(fetch(ApiRoutes.prorrogas, {headers}));
           if (permisos.concesiones) requests.push(fetch(ApiRoutes.concesiones, {headers}));
           if (permisos.denuncias) requests.push(fetch(ApiRoutes.denuncias, {headers}));
           if (permisos.precarios) requests.push(fetch(ApiRoutes.precarios, {headers}));
-          if (permisos.precarios) requests.push(fetch(ApiRoutes.planos, {headers}));
+          if (permisos.planos) {requests.push(fetch(ApiRoutes.planos, { headers }));
+}
 
+          
+          
           const res = await Promise.all(requests.map(req => req.catch(err => null)));
-          const data = await Promise.all(res.map(r => (r ? r.json().catch(() => []) : [])));
+          const data = await Promise.all(
+            res.map(async (r, index) => {
+              if (!r) return [];
+              try {
+                const json = await r.json();
+                console.log(`Datos en index ${index}:`, json);
+                return json;
+              } catch (err) {
+                console.error(`Error parseando JSON en index ${index}:`, err);
+                return [];
+              }
+            })
+          );
+          
           console.log("Datos obtenidos:", data);
 
           const procesarDatos = (items: any[]) => ({
@@ -84,7 +99,6 @@ export default function DashboardHome() {
             precarios: permisos.precarios ? procesarDatos(data[5]?.flat() || []) : {pendiente: 0, aprobada: 0, denegada: 0},
             planos: permisos.planos ? procesarDatos(data[6]?.flat() || []) : {pendiente: 0, aprobada: 0, denegada: 0},
           });
-          
         } catch (error) {
           console.error("Error al obtener estadísticas", error);
         }

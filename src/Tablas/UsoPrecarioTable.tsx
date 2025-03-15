@@ -96,7 +96,7 @@ const TablaUsoPrecario: React.FC<PrecarioTableProps> = ({ onVerPrecario }) => {
     let precariosFiltrados = precarios;
 
     if (filtroEstado !== 'todos') {
-      precariosFiltrados = precariosFiltrados.filter((precario) => precario.Status === filtroEstado);
+      precariosFiltrados = precariosFiltrados.filter((precario) => precario.status === filtroEstado);
     }
 
     if (fechaFiltro) {
@@ -169,19 +169,19 @@ const TablaUsoPrecario: React.FC<PrecarioTableProps> = ({ onVerPrecario }) => {
                 <td className="px-4 py-2">{precario.user?.nombre}</td>
                 <td className="px-4 py-2">{precario.user?.cedula}</td>
                 <td className="px-4 py-2">{precario.Date}</td>
-                <td className="px-4 py-2">{precario.Status || 'Pendiente'}</td>
+                <td className="px-4 py-2">{precario.status || 'Pendiente'}</td>
                 <td className="px-4 py-2 space-x-2">
                   <button
                     onClick={() => onVerPrecario(precario)}
                     className="button-view"
                   >
-                    <FaEye /> Ver
+                    <FaEye />
                   </button>
                   <button
                     onClick={() => manejarEliminarPrecario(precario.id)}
                     className="button-delete"
                   >
-                    <FaTrash /> Eliminar
+                    <FaTrash />
                   </button>
                 </td>
               </tr>

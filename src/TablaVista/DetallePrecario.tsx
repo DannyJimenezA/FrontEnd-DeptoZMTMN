@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaFilePdf } from 'react-icons/fa';
 import { Precario } from '../Types/Types';
 import ApiRoutes from '../components/ApiRoutes';
-
+import  '../styles/DetalleSolicitud.css'
 interface DetallePrecarioProps {
   precario: Precario;
   onVolver: () => void;
@@ -11,7 +11,7 @@ interface DetallePrecarioProps {
 
 const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver, onEstadoCambiado }) => {
   const [mensaje, setMensaje] = useState<string>('');
-  const [estado, setEstado] = useState<string>(precario.Status || 'Pendiente'); // Estado local para el status
+  const [estado, setEstado] = useState<string>(precario.status || 'Pendiente'); // Estado local para el status
 
   const enviarCorreo = async () => {
     if (!precario.user?.email || !mensaje) {
@@ -94,15 +94,15 @@ const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver, o
       </div>
 
       <div className="estado-botones">
-        <button className="btn-aprobar" onClick={() => manejarCambioEstado('Aprobada')}>
-          Aprobar Uso Precario
+        <button className="boton-aprobar" onClick={() => manejarCambioEstado('Aprobada')}>
+          Aprobar
         </button>
-        <button className="btn-denegar" onClick={() => manejarCambioEstado('Denegada')}>
-          Denegar Uso Precario
+        <button className="boton-denegar" onClick={() => manejarCambioEstado('Denegada')}>
+          Denegar
         </button>
       </div>
 
-      <button className="volver-btn" onClick={onVolver}>Volver a la lista de uso precario</button>
+      <button className="volver-btn" onClick={onVolver}>Volver</button>
     </div>
   );
 };

@@ -96,7 +96,7 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
     let prorrogasFiltradas = prorrogas;
 
     if (filtroEstado !== 'todos') {
-      prorrogasFiltradas = prorrogasFiltradas.filter((prorroga) => prorroga.Status === filtroEstado);
+      prorrogasFiltradas = prorrogasFiltradas.filter((prorroga) => prorroga.status === filtroEstado);
     }
 
     if (fechaFiltro) {
@@ -169,13 +169,13 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
                 <td className="px-4 py-2">{prorroga.user?.nombre || 'Nombre no disponible'}</td>
                 <td className="px-4 py-2">{prorroga.user?.cedula}</td>
                 <td className="px-4 py-2">{prorroga.Date}</td>
-                <td className="px-4 py-2">{prorroga.Status || 'Pendiente'}</td>
+                <td className="px-4 py-2">{prorroga.status || 'Pendiente'}</td>
                 <td className="px-4 py-2 space-x-2">
                   <button onClick={() => onVerProrroga(prorroga)} className="button-view">
-                    <FaEye /> Ver
+                    <FaEye />
                   </button>
                   <button onClick={() => manejarEliminarProrroga(prorroga.id)} className="button-delete">
-                    <FaTrash /> Eliminar
+                    <FaTrash />
                   </button>
                 </td>
               </tr>

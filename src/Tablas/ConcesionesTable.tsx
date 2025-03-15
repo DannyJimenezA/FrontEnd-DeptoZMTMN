@@ -95,7 +95,7 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
     let concesionesFiltradas = concesiones;
 
     if (filtroEstado !== 'todos') {
-      concesionesFiltradas = concesionesFiltradas.filter((concesion) => concesion.Status === filtroEstado);
+      concesionesFiltradas = concesionesFiltradas.filter((concesion) => concesion.status === filtroEstado);
     }
 
     if (fechaFiltro) {
@@ -163,13 +163,13 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
                 <td className="px-4 py-2">{concesion.user?.nombre}</td>
                 <td className="px-4 py-2">{concesion.user?.cedula}</td>
                 <td className="px-4 py-2">{concesion.Date}</td>
-                <td className="px-4 py-2">{concesion.Status || 'Pendiente'}</td>
+                <td className="px-4 py-2">{concesion.status || 'Pendiente'}</td>
                 <td className="px-4 py-2 space-x-2">
                   <button onClick={() => onVerConcesion(concesion)} className="button-view">
-                    <FaEye /> Ver
+                    <FaEye />
                   </button>
                   <button onClick={() => manejarEliminarConcesion(concesion.id)} className="button-delete">
-                    <FaTrash /> Eliminar
+                    <FaTrash />
                   </button>
                 </td>
               </tr>

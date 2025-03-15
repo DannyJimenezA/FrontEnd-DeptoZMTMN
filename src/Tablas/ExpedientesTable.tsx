@@ -169,10 +169,10 @@ const ExpedientesTable: React.FC<ExpedientesTableProps> = ({ onVerExpediente }) 
                 <td className="px-4 py-2">{expediente.status || 'Pendiente'}</td>
                 <td className="px-4 py-2 space-x-2">
                   <button onClick={() => onVerExpediente(expediente)} className="button-view">
-                    <FaEye /> Ver
+                    <FaEye />
                   </button>
                   <button onClick={() => manejarEliminarExpediente(expediente.idExpediente)} className="button-delete">
-                    <FaTrash /> Eliminar
+                    <FaTrash />
                   </button>
                 </td>
               </tr>

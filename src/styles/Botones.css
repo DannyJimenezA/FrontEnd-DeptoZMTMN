@@ -1,38 +1,61 @@
 /* Botón para Ver */
 .boton-ver {
-    background-color: #4CAF50; /* Verde */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 14px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-  
-  .boton-ver:hover {
-    background-color: #45a049; /* Más oscuro al pasar el ratón */
-  }
-  
-  /* Botón para Eliminar */
-  .boton-eliminar {
-    background-color: #f44336; /* Rojo */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 14px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-  
-  .boton-eliminar:hover {
-    background-color: #d32f2f; /* Más oscuro al pasar el ratón */
-  }
-  
+  background-color: #4CAF50; /* Verde */
+  color: white;
+  border: none;
+  padding: 3px 6px; /* Tamaño más compacto */
+  text-align: center;
+  font-size: 10px; /* Texto más pequeño */
+  margin: 1px; /* Menos separación entre botones */
+  cursor: pointer;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  gap: 2px; /* Menos espacio entre icono y texto */
+  min-width: 40px; /* Evita que se achiquen demasiado */
+}
+
+.boton-ver:hover {
+  background-color: #45a049;
+}
+
+/* Botón para Eliminar */
+.boton-eliminar {
+  background-color: #f44336; /* Rojo */
+  color: white;
+  border: none;
+  padding: 3px 6px; /* Tamaño más compacto */
+  text-align: center;
+  font-size: 10px; /* Texto más pequeño */
+  margin: 1px; /* Menos separación entre botones */
+  cursor: pointer;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  gap: 2px; /* Menos espacio entre icono y texto */
+  min-width: 40px;
+}
+
+.boton-eliminar:hover {
+  background-color: #d32f2f;
+}
+
+/* Reducir tamaño de los iconos dentro del botón */
+.boton-ver svg, .boton-eliminar svg {
+  width: 10px;
+  height: 10px;
+}
+
+/* 🔻 Ajustes en pantallas pequeñas */
+@media (max-width: 768px) {
+.boton-ver, .boton-eliminar {
+  font-size: 9px;
+  padding: 2px 5px; /* Botones más pequeños */
+  min-width: 35px; /* Evita que se deformen */
+}
+
+.boton-ver svg, .boton-eliminar svg {
+  width: 8px;
+  height: 8px;
+}
+}

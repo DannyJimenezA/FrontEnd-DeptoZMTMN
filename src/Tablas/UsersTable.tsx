@@ -323,10 +323,10 @@ const UsuariosTable: React.FC<UsuariosTableProps> = ({ onVerUsuario }) => {
                 </td>
                 <td className="px-4 py-2 space-x-2">
                   <button className="button-view" onClick={() => onVerUsuario(usuario)}>
-                    <FaEye /> Ver
+                    <FaEye />
                   </button>
                   <button className="button-delete" onClick={() => manejarEliminarUsuario(usuario.id)}>
-                    <FaTrash /> Eliminar
+                    <FaTrash />
                   </button>
                 </td>
               </tr>

@@ -201,10 +201,10 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
                 <td className="px-4 py-2">{cita.status}</td>
                 <td className="px-4 py-2 space-x-2">
                   <button onClick={() => onVerCita(cita)} className="button-view">
-                    <FaEye /> Ver
+                    <FaEye />
                   </button>
                   <button onClick={() => manejarEliminar(cita.id)} className="button-delete">
-                    <FaTrash /> Eliminar
+                    <FaTrash />
                   </button>
                 </td>
               </tr>

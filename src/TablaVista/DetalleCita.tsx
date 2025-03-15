@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Cita } from '../Types/Types';
 import CambiarEstadoCita from '../components/CambioEstado'; // Importar el nuevo componente
 import ApiRoutes from '../components/ApiRoutes';
-
+import  '../styles/DetalleSolicitud.css'
 interface DetalleCitaProps {
   cita: Cita;
   onVolver: () => void;  // Función para volver a la lista de citas
@@ -55,7 +55,7 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita, onVolver, onEstadoCambi
         </div>
       </div>
 
-      {/* Sección para enviar el mensaje */}
+      {/* Sección para enviar mensaje */}
       <div className="mensaje-container">
         <h3>Enviar mensaje a: {cita.user?.email}</h3>
         <textarea
@@ -63,30 +63,31 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita, onVolver, onEstadoCambi
           onChange={(e) => setMensaje(e.target.value)}
           placeholder="Escribe tu mensaje aquí"
           rows={4}
-          style={{ width: '100%' }}
         />
         <button onClick={enviarCorreo} className="btn-enviar">Enviar mensaje</button>
       </div>
 
-      {/* Botones para cambiar el estado de la cita */}
+      {/* Botones de acción */}
       <div className="estado-botones">
         <CambiarEstadoCita
           id={cita.id}
           nuevoEstado="Aprobada"
           onEstadoCambiado={onEstadoCambiado}
-          label="Aprobar Cita"
+          label="Aprobar"
+          className="boton-aprobar"
         />
         <CambiarEstadoCita
           id={cita.id}
           nuevoEstado="Denegada"
           onEstadoCambiado={onEstadoCambiado}
-          label="Denegar Cita"
+          label="Denegar"
+          className="boton-denegar"
         />
       </div>
 
-      {/* Botón para volver a la lista */}
+      {/* Botón de volver */}
       <button className="volver-btn" onClick={onVolver}>
-        Volver a la lista de citas
+        Volver
       </button>
     </div>
   );

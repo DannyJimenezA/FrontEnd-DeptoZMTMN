@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CopiaExpediente } from '../Types/Types';
 import ApiRoutes from '../components/ApiRoutes';
-
+import  '../styles/DetalleSolicitud.css'
 interface DetalleExpedienteProps {
   expediente: CopiaExpediente;
   onVolver: () => void;  // Función para volver a la lista de expedientes
@@ -46,7 +46,7 @@ const DetalleExpediente: React.FC<DetalleExpedienteProps> = ({ expediente, onVol
   };
 
   return (
-    <div className="detalle-expediente">
+    <div className="detalle-tabla">
       <h3>Detalles de la Solicitud de Expediente</h3>
       <div className="detalle-contenido">
         {/* Información general del expediente */}
@@ -76,17 +76,17 @@ const DetalleExpediente: React.FC<DetalleExpedienteProps> = ({ expediente, onVol
 
       {/* Botones para cambiar el estado del expediente */}
       <div className="estado-botones">
-        <button className="btn-aprobar" onClick={() => manejarCambioEstado('Aprobada')}>
-          Aprobar Expediente
+        <button className="boton-aprobar" onClick={() => manejarCambioEstado('Aprobada')}>
+          Aprobar
         </button>
-        <button className="btn-denegar" onClick={() => manejarCambioEstado('Denegada')}>
-          Denegar Expediente
+        <button className="boton-denegar" onClick={() => manejarCambioEstado('Denegada')}>
+          Denegar
         </button>
       </div>
 
       {/* Botón para volver a la lista de expedientes */}
       <button className="volver-btn" onClick={onVolver}>
-        Volver a la lista de expedientes
+        Volver
       </button>
     </div>
   );

@@ -264,7 +264,7 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
     let denunciasFiltradas = denuncias;
 
     if (filtroEstado !== 'todos') {
-      denunciasFiltradas = denunciasFiltradas.filter((denuncia) => denuncia.Status === filtroEstado);
+      denunciasFiltradas = denunciasFiltradas.filter((denuncia) => denuncia.status === filtroEstado);
     }
 
     if (fechaFiltro) {
@@ -346,13 +346,13 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
                 <td className="px-4 py-2">{denuncia.Date}</td>
                 <td className="px-4 py-2">{denuncia.tipoDenuncia?.descripcion || 'Tipo no disponible'}</td>
                 <td className="px-4 py-2">{denuncia.lugarDenuncia?.descripcion || 'Lugar no disponible'}</td>
-                <td className="px-4 py-2">{denuncia.Status}</td>
+                <td className="px-4 py-2">{denuncia.status}</td>
                 <td className="px-4 py-2 space-x-2">
                   <button onClick={() => manejarVer(denuncia)} className="button-view">
-                    <FaEye /> Ver
+                    <FaEye />
                   </button>
                   <button onClick={() => manejarEliminarDenuncia(denuncia.id)} className="button-delete">
-                    <FaTrash /> Eliminar
+                    <FaTrash />
                   </button>
                 </td>
               </tr>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaFilePdf } from 'react-icons/fa';
 import { Prorroga } from '../Types/Types';
 import ApiRoutes from '../components/ApiRoutes';
-
+import  '../styles/DetalleSolicitud.css'
 interface DetalleProrrogaProps {
   prorroga: Prorroga;
   onVolver: () => void;   // Función para volver a la lista de prórrogas
@@ -61,7 +61,7 @@ const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver, o
           <p><strong>ID:</strong> {prorroga.id}</p>
           <p><strong>Nombre:</strong> {prorroga.user?.nombre || 'No disponible'}</p>
           <p><strong>Apellidos:</strong> {prorroga.user?.apellido1 || 'No disponible'} {prorroga.user?.apellido2 || ''}</p>
-          <p><strong>Estado:</strong> {prorroga.Status || 'Pendiente'}</p>
+          <p><strong>Estado:</strong> {prorroga.status || 'Pendiente'}</p>
         </div>
         <div className="detalle-archivos">
           <p><strong>Archivo Adjunto:</strong></p>
@@ -95,12 +95,12 @@ const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver, o
 
       {/* Botones para cambiar el estado */}
       <div className="estado-botones">
-        <button onClick={() => cambiarEstado('Aprobada')} className="estado-aprobado-btn">Aprobar</button>
-        <button onClick={() => cambiarEstado('Denegada')} className="estado-denegado-btn">Denegar</button>
+        <button onClick={() => cambiarEstado('Aprobada')} className="boton-aprobar">Aprobar</button>
+        <button onClick={() => cambiarEstado('Denegada')} className="boton-denegar">Denegar</button>
       </div>
 
       {/* Botón para volver a la lista */}
-      <button className="volver-btn" onClick={onVolver}>Volver a la lista de prórrogas</button>
+      <button className="volver-btn" onClick={onVolver}>Volver</button>
     </div>
   );
 };
