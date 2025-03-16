@@ -122,9 +122,7 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
   const RevisionplanoActuales = RevisionplanoFiltradas.slice(indexPrimeraRevisionPlano, indexUltimaRevisionPlano);
   const numeroPaginas = Math.ceil(RevisionplanoFiltradas.length / itemsPerPage);
 
-  const manejarEliminarRevisionPlano = async (id: number) => {
-    await eliminarEntidad<RevisionPlano>('Revision-Plano', id, setRevisionplano);
-  };
+  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<RevisionPlano>("revision-plano", setRevisionplano);
 
   if (loading) {
     return <p>Cargando solicitudes de revisión de planos...</p>;
@@ -175,7 +173,7 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
                   <button onClick={() => onVerRevisionPlano(RevisionPlano)} className="button-view">
                     <FaEye />
                   </button>
-                  <button onClick={() => manejarEliminarRevisionPlano(RevisionPlano.id)} className="button-delete">
+                  <button className="button-delete" onClick={() => abrirModalEliminar(RevisionPlano.id)}>
                     <FaTrash />
                   </button>
                 </td>
@@ -192,6 +190,7 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+      <ModalEliminar />
     </div>
   );
 };

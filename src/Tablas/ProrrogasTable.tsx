@@ -121,9 +121,7 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
   const prorrogasActuales = prorrogasFiltradas.slice(indexPrimeraProrroga, indexUltimaProrroga);
   const numeroPaginas = Math.ceil(prorrogasFiltradas.length / itemsPerPage);
 
-  const manejarEliminarProrroga = async (id: number) => {
-    await eliminarEntidad<Prorroga>('Prorrogas', id, setProrrogas);
-  };
+  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Prorroga>("prorrogas", setProrrogas);
 
   if (loading) {
     return <p>Cargando prórrogas...</p>;
@@ -174,7 +172,7 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
                   <button onClick={() => onVerProrroga(prorroga)} className="button-view">
                     <FaEye />
                   </button>
-                  <button onClick={() => manejarEliminarProrroga(prorroga.id)} className="button-delete">
+                  <button className="button-delete" onClick={() => abrirModalEliminar(prorroga.id)}>
                     <FaTrash />
                   </button>
                 </td>
@@ -191,6 +189,7 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+      <ModalEliminar />
     </div>
   );
 };

@@ -11,6 +11,10 @@ interface DetalleConcesionProps {
 }
 
 const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver, onEstadoCambiado }) => {
+  
+  const manejarCambioEstado = (nuevoEstado: string) => {
+    onEstadoCambiado(concesion.id, nuevoEstado);
+  };
   const [mensaje, setMensaje] = useState<string>(''); // Estado para almacenar el mensaje personalizado
 
   // Función para ver el archivo adjunto
@@ -52,9 +56,7 @@ const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver
   };
 
   // Manejar el cambio de estado
-  const manejarCambioEstado = (nuevoEstado: string) => {
-    onEstadoCambiado(concesion.id, nuevoEstado);
-  };
+ 
 
   return (
     <div className="detalle-tabla">
