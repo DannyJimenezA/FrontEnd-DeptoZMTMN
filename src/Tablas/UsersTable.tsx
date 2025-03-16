@@ -106,9 +106,7 @@ const UsuariosTable: React.FC<UsuariosTableProps> = ({ onVerUsuario }) => {
   const usuariosActuales = usuariosFiltrados.slice(indexPrimerUsuario, indexUltimoUsuario);
   const numeroPaginas = Math.ceil(usuariosFiltrados.length / itemsPerPage);
 
-  const manejarEliminarUsuario = async (id: number) => {
-    await eliminarEntidad<Usuario>('users', id, setUsuarios);
-  };
+  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Usuario>("users", setUsuarios);
 
   if (loading) {
     return <p>Cargando usuarios...</p>;
@@ -161,7 +159,7 @@ const UsuariosTable: React.FC<UsuariosTableProps> = ({ onVerUsuario }) => {
                   <button className="button-view" onClick={() => onVerUsuario(usuario)}>
                     <FaEye />
                   </button>
-                  <button className="button-delete" onClick={() => manejarEliminarUsuario(usuario.id)}>
+                  <button className="button-delete" onClick={() => abrirModalEliminar(usuario.id)}>
                     <FaTrash />
                   </button>
                 </td>
@@ -178,6 +176,7 @@ const UsuariosTable: React.FC<UsuariosTableProps> = ({ onVerUsuario }) => {
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+      <ModalEliminar />
     </div>
   );
 };

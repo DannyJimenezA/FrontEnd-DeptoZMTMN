@@ -293,9 +293,7 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
     onVerDenuncia(denuncia);
   };
 
-  const manejarEliminarDenuncia = async (id: number) => {
-    await eliminarEntidad<Denuncia>('denuncia', id, setDenuncias);
-  };
+  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Denuncia>("denuncia", setDenuncias);
 
   if (loading) {
     return <p>Cargando denuncias...</p>;
@@ -351,7 +349,7 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
                   <button onClick={() => manejarVer(denuncia)} className="button-view">
                     <FaEye />
                   </button>
-                  <button onClick={() => manejarEliminarDenuncia(denuncia.id)} className="button-delete">
+                  <button className="button-delete" onClick={() => abrirModalEliminar(denuncia.id)}>
                     <FaTrash />
                   </button>
                 </td>
@@ -369,6 +367,7 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+      <ModalEliminar />
     </div>
   );
 };

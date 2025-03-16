@@ -120,9 +120,7 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
   const concesionesActuales = concesionesFiltradas.slice(indexPrimeraConcesion, indexUltimaConcesion);
   const numeroPaginas = Math.ceil(concesionesFiltradas.length / itemsPerPage);
 
-  const manejarEliminarConcesion = async (id: number) => {
-    await eliminarEntidad<Concesion>('Concesiones', id, setConcesiones);
-  };
+  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Concesion>("Concesiones", setConcesiones);
 
   if (loading) return <p>Cargando concesiones...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -168,7 +166,7 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
                   <button onClick={() => onVerConcesion(concesion)} className="button-view">
                     <FaEye />
                   </button>
-                  <button onClick={() => manejarEliminarConcesion(concesion.id)} className="button-delete">
+                  <button className="button-delete" onClick={() => abrirModalEliminar(concesion.id)}>
                     <FaTrash />
                   </button>
                 </td>
@@ -185,6 +183,7 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+      <ModalEliminar />
     </div>
   );
 };

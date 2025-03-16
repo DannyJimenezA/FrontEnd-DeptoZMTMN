@@ -123,9 +123,7 @@ const ExpedientesTable: React.FC<ExpedientesTableProps> = ({ onVerExpediente }) 
   const expedientesActuales = expedientesFiltrados.slice(indexPrimerExpediente, indexUltimoExpediente);
   const numeroPaginas = Math.ceil(expedientesFiltrados.length / itemsPerPage);
 
-  const manejarEliminarExpediente = async (id: number) => {
-    await eliminarEntidad<CopiaExpediente>('expedientes', id, setExpedientes);
-  };
+  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<CopiaExpediente>("expedientes", setExpedientes);
 
   if (loading) return <p>Cargando expedientes...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -171,7 +169,7 @@ const ExpedientesTable: React.FC<ExpedientesTableProps> = ({ onVerExpediente }) 
                   <button onClick={() => onVerExpediente(expediente)} className="button-view">
                     <FaEye />
                   </button>
-                  <button onClick={() => manejarEliminarExpediente(expediente.idExpediente)} className="button-delete">
+                  <button className="button-delete" onClick={() => abrirModalEliminar(expediente.idExpediente)}>
                     <FaTrash />
                   </button>
                 </td>
@@ -188,6 +186,7 @@ const ExpedientesTable: React.FC<ExpedientesTableProps> = ({ onVerExpediente }) 
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+      <ModalEliminar />
     </div>
   );
 };

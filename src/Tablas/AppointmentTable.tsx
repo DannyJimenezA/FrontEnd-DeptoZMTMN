@@ -12,6 +12,7 @@ import SearchBar from '../components/SearchBar';
 import "../styles/TableButtons.css";
 import ModalCrearFecha from '../TablaVista/ModalCrearFecha'; // Asegúrate de que la ruta sea correcta
 import ModalAgregarHoras from '../TablaVista/ModalAgregarHoras'; // Asegúrate de que la ruta sea correcta
+import { eliminarEntidad } from '../Helpers/eliminarEntidad';
 
 interface CitasTableProps {
   onVerCita: (cita: Cita) => void;
@@ -114,41 +115,7 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
     obtenerCitasYFechas();
   }, [navigate]);
 
-  const manejarEliminar = async (id: number) => {
-    const confirmacion = window.confirm('¿Estás seguro de eliminar la cita?');
-    if (!confirmacion) return;
-
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.error('Token no encontrado');
-      alert('No tienes permisos para realizar esta acción.');
-      return;
-    }
-
-    try {
-      const response = await fetch(`${ApiRoutes.citas.crearcita}/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 403) {
-          alert('No tienes permisos para eliminar esta cita.');
-        } else {
-          alert('Error al eliminar la cita.');
-        }
-        throw new Error(`Error al eliminar la cita con ID: ${id}`);
-      }
-
-      setCitas((prevCitas) => prevCitas.filter((cita) => cita.id !== id));
-      console.log(`Cita con ID: ${id} eliminada`);
-    } catch (error) {
-      console.error('Error al eliminar la cita:', error);
-    }
-  };
+  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Cita>("appointments", setCitas);
 
   const obtenerCitasFiltradas = () => {
     let citasFiltradas = citas;
@@ -276,10 +243,10 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
                   <td className="px-4 py-2">{cita.status}</td>
                   <td className="px-4 py-2 space-x-2">
                     <button onClick={() => onVerCita(cita)} className="button-view">
-                      <FaEye /> Ver
+                      <FaEye />
                     </button>
-                    <button onClick={() => manejarEliminar(cita.id)} className="button-delete">
-                      <FaTrash /> Eliminar
+                    <button onClick={() => abrirModalEliminar(cita.id)} className="button-delete">
+                      <FaTrash />
                     </button>
                   </td>
                 </tr>
@@ -297,6 +264,7 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+      <ModalEliminar />
     </div>
   );
 };

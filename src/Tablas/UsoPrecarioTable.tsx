@@ -121,9 +121,7 @@ const TablaUsoPrecario: React.FC<PrecarioTableProps> = ({ onVerPrecario }) => {
   const precariosActuales = precariosFiltrados.slice(indexPrimeraSolicitud, indexUltimaSolicitud);
   const numeroPaginas = Math.ceil(precariosFiltrados.length / itemsPerPage);
 
-  const manejarEliminarPrecario = async (id: number) => {
-    await eliminarEntidad<Precario>('Precario', id, setPrecarios);
-  };
+  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Precario>("Precario", setPrecarios);
 
   if (loading) {
     return <p>Cargando solicitudes de uso precario...</p>;
@@ -177,10 +175,7 @@ const TablaUsoPrecario: React.FC<PrecarioTableProps> = ({ onVerPrecario }) => {
                   >
                     <FaEye />
                   </button>
-                  <button
-                    onClick={() => manejarEliminarPrecario(precario.id)}
-                    className="button-delete"
-                  >
+                  <button className="button-delete" onClick={() => abrirModalEliminar(precario.id)}>
                     <FaTrash />
                   </button>
                 </td>
@@ -197,6 +192,7 @@ const TablaUsoPrecario: React.FC<PrecarioTableProps> = ({ onVerPrecario }) => {
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+      <ModalEliminar />
     </div>
   );
 };
