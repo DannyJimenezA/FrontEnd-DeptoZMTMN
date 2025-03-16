@@ -22,3 +22,17 @@
     background-color: #dc2626 !important; /* Rojo más oscuro */
   }
   
+/* Evita que el DatePicker se oculte debajo del encabezado sticky */
+.react-datepicker-popper {
+  z-index: 1050 !important;
+}
+
+/* Asegura que el encabezado sticky de la tabla no bloquee otros elementos */
+thead {
+  position: sticky;
+  top: 0;
+  z-index: 100; /* Debe ser menor que el DatePicker */
+  background-color: #f9fafb;
+}
+
+  

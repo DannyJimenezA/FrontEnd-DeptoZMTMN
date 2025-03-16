@@ -35,7 +35,7 @@ interface FiltroFechaProps {
 
 const FiltroFecha: React.FC<FiltroFechaProps> = ({ fechaFiltro, onChangeFecha }) => {
   return (
-    <div className="my-4">
+    <div className="my-4 relative">
       <label className="block text-sm font-medium text-gray-700">Filtrar por fecha:</label>
       <div className="flex items-center gap-2">
         <DatePicker
@@ -44,6 +44,8 @@ const FiltroFecha: React.FC<FiltroFechaProps> = ({ fechaFiltro, onChangeFecha })
           dateFormat="yyyy-MM-dd"
           placeholderText="Selecciona una fecha"
           className="w-full border border-gray-300 p-2 rounded-md focus:ring-blue-500 focus:border-blue-500"
+          popperPlacement="bottom-start"
+           portalId="root-portal"
         />
         {/* Botón para limpiar la fecha seleccionada */}
         <button
