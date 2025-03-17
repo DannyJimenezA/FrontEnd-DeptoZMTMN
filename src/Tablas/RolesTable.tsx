@@ -305,6 +305,15 @@ const RolesTable: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (isCreatingRole) {
+      document.body.classList.add("modal-open");
+    } else {
+      document.body.classList.remove("modal-open");
+    }
+  }, [isCreatingRole]);
+  
+
   if (loading) return <p className="text-center">Cargando roles...</p>;
   if (error) return <p className="text-red-500 text-center">{error}</p>;
 
@@ -321,7 +330,7 @@ const RolesTable: React.FC = () => {
         <FaPlus className="mr-2" /> Crear Nuevo Rol
       </button>
 
-      <div className="overflow-y-auto flex-1">
+      <div className="roles-table overflow-y-auto flex-1">
         <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-lg">
           <thead>
             <tr className="bg-gray-200">
@@ -353,31 +362,31 @@ const RolesTable: React.FC = () => {
 
       {/* Modal de creación de rol */}
       {isCreatingRole && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <button className="absolute top-2 right-2 text-gray-500" onClick={cerrarModalCrearRol}>
-              <FaTimes size={20} />
-            </button>
-            <h3 className="text-xl font-bold mb-4 text-center">Crear Nuevo Rol</h3>
-            <input
-              type="text"
-              className="w-full p-2 border rounded mb-4"
-              placeholder="Nombre del rol"
-              value={newRoleName}
-              onChange={(e) => setNewRoleName(e.target.value)}
-            />
-            <textarea
-              className="w-full p-2 border rounded mb-4"
-              placeholder="Descripción del rol"
-              value={newRoleDescription}
-              onChange={(e) => setNewRoleDescription(e.target.value)}
-              rows={3}
-            />
-            <button onClick={manejarCrearRol} className="w-full bg-blue-600 text-white py-2 rounded">
-              Guardar
-            </button>
-          </div>
-        </div>
+  <div className="modal-overlay">
+    <div className="modal-container">
+      <button className="absolute top-2 right-2 text-gray-500" onClick={cerrarModalCrearRol}>
+        <FaTimes size={20} />
+      </button>
+      <h3 className="text-xl font-bold mb-4 text-center">Crear Nuevo Rol</h3>
+      <input
+        type="text"
+        className="w-full p-2 border rounded mb-4"
+        placeholder="Nombre del rol"
+        value={newRoleName}
+        onChange={(e) => setNewRoleName(e.target.value)}
+      />
+      <textarea
+        className="w-full p-2 border rounded mb-4"
+        placeholder="Descripción del rol"
+        value={newRoleDescription}
+        onChange={(e) => setNewRoleDescription(e.target.value)}
+        rows={3}
+      />
+      <button onClick={manejarCrearRol} className="w-full bg-blue-600 text-white py-2 rounded">
+        Guardar
+      </button>
+    </div>
+  </div>
       )}
     </div>
   );
