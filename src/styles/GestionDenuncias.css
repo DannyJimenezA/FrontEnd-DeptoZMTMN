@@ -1,0 +1,32 @@
+/* Asegurar que ambas tablas tengan el mismo ancho */
+.tabla-denuncias {
+    width: 100%;
+    table-layout: fixed; /* Hace que las columnas tengan el mismo ancho */
+    border-collapse: collapse;
+  }
+  
+  /* Definir anchos fijos para las columnas */
+  .col-tipo, .col-lugar {
+    width: 75%; /* Mismo ancho en ambas tablas */
+  }
+  
+  .col-acciones {
+    width: 25%; /* Misma proporción para la columna "Acciones" */
+    text-align: center; /* Centrar los botones */
+  }
+  
+  /* Estilo de las celdas para que sean uniformes */
+  .tabla-denuncias th,
+  .tabla-denuncias td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+  }
+  
+  /* Asegurar que los botones dentro de la columna "Acciones" estén centrados */
+  .tabla-denuncias td .button-delete {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  

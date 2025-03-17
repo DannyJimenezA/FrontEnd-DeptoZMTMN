@@ -276,6 +276,7 @@
 
 import React, { useState, useEffect } from 'react';
 import ApiRoutes from '../components/ApiRoutes';
+import "../styles/GestionDenuncias.css";
 
 interface DenunciaData {
   id: number;
@@ -415,54 +416,50 @@ const GestionDenunciasTable: React.FC = () => {
       </button>
 
       {/* Tabla de Tipos de Denuncia */}
-      <h3>Tipos de Denuncia</h3>
-      <table className="tabla-denuncias">
-        <thead>
-          <tr>
-            {/* <th>ID</th> */}
-            <th>Tipo</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tipoDenuncias.map((tipo) => (
-            <tr key={tipo.id}>
-              {/* <td>{tipo.id}</td> */}
-              <td>{tipo.descripcion}</td>
-              <td>
-                <button onClick={() => abrirConfirmacionEliminar(tipo.id, 'tipo-denuncia')} className="button-delete">
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+<h3>Tipos de Denuncia</h3>
+<table className="tabla-denuncias">
+  <thead>
+    <tr>
+      <th className="col-tipo">Tipo</th>
+      <th className="col-acciones">Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {tipoDenuncias.map((tipo) => (
+      <tr key={tipo.id}>
+        <td>{tipo.descripcion}</td>
+        <td>
+          <button onClick={() => abrirConfirmacionEliminar(tipo.id, 'tipo-denuncia')} className="button-delete">
+            Eliminar
+          </button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
 
-      {/* Tabla de Lugares de Denuncia */}
-      <h3>Lugares de Denuncia</h3>
-      <table className="tabla-denuncias">
-        <thead>
-          <tr>
-            {/* <th>ID</th> */}
-            <th>Lugar</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {lugarDenuncias.map((lugar) => (
-            <tr key={lugar.id}>
-              {/* <td>{lugar.id}</td> */}
-              <td>{lugar.descripcion}</td>
-              <td>
-                <button onClick={() => abrirConfirmacionEliminar(lugar.id, 'lugar-denuncia')} className="button-delete">
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+{/* Tabla de Lugares de Denuncia */}
+<h3>Lugares de Denuncia</h3>
+<table className="tabla-denuncias">
+  <thead>
+    <tr>
+      <th className="col-lugar">Lugar</th>
+      <th className="col-acciones">Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {lugarDenuncias.map((lugar) => (
+      <tr key={lugar.id}>
+        <td>{lugar.descripcion}</td>
+        <td>
+          <button onClick={() => abrirConfirmacionEliminar(lugar.id, 'lugar-denuncia')} className="button-delete">
+            Eliminar
+          </button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
 
       {/* Modal para agregar */}
       {isAdding && (
