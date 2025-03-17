@@ -461,16 +461,22 @@ const GestionDenunciasTable: React.FC = () => {
   </tbody>
 </table>
 
-      {/* Modal para agregar */}
-      {isAdding && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>Agregar Nuevo {denunciaType === 'tipo-denuncia' ? 'Tipo' : 'Lugar'} de Denuncia</h3>
-            <input type="text" placeholder="Descripción" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
-            <button onClick={manejarAgregar}>Guardar</button>
-            <button onClick={cerrarModalAgregar} className="cancel-button">Cancelar</button>
-          </div>
-        </div>
+    {/* Modal para agregar */}
+{isAdding && (
+  <div className="modal-overlay">
+    <div className="modal-content">
+      <h3>Agregar Nuevo {denunciaType === 'tipo-denuncia' ? 'Tipo' : 'Lugar'} de Denuncia</h3>
+      <input 
+        type="text" 
+        className="descripcion-input" 
+        placeholder="Descripción" 
+        value={descripcion} 
+        onChange={(e) => setDescripcion(e.target.value)} 
+      />
+      <button onClick={manejarAgregar} className="guardar-button">Guardar</button>
+      <button onClick={cerrarModalAgregar} className="cancel-button">Cancelar</button>
+    </div>
+  </div>
       )}
 
       {/* Modal de confirmación para eliminar */}

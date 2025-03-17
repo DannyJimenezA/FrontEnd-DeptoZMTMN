@@ -30,3 +30,46 @@
     align-items: center;
   }
   
+  /* Ajustar el tamaño del modal para que no sea tan grande */
+
+  
+  /* Reducir el tamaño del input de Descripción */
+  .modal-content input[type="text"] {
+    width: 100%; /* Para que no sea más grande que el modal */
+    max-width: 350px; /* Limitar el ancho */
+    padding: 8px;
+    font-size: 14px;
+  }
+  
+  .modal-content {
+    width: 400px; /* Ancho adecuado */
+    max-width: 90%; /* No sobrepasa el 90% en pantallas pequeñas */
+    max-height: 350px; /* Limita la altura para que no sea muy alto */
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centrar el contenido verticalmente */
+  }
+  
+  /* Reducir el tamaño del textarea */
+  .modal-content textarea {
+    width: 100%;
+    max-width: 350px;
+    height: 60px; /* Antes era muy alto, ahora lo reducimos */
+    padding: 8px;
+    font-size: 14px;
+    resize: none; /* Evitar que el usuario lo haga más grande */
+  }
+  
+  /* Alinear correctamente los botones */
+  .modal-content button {
+    width: 100%; /* Para que se vean bien alineados */
+    max-width: 150px;
+    padding: 8px;
+    font-size: 14px;
+    margin-top: 10px;
+  }
