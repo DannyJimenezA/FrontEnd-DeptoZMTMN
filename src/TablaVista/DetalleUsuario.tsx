@@ -6,6 +6,7 @@ import ApiRoutes from '../components/ApiRoutes';
 interface DetalleUsuarioProps {
   usuario: Usuario;
   onVolver: () => void;
+  onEstadoCambiado: (id: number, nuevoEstado: boolean) => Promise<void>;
 }
 
 const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({ usuario, onVolver }) => {
