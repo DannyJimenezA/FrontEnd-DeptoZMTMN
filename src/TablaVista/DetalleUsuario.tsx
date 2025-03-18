@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Usuario } from '../Types/Types';
 import ApiRoutes from '../components/ApiRoutes';
+import '../styles/DetalleUsuario.css'
 
 interface DetalleUsuarioProps {
   usuario: Usuario;
@@ -84,7 +85,7 @@ const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({ usuario, onVolver }) =>
       {/* MODAL */}
       {isModalOpen && (
         <div className="modal-overlay">
-          <div className="modal-content">
+          <div className="modal">
             <h3>Asignar Rol</h3>
 
             {mensaje ? (
