@@ -170,6 +170,12 @@ const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver, o
     setEstado(nuevoEstado);
   };
 
+  const [confirmModal, setConfirmModal] = useState<{
+    visible: boolean;
+    nuevoEstado: string;
+  } | null>(null);
+  
+
   return (
     <div className="detalle-tabla">
       <h3>Detalles del Uso Precario</h3>
@@ -235,18 +241,76 @@ const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver, o
         <button onClick={enviarCorreo} className="btn-enviar">Enviar mensaje</button>
       </div>
 
-      {/* Botones para cambiar el estado */}
-      <div className="estado-botones">
-        <button className="boton-aprobar" onClick={() => manejarCambioEstado('Aprobada')}>
+      {/* Botones para cambiar estado */}
+      <div className="estado-botones" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+        <button
+          style={{
+            backgroundColor: '#4caf50',
+            color: 'white',
+            padding: '10px 20px',
+            border: 'none',
+            borderRadius: '6px'
+          }}
+          onClick={() => setConfirmModal({ visible: true, nuevoEstado: 'Aprobada' })}
+        >
           Aprobar
         </button>
-        <button className="boton-denegar" onClick={() => manejarCambioEstado('Denegada')}>
+        <button
+          style={{
+            backgroundColor: '#f44336',
+            color: 'white',
+            padding: '10px 20px',
+            border: 'none',
+            borderRadius: '6px'
+          }}
+          onClick={() => setConfirmModal({ visible: true, nuevoEstado: 'Denegada' })}
+        >
           Denegar
         </button>
       </div>
 
-      {/* Botón para volver a la lista */}
       <button className="volver-btn" onClick={onVolver}>Volver</button>
+
+      {/* Modal de confirmación */}
+      {confirmModal?.visible && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ textAlign: 'center', padding: '20px' }}>
+            <h3>Confirmación</h3>
+            <p>¿Estás seguro de cambiar el estado a <strong>{confirmModal.nuevoEstado}</strong>?</p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '15px' }}>
+              <button
+                style={{
+                  backgroundColor: '#4caf50',
+                  color: 'white',
+                  padding: '8px 16px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 'bold',
+                }}
+                onClick={() => {
+                  manejarCambioEstado(confirmModal.nuevoEstado);
+                  setConfirmModal(null);
+                }}
+              >
+                Aceptar
+              </button>
+              <button
+                style={{
+                  backgroundColor: '#f44336',
+                  color: 'white',
+                  padding: '8px 16px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 'bold',
+                }}
+                onClick={() => setConfirmModal(null)}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

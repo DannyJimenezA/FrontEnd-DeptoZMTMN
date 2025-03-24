@@ -173,6 +173,9 @@ const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPla
     onEstadoCambiado(revisionPlano.id, nuevoEstado);
   };
 
+  const [confirmarEstado, setConfirmarEstado] = useState<{ mostrar: boolean; estado: string }>({ mostrar: false, estado: '' });
+
+
   return (
     <div className="detalle-tabla">
       <h3>Detalles de la Revisión de Plano</h3>
@@ -186,8 +189,7 @@ const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPla
           <p><strong>Comentario:</strong> {revisionPlano.Comentario}</p>
           <p><strong>Estado:</strong> {revisionPlano.status || 'Pendiente'}</p>
         </div>
-
-        {/* Sección de Archivos Adjuntos */}
+  
         <div className="detalle-archivos">
           <p><strong>Archivos Adjuntos:</strong></p>
           {revisionPlano.ArchivosAdjuntos && Array.isArray(revisionPlano.ArchivosAdjuntos) ? (
@@ -205,8 +207,8 @@ const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPla
           )}
         </div>
       </div>
-
-      {/* Modal para previsualizar el PDF */}
+  
+      {/* Modal para vista previa */}
       {archivoVistaPrevia && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -217,8 +219,7 @@ const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPla
           </div>
         </div>
       )}
-
-      {/* Sección para enviar el mensaje */}
+  
       <div className="mensaje-container">
         <h3>Enviar mensaje a: {revisionPlano.user?.email}</h3>
         <textarea
@@ -230,17 +231,52 @@ const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPla
         />
         <button onClick={enviarCorreo} className="btn-enviar">Enviar mensaje</button>
       </div>
-
-      {/* Botones para cambiar el estado */}
-      <div className="estado-botones">
-        <button onClick={() => cambiarEstado('Aprobada')} className="boton-aprobar">Aprobar</button>
-        <button onClick={() => cambiarEstado('Denegada')} className="boton-denegar">Denegar</button>
+  
+      <div className="estado-botones" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+        <button
+          onClick={() => setConfirmarEstado({ mostrar: true, estado: 'Aprobada' })}
+          style={{ backgroundColor: '#4CAF50', color: '#fff', padding: '8px 16px', border: 'none', borderRadius: '4px' }}
+        >
+          Aprobar
+        </button>
+        <button
+          onClick={() => setConfirmarEstado({ mostrar: true, estado: 'Denegada' })}
+          style={{ backgroundColor: '#f44336', color: '#fff', padding: '8px 16px', border: 'none', borderRadius: '4px' }}
+        >
+          Denegar
+        </button>
       </div>
-
-      {/* Botón para volver a la lista */}
+  
       <button className="volver-btn" onClick={onVolver}>Volver</button>
+  
+      {/* Modal de Confirmación */}
+      {confirmarEstado.mostrar && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Confirmación</h3>
+            <p>¿Estás seguro de cambiar el estado a <strong>{confirmarEstado.estado}</strong>?</p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+              <button
+                onClick={() => {
+                  cambiarEstado(confirmarEstado.estado);
+                  setConfirmarEstado({ mostrar: false, estado: '' });
+                }}
+                style={{ backgroundColor: '#4CAF50', color: '#fff', padding: '8px 16px', border: 'none', borderRadius: '4px' }}
+              >
+                Aceptar
+              </button>
+              <button
+                onClick={() => setConfirmarEstado({ mostrar: false, estado: '' })}
+                style={{ backgroundColor: '#f44336', color: '#fff', padding: '8px 16px', border: 'none', borderRadius: '4px' }}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-  );
+  );  
 };
 
 export default DetalleRevisionPlano;

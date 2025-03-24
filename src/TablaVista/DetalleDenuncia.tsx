@@ -109,10 +109,6 @@ interface DetalleDenunciaProps {
 const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, onEstadoCambiado }) => {
   const [archivoVistaPrevia, setArchivoVistaPrevia] = useState<string | null>(null);
 
-  const cambiarEstado = (nuevoEstado: string) => {
-    onEstadoCambiado(denuncia.id, nuevoEstado);
-  };
-
   const procesarArchivos = (archivosEvidencia: string | string[] | undefined) => {
     let archivos: string[] = [];
 
@@ -144,6 +140,12 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, o
     }
   };
 
+  const [confirmModal, setConfirmModal] = useState<{
+    visible: boolean;
+    nuevoEstado: string;
+  } | null>(null);
+
+
   return (
     <div className="detalle-tabla">
       <h3>Detalles de la Denuncia</h3>
@@ -162,6 +164,7 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, o
           <p><strong>Detalles de Evidencia:</strong> {denuncia.detallesEvidencia || 'No disponible'}</p>
           <p><strong>Estado:</strong> {denuncia.status}</p>
         </div>
+
         <div className="detalle-archivos">
           <p><strong>Archivos de Evidencia:</strong></p>
           {archivosProcesados.length > 0 ? (
@@ -180,7 +183,7 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, o
         </div>
       </div>
 
-      {/* Modal para previsualizar imágenes */}
+      {/* Modal de imagen */}
       {archivoVistaPrevia && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -192,11 +195,30 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, o
         </div>
       )}
 
-      <div className="estado-botones">
-        <button className="boton-aprobar" onClick={() => cambiarEstado('Aprobada')}>
+      {/* Botones con confirmación */}
+      <div className="estado-botones" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+        <button
+          onClick={() => setConfirmModal({ visible: true, nuevoEstado: 'Aprobada' })}
+          style={{
+            backgroundColor: '#4caf50',
+            color: 'white',
+            padding: '10px 20px',
+            border: 'none',
+            borderRadius: '6px'
+          }}
+        >
           Aprobar
         </button>
-        <button className="boton-denegar" onClick={() => cambiarEstado('Denegada')}>
+        <button
+          onClick={() => setConfirmModal({ visible: true, nuevoEstado: 'Denegada' })}
+          style={{
+            backgroundColor: '#f44336',
+            color: 'white',
+            padding: '10px 20px',
+            border: 'none',
+            borderRadius: '6px'
+          }}
+        >
           Denegar
         </button>
       </div>
@@ -204,6 +226,47 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, o
       <button className="volver-btn" onClick={onVolver}>
         Volver
       </button>
+
+      {/* Modal de confirmación */}
+      {confirmModal?.visible && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ textAlign: 'center', padding: '20px' }}>
+            <h3>Confirmación</h3>
+            <p>¿Estás seguro de cambiar el estado a <strong>{confirmModal.nuevoEstado}</strong>?</p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '15px' }}>
+              <button
+                style={{
+                  backgroundColor: '#4caf50',
+                  color: 'white',
+                  padding: '8px 16px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 'bold',
+                }}
+                onClick={() => {
+                  onEstadoCambiado(denuncia.id, confirmModal.nuevoEstado);
+                  setConfirmModal(null);
+                }}
+              >
+                Aceptar
+              </button>
+              <button
+                style={{
+                  backgroundColor: '#f44336',
+                  color: 'white',
+                  padding: '8px 16px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 'bold',
+                }}
+                onClick={() => setConfirmModal(null)}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -166,11 +166,12 @@ const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver, o
   // Función para cerrar la vista previa
   const cerrarVistaPrevia = () => setArchivoVistaPrevia(null);
 
-  // Función para cambiar el estado de la prórroga
-  const cambiarEstado = (nuevoEstado: string) => {
-    onEstadoCambiado(prorroga.id, nuevoEstado);
-  };
+  const [confirmModal, setConfirmModal] = useState<{
+    visible: boolean;
+    nuevoEstado: string;
+  } | null>(null);
 
+  
   return (
     <div className="detalle-tabla">
       <h3>Detalles de la Prórroga</h3>
@@ -183,7 +184,7 @@ const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver, o
           <p><strong>Estado:</strong> {prorroga?.status || 'Pendiente'}</p>
         </div>
 
-        {/* Sección de Archivos Adjuntos */}
+        {/* Archivos */}
         <div className="detalle-archivos">
           <p><strong>Archivo Adjunto:</strong></p>
           {prorroga.ArchivoAdjunto ? (
@@ -210,7 +211,7 @@ const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver, o
         </div>
       </div>
 
-      {/* Modal para previsualizar el PDF */}
+      {/* Modal PDF */}
       {archivoVistaPrevia && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -222,7 +223,7 @@ const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver, o
         </div>
       )}
 
-      {/* Sección para enviar el mensaje */}
+      {/* Mensaje personalizado */}
       <div className="mensaje-container">
         <h3>Enviar mensaje a: {prorroga.user?.email}</h3>
         <textarea
@@ -235,14 +236,76 @@ const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver, o
         <button onClick={enviarCorreo} className="btn-enviar">Enviar mensaje</button>
       </div>
 
-      {/* Botones para cambiar el estado */}
-      <div className="estado-botones">
-        <button onClick={() => cambiarEstado('Aprobada')} className="boton-aprobar">Aprobar</button>
-        <button onClick={() => cambiarEstado('Denegada')} className="boton-denegar">Denegar</button>
+      {/* Botones de cambio de estado con modal */}
+      <div className="estado-botones" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+        <button
+          onClick={() => setConfirmModal({ visible: true, nuevoEstado: 'Aprobada' })}
+          style={{
+            backgroundColor: '#4caf50',
+            color: 'white',
+            padding: '10px 20px',
+            border: 'none',
+            borderRadius: '6px'
+          }}
+        >
+          Aprobar
+        </button>
+        <button
+          onClick={() => setConfirmModal({ visible: true, nuevoEstado: 'Denegada' })}
+          style={{
+            backgroundColor: '#f44336',
+            color: 'white',
+            padding: '10px 20px',
+            border: 'none',
+            borderRadius: '6px'
+          }}
+        >
+          Denegar
+        </button>
       </div>
 
-      {/* Botón para volver a la lista */}
       <button className="volver-btn" onClick={onVolver}>Volver</button>
+
+      {/* Modal de confirmación */}
+      {confirmModal?.visible && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ textAlign: 'center', padding: '20px' }}>
+            <h3>Confirmación</h3>
+            <p>¿Estás seguro de cambiar el estado a <strong>{confirmModal.nuevoEstado}</strong>?</p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '15px' }}>
+              <button
+                style={{
+                  backgroundColor: '#4caf50',
+                  color: 'white',
+                  padding: '8px 16px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 'bold',
+                }}
+                onClick={() => {
+                  onEstadoCambiado(prorroga.id, confirmModal.nuevoEstado);
+                  setConfirmModal(null);
+                }}
+              >
+                Aceptar
+              </button>
+              <button
+                style={{
+                  backgroundColor: '#f44336',
+                  color: 'white',
+                  padding: '8px 16px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 'bold',
+                }}
+                onClick={() => setConfirmModal(null)}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FaFilePdf, FaTimes } from 'react-icons/fa';
 import { Concesion } from '../Types/Types';
 import ApiRoutes from '../components/ApiRoutes';
+import AlertNotification from '../components/AlertNotificationP';
 import '../styles/DetalleSolicitud.css';
 
 interface DetalleConcesionProps {
@@ -13,23 +14,24 @@ interface DetalleConcesionProps {
 const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver, onEstadoCambiado }) => {
   const [mensaje, setMensaje] = useState<string>('');
   const [archivoVistaPrevia, setArchivoVistaPrevia] = useState<string | null>(null);
+  const [customAlert, setCustomAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
-  // Función para abrir la vista previa del archivo
   const manejarVerArchivo = (archivo: string) => {
     const archivoFinal = archivo.replace(/[\[\]"]/g, '');
     if (archivoFinal) {
       const fileUrl = `${ApiRoutes.urlBase}/${archivoFinal}`;
-      setArchivoVistaPrevia(fileUrl); // Abre la vista previa en el modal
+      setArchivoVistaPrevia(fileUrl);
     }
   };
 
-  // Función para cerrar la vista previa
   const cerrarVistaPrevia = () => setArchivoVistaPrevia(null);
 
-  // Función para enviar el correo
   const enviarCorreo = async () => {
     if (!concesion.user?.email || !mensaje) {
-      alert('Por favor, asegúrate de que el usuario tiene un correo y escribe un mensaje.');
+      setCustomAlert({
+        type: 'error',
+        message: 'Por favor, asegúrate de que el usuario tiene un correo y escribe un mensaje.',
+      });
       return;
     }
 
@@ -42,16 +44,31 @@ const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver
 
       const result = await response.json();
       if (result.success) {
-        alert('Mensaje enviado exitosamente.');
+        setCustomAlert({
+          type: 'success',
+          message: 'Mensaje enviado exitosamente.',
+        });
         setMensaje('');
       } else {
-        alert('Error al enviar el mensaje.');
+        setCustomAlert({
+          type: 'error',
+          message: 'Error al enviar el mensaje.',
+        });
       }
     } catch (error) {
       console.error('Error al enviar el correo:', error);
-      alert('Hubo un error al intentar enviar el mensaje.');
+      setCustomAlert({
+        type: 'error',
+        message: 'Hubo un error al intentar enviar el mensaje.',
+      });
     }
   };
+
+  const [confirmModal, setConfirmModal] = useState<{
+    visible: boolean;
+    nuevoEstado: string;
+  } | null>(null);
+  
 
   return (
     <div className="detalle-tabla">
@@ -108,11 +125,30 @@ const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver
         <button onClick={enviarCorreo} className="btn-enviar">Enviar mensaje</button>
       </div>
 
-      <div className="estado-botones">
-        <button className="boton-aprobar" onClick={() => onEstadoCambiado(concesion.id, 'Aprobada')}>
+      {/* Botones Aprobar/Denegar con modal */}
+      <div className="estado-botones" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+        <button
+          onClick={() => setConfirmModal({ visible: true, nuevoEstado: 'Aprobada' })}
+          style={{
+            backgroundColor: '#4caf50',
+            color: 'white',
+            padding: '10px 20px',
+            border: 'none',
+            borderRadius: '6px'
+          }}
+        >
           Aprobar
         </button>
-        <button className="boton-denegar" onClick={() => onEstadoCambiado(concesion.id, 'Denegada')}>
+        <button
+          onClick={() => setConfirmModal({ visible: true, nuevoEstado: 'Denegada' })}
+          style={{
+            backgroundColor: '#f44336',
+            color: 'white',
+            padding: '10px 20px',
+            border: 'none',
+            borderRadius: '6px'
+          }}
+        >
           Denegar
         </button>
       </div>
@@ -120,8 +156,59 @@ const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver
       <button className="volver-btn" onClick={onVolver}>
         Volver
       </button>
+
+      {/* Modal de confirmación */}
+      {confirmModal?.visible && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ textAlign: 'center', padding: '20px' }}>
+            <h3>Confirmación</h3>
+            <p>¿Estás seguro de cambiar el estado a <strong>{confirmModal.nuevoEstado}</strong>?</p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '15px' }}>
+              <button
+                style={{
+                  backgroundColor: '#4caf50',
+                  color: 'white',
+                  padding: '8px 16px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 'bold',
+                }}
+                onClick={() => {
+                  onEstadoCambiado(concesion.id, confirmModal.nuevoEstado);
+                  setConfirmModal(null);
+                }}
+              >
+                Aceptar
+              </button>
+              <button
+                style={{
+                  backgroundColor: '#f44336',
+                  color: 'white',
+                  padding: '8px 16px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 'bold',
+                }}
+                onClick={() => setConfirmModal(null)}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Alerta visual personalizada */}
+      {customAlert && (
+        <AlertNotification
+          type={customAlert.type}
+          message={customAlert.message}
+          onClose={() => setCustomAlert(null)}
+        />
+      )}
     </div>
   );
+
 };
 
 export default DetalleConcesion;
