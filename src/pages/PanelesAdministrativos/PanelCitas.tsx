@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'; // Importa useNavigate para redi
 import {jwtDecode} from 'jwt-decode'; // Asegúrate de que jwt-decode esté instalado
 import "../../styles/Administrativos/TablaCitas.css";
 import ApiRoutes from '../../components/ApiRoutes';
+import AlertNotification  from '../../components/AlertNotificationP';
+
 
 // Interfaz para las citas
 interface Cita {
@@ -144,49 +146,76 @@ const TablaCitas: React.FC = () => {
           cita.id === id ? { ...cita, status: nuevoEstado } : cita
         )
       );
-      console.log(`Estado de la cita con ID: ${id} cambiado a ${nuevoEstado}`);
+  
+      // Mostrar alerta
+      setAlert({
+        type: 'success',
+        message: `La cita fue ${nuevoEstado === 'aprobada' ? 'aprobada' : 'denegada'} correctamente.`,
+      });
     } catch (error) {
       console.error('Error al cambiar el estado de la cita:', error);
+      setAlert({
+        type: 'error',
+        message: 'Ocurrió un error al cambiar el estado de la cita.',
+      });
     }
   };
+  
+
+  const [alert, setAlert] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
+  
 
   return (
-    <div className="tabla-container">
-      <h2>Citas Programadas</h2>
-      <table className="tabla-citas">
-        <thead>
-          <tr>
-            <th>ID Cita</th>
-            <th>Descripción</th>
-            <th>Fecha</th>
-            <th>Hora</th>
-            <th>Cédula</th>
-            <th>Nombre</th>
-            <th>Estado</th>
-            <th>Accion</th>
-          </tr>
-        </thead>
-        <tbody>
-          {citas.map((cita) => (
-            <tr key={cita.id}>
-              <td>{cita.id}</td>
-              <td>{cita.description}</td>
-              <td>{new Date(cita.date).toLocaleDateString()}</td>
-              <td>{cita.time}</td>
-              <td>{cita.user ? `${cita.user.cedula}` : 'ID no disponible'}</td>
-              <td>{cita.user ? cita.user.nombre : 'Nombre no disponible'}</td>
-              <td>{cita.status}</td>
-              <td>
-                <button onClick={() => manejarCambioEstado(cita.id, 'aprobada')}>Aprobar</button>
-                <button onClick={() => manejarCambioEstado(cita.id, 'denegada')}>Denegar</button>
-                <button onClick={() => manejarEliminar(cita.id)}>Eliminar</button>
-              </td>
+    <>
+      <div className="tabla-container">
+        <h2>Citas Programadas</h2>
+        <table className="tabla-citas">
+          <thead>
+            <tr>
+              <th>ID Cita</th>
+              <th>Descripción</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Cédula</th>
+              <th>Nombre</th>
+              <th>Estado</th>
+              <th>Acción</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+          </thead>
+          <tbody>
+            {citas.map((cita) => (
+              <tr key={cita.id}>
+                <td>{cita.id}</td>
+                <td>{cita.description}</td>
+                <td>{new Date(cita.date).toLocaleDateString()}</td>
+                <td>{cita.time}</td>
+                <td>{cita.user ? cita.user.cedula : 'ID no disponible'}</td>
+                <td>{cita.user ? cita.user.nombre : 'Nombre no disponible'}</td>
+                <td>{cita.status}</td>
+                <td>
+                  <button onClick={() => manejarCambioEstado(cita.id, 'aprobada')}>Aprobar</button>
+                  <button onClick={() => manejarCambioEstado(cita.id, 'denegada')}>Denegar</button>
+                  <button onClick={() => manejarEliminar(cita.id)}>Eliminar</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+  
+      {/* ✅ Alerta fuera del div principal para evitar problemas de posicionamiento */}
+      {alert && (
+        <AlertNotification
+          type={alert.type}
+          message={alert.message}
+          onClose={() => setAlert(null)}
+        />
+      )}
+    </>
+  );  
 };
 
 export default TablaCitas;

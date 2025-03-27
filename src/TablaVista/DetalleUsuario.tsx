@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Usuario } from '../Types/Types';
 import ApiRoutes from '../components/ApiRoutes';
+import '../styles/DetalleUsuario.css'
 
 interface DetalleUsuarioProps {
   usuario: Usuario;
   onVolver: () => void;
+  onEstadoCambiado: (id: number, nuevoEstado: boolean) => Promise<void>;
 }
 
 const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({ usuario, onVolver }) => {
@@ -69,8 +71,11 @@ const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({ usuario, onVolver }) =>
 
       <div className="usuario-info">
         <p><strong>ID:</strong> {usuario.id}</p>
-        <p><strong>Nombre:</strong> {usuario.nombre} {usuario.apellido1} {usuario.apellido2}</p>
+        <p><strong>Cedula:</strong> {usuario.cedula}</p>
+        <p><strong>Nombre:</strong> {usuario.nombre}</p>
+        <p><strong>Apellidos:</strong> {usuario.apellido1} {usuario.apellido2}</p>
         <p><strong>Email:</strong> {usuario.email}</p>
+        <p><strong>Telefono:</strong> {usuario.telefono}</p>
         <p><strong>Estado:</strong> {usuario.isActive ? 'Activo' : 'Inactivo'}</p>
         <p><strong>Rol Actual:</strong> {usuario.roles.length > 0 ? usuario.roles[0].name : 'Sin rol asignado'}</p>
       </div>
@@ -83,7 +88,7 @@ const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({ usuario, onVolver }) =>
       {/* MODAL */}
       {isModalOpen && (
         <div className="modal-overlay">
-          <div className="modal-content">
+          <div className="modal">
             <h3>Asignar Rol</h3>
 
             {mensaje ? (

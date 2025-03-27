@@ -356,6 +356,9 @@ const AdminDashboard: React.FC = () => {
     }
   };
   
+  const manejarAsignarPermisos = (rol: Role) => {
+    setRolSeleccionado(rol); // ✅ Guardamos el rol seleccionado
+  };
   
 
   const renderSection = () => {
@@ -400,7 +403,7 @@ const AdminDashboard: React.FC = () => {
     }
 
     if (activeSection === 'roles') {
-      return <RolesTable onCrearRol={manejarMostrarFormularioCrearRol}  />;
+      return <RolesTable onCrearRol={manejarMostrarFormularioCrearRol} onAsignarPermisos={manejarAsignarPermisos} />;
     }
     
 
@@ -485,5 +488,3 @@ const AdminDashboard: React.FC = () => {
 };
 
 export default AdminDashboard;
-
-
