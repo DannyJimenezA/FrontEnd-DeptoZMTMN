@@ -82,7 +82,7 @@ function Login() {
       {message && <p className="text-blue-600 text-center mb-4">{message}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="input-wrapper">
+        <div className="login-input-wrapper">
           <div className="icon-container">
             <FaRegUser className="icon" />
           </div>
@@ -96,7 +96,7 @@ function Login() {
             className="email-input"
           />
         </div>
-        <div className="input-wrapper">
+        <div className="login-input-wrapper">
   <div className="icon-container">
     <FaLock className="icon" />
   </div>
