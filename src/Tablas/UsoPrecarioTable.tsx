@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { DecodedToken, Precario } from '../Types/Types';
 import Paginacion from '../components/Paginacion';
-import FilterButtons from '../components/FilterButton';
 import FiltroFecha from '../components/FiltroFecha';
-import SearchBar from '../components/SearchBar';
+import SearchFilterBar from '../components/SearchFilterBar';
 import { eliminarEntidad } from '../Helpers/eliminarEntidad';
 import { FaEye, FaTrash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import ApiRoutes from '../components/ApiRoutes';
-import "../styles/TableButtons.css"
+import "../styles/TableButtons.css";
 
 interface PrecarioTableProps {
   onVerPrecario: (precario: Precario) => void;
@@ -17,34 +16,29 @@ interface PrecarioTableProps {
 
 const fetchPrecarios = async (): Promise<Precario[]> => {
   const token = localStorage.getItem('token');
-  try {
-    const response = await fetch(ApiRoutes.precarios, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+  const response = await fetch(ApiRoutes.precarios, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
 
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status} - ${response.statusText}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching precarios:', error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`Error: ${response.status} - ${response.statusText}`);
   }
+
+  return await response.json();
 };
 
 const TablaUsoPrecario: React.FC<PrecarioTableProps> = ({ onVerPrecario }) => {
   const [precarios, setPrecarios] = useState<Precario[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filtroEstado, setFiltroEstado] = useState<string>('todos');
+  const [filtroEstado, setFiltroEstado] = useState('todos');
   const [fechaFiltro, setFechaFiltro] = useState<Date | null>(null);
-  const [searchText, setSearchText] = useState<string>('');
-  const [searchBy, setSearchBy] = useState<string>('nombre'); // Cambia a 'nombre' o 'cedula' según la búsqueda deseada
+  const [searchText, setSearchText] = useState('');
+  const [searchBy, setSearchBy] = useState('nombre');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const navigate = useNavigate();
@@ -54,35 +48,29 @@ const TablaUsoPrecario: React.FC<PrecarioTableProps> = ({ onVerPrecario }) => {
 
     if (token) {
       try {
-        const decodedToken = jwtDecode<DecodedToken>(token);
-        const hasPermission = decodedToken.permissions.some(
-          (permission: { action: string; resource: string }) =>
-            permission.action === 'GET' && permission.resource === 'concesion'
+        const decoded = jwtDecode<DecodedToken>(token);
+        const hasPermission = decoded.permissions.some(
+          (perm) => perm.action === 'GET' && perm.resource === 'concesion'
         );
-
         if (!hasPermission) {
-          window.alert('No tienes permiso para acceder a esta página.');
-          navigate('/');
-          return;
+          alert('No tienes permiso para acceder a esta página.');
+          return navigate('/');
         }
       } catch (error) {
-        console.error('Error al decodificar el token:', error);
-        window.alert('Ha ocurrido un error. Por favor, inicie sesión nuevamente.');
-        navigate('/login');
-        return;
+        alert('Error con el token. Por favor, inicia sesión nuevamente.');
+        return navigate('/login');
       }
     } else {
-      window.alert('No se ha encontrado un token de acceso. Por favor, inicie sesión.');
-      navigate('/login');
-      return;
+      alert('Token no encontrado. Inicia sesión.');
+      return navigate('/login');
     }
 
     const obtenerPrecarios = async () => {
       try {
-        const precariosFromAPI = await fetchPrecarios();
-        setPrecarios(precariosFromAPI);
-      } catch (error) {
-        console.error('Error al obtener los precarios:', error);
+        const data = await fetchPrecarios();
+        setPrecarios(data);
+      } catch (err) {
+        console.error('Error al obtener los precarios:', err);
         setError('Error al cargar los precarios.');
       } finally {
         setLoading(false);
@@ -93,62 +81,73 @@ const TablaUsoPrecario: React.FC<PrecarioTableProps> = ({ onVerPrecario }) => {
   }, [navigate]);
 
   const obtenerPrecariosFiltrados = () => {
-    let precariosFiltrados = precarios;
+    let filtrados = precarios;
 
     if (filtroEstado !== 'todos') {
-      precariosFiltrados = precariosFiltrados.filter((precario) => precario.status === filtroEstado);
+      filtrados = filtrados.filter((p) => p.status === filtroEstado);
     }
 
     if (fechaFiltro) {
       const fechaSeleccionada = fechaFiltro.toISOString().split('T')[0];
-      precariosFiltrados = precariosFiltrados.filter((precario) => precario.Date === fechaSeleccionada);
+      filtrados = filtrados.filter((p) => p.Date === fechaSeleccionada);
     }
 
     if (searchText) {
-      precariosFiltrados = precariosFiltrados.filter((precario) =>
+      filtrados = filtrados.filter((p) =>
         searchBy === 'nombre'
-          ? precario.user?.nombre?.toLowerCase().includes(searchText.toLowerCase())
-          : precario.user?.cedula?.toLowerCase().includes(searchText.toLowerCase())
+          ? p.user?.nombre?.toLowerCase().includes(searchText.toLowerCase())
+          : p.user?.cedula?.toLowerCase().includes(searchText.toLowerCase())
       );
     }
 
-    return precariosFiltrados;
+    return filtrados;
   };
 
   const precariosFiltrados = obtenerPrecariosFiltrados();
-  const indexUltimaSolicitud = currentPage * itemsPerPage;
-  const indexPrimeraSolicitud = indexUltimaSolicitud - itemsPerPage;
-  const precariosActuales = precariosFiltrados.slice(indexPrimeraSolicitud, indexUltimaSolicitud);
+  const indexUltima = currentPage * itemsPerPage;
+  const indexPrimera = indexUltima - itemsPerPage;
+  const precariosActuales = precariosFiltrados.slice(indexPrimera, indexUltima);
   const numeroPaginas = Math.ceil(precariosFiltrados.length / itemsPerPage);
 
-  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Precario>("Precario", setPrecarios);
+  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Precario>('Precario', setPrecarios);
 
-  if (loading) {
-    return <p>Cargando solicitudes de uso precario...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
+  if (loading) return <p>Cargando solicitudes de uso precario...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="flex flex-col w-full h-full p-4">
       <h2 className="text-2xl font-semibold mb-4">Solicitudes de Uso Precario</h2>
 
-      {/* Barra de búsqueda */}
-      <SearchBar
-        onSearch={setSearchText}
-        searchBy={searchBy}
+      {/* Filtros unificados */}
+      <SearchFilterBar
+        searchPlaceholder="Buscar por nombre o cédula..."
+        searchText={searchText}
+        onSearchTextChange={setSearchText}
+        searchByOptions={[
+          { value: 'nombre', label: 'Nombre' },
+          { value: 'cedula', label: 'Cédula' },
+        ]}
+        selectedSearchBy={searchBy}
         onSearchByChange={setSearchBy}
+        extraFilters={
+          <div className="flex flex-wrap items-end gap-2">
+            <select
+              value={filtroEstado}
+              onChange={(e) => setFiltroEstado(e.target.value)}
+              className="text-sm py-2 px-3 border border-gray-300 rounded-md w-44"
+            >
+              <option value="todos">Todos</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="Aprobada">Aprobada</option>
+              <option value="Denegada">Denegada</option>
+            </select>
+
+            <FiltroFecha fechaFiltro={fechaFiltro} onChangeFecha={setFechaFiltro} />
+          </div>
+        }
       />
-      {/* Filtro por fecha */}
-      <FiltroFecha fechaFiltro={fechaFiltro} onChangeFecha={setFechaFiltro} />
 
-      {/* Componente de filtro por estado */}
-      <FilterButtons onFilterChange={setFiltroEstado} />
-
-
-      <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg">
+      <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg max-h-[70vh]">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50 sticky top-0 z-10">
             <tr>
@@ -169,10 +168,7 @@ const TablaUsoPrecario: React.FC<PrecarioTableProps> = ({ onVerPrecario }) => {
                 <td className="px-4 py-2">{precario.Date}</td>
                 <td className="px-4 py-2">{precario.status || 'Pendiente'}</td>
                 <td className="px-4 py-2 space-x-2">
-                  <button
-                    onClick={() => onVerPrecario(precario)}
-                    className="button-view"
-                  >
+                  <button onClick={() => onVerPrecario(precario)} className="button-view">
                     <FaEye />
                   </button>
                   <button className="button-delete" onClick={() => abrirModalEliminar(precario.id)}>
