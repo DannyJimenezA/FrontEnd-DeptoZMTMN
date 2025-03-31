@@ -6,7 +6,7 @@ body {
   }
   
 .register-container {
-  width: 700px;
+  width: 500px;
     margin: 100px auto;
   padding: 2.5rem;
     background-color: #fff;
@@ -221,24 +221,3 @@ input[type="password"] {
   font-size: 0.875rem;
   }
   
-  /* 🆕 Estilo para mostrar errores de campo */
-.field-error {
-  color: #ef4444; /* rojo suave */
-  font-size: 0.8rem;
-  margin-top: 0.3rem;
-  min-height: 1rem; /* asegura espacio reservado para evitar que brinque el layout */
-  display: block;
-}
-
-/* 🆕 Si querés resaltar el borde del input cuando hay error */
-.input-error {
-  border-color: #ef4444 !important;
-  background-color: #fff5f5;
-}
-
-.input-wrapper {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  min-height: 5.2rem; /* altura combinada del input (3.5rem) + error (1.2rem) + espacio */
-}
