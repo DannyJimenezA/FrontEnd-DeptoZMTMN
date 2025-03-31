@@ -12,6 +12,7 @@ import SearchBar from '../components/SearchBar';
 import "../styles/TableButtons.css";
 import ModalCrearFecha from '../TablaVista/ModalCrearFecha'; // Asegúrate de que la ruta sea correcta
 import ModalAgregarHoras from '../TablaVista/ModalAgregarHoras'; // Asegúrate de que la ruta sea correcta
+import { eliminarEntidad } from '../Helpers/eliminarEntidad';
 
 interface CitasTableProps {
   onVerCita: (cita: Cita) => void;
@@ -114,41 +115,7 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
     obtenerCitasYFechas();
   }, [navigate]);
 
-  const manejarEliminar = async (id: number) => {
-    const confirmacion = window.confirm('¿Estás seguro de eliminar la cita?');
-    if (!confirmacion) return;
-
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.error('Token no encontrado');
-      alert('No tienes permisos para realizar esta acción.');
-      return;
-    }
-
-    try {
-      const response = await fetch(`${ApiRoutes.citas.crearcita}/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 403) {
-          alert('No tienes permisos para eliminar esta cita.');
-        } else {
-          alert('Error al eliminar la cita.');
-        }
-        throw new Error(`Error al eliminar la cita con ID: ${id}`);
-      }
-
-      setCitas((prevCitas) => prevCitas.filter((cita) => cita.id !== id));
-      console.log(`Cita con ID: ${id} eliminada`);
-    } catch (error) {
-      console.error('Error al eliminar la cita:', error);
-    }
-  };
+  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Cita>("appointments", setCitas);
 
   const obtenerCitasFiltradas = () => {
     let citasFiltradas = citas;
@@ -207,7 +174,7 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
   return (
     <div className="flex flex-col w-full h-full p-4">
       <h2 className="text-2xl font-semibold mb-4">Citas Programadas</h2>
-
+  
       {/* Botones para abrir los modales */}
       <div className="flex space-x-4 mb-4">
         <button
@@ -223,22 +190,34 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
           <FaPlus /> Agregar Horas
         </button>
       </div>
-
+  
       {/* Modal para crear fechas */}
-      <ModalCrearFecha
-        isOpen={isModalFechaOpen}
-        onClose={() => setIsModalFechaOpen(false)}
-        onFechaCreada={handleFechaCreada}
-      />
-
+      {isModalFechaOpen && (
+        <div className="modal-overlay">
+          <div className="modal-container">
+            <ModalCrearFecha
+              isOpen={isModalFechaOpen}
+              onClose={() => setIsModalFechaOpen(false)}
+              onFechaCreada={handleFechaCreada}
+            />
+          </div>
+        </div>
+      )}
+  
       {/* Modal para agregar horas */}
-      <ModalAgregarHoras
-        isOpen={isModalHorasOpen}
-        onClose={() => setIsModalHorasOpen(false)}
-        onHorasAgregadas={handleHorasAgregadas}
-        fechasDisponibles={fechasDisponibles}
-      />
-
+      {isModalHorasOpen && (
+        <div className="modal-overlay">
+          <div className="modal-container">
+            <ModalAgregarHoras
+              isOpen={isModalHorasOpen}
+              onClose={() => setIsModalHorasOpen(false)}
+              onHorasAgregadas={handleHorasAgregadas}
+              fechasDisponibles={fechasDisponibles}
+            />
+          </div>
+        </div>
+      )}
+  
       <SearchBar
         onSearch={setSearchText}
         searchBy={searchBy}
@@ -246,10 +225,10 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
       />
       <FiltroFecha fechaFiltro={fechaFiltro} onChangeFecha={setFechaFiltro} />
       <FilterButtons onFilterChange={setFiltroEstado} />
-
+  
       <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 sticky top-0 z-10">
             <tr>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">ID</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Fecha y Hora</th>
@@ -263,22 +242,20 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
             {citasActuales.map((cita) => {
               const fecha = cita.availableDate ? cita.availableDate.date : 'No disponible';
               const hora = cita.horaCita ? cita.horaCita.hora : 'No disponible';
-
+  
               return (
                 <tr key={cita.id}>
                   <td className="px-4 py-2">{cita.id}</td>
-                  <td className="px-4 py-2">
-                    {`${fecha} ${hora}`}
-                  </td>
+                  <td className="px-4 py-2">{`${fecha} ${hora}`}</td>
                   <td className="px-4 py-2">{cita.user?.cedula || 'No disponible'}</td>
                   <td className="px-4 py-2">{cita.user?.nombre || 'No disponible'}</td>
                   <td className="px-4 py-2">{cita.status}</td>
                   <td className="px-4 py-2 space-x-2">
                     <button onClick={() => onVerCita(cita)} className="button-view">
-                      <FaEye /> Ver
+                      <FaEye />
                     </button>
-                    <button onClick={() => manejarEliminar(cita.id)} className="button-delete">
-                      <FaTrash /> Eliminar
+                    <button onClick={() => abrirModalEliminar(cita.id)} className="button-delete">
+                      <FaTrash />
                     </button>
                   </td>
                 </tr>
@@ -287,7 +264,7 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
           </tbody>
         </table>
       </div>
-
+  
       <Paginacion
         currentPage={currentPage}
         totalPages={totalPages}
@@ -295,8 +272,9 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+      <ModalEliminar />
     </div>
-  );
+  );  
 };
 
 export default TablaCitas;

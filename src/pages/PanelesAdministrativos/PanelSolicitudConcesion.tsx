@@ -4,6 +4,7 @@ import {jwtDecode} from "jwt-decode"; // Asegúrate de que jwt-decode esté inst
 import "../../styles/Administrativos/TablaProrrogaConcesion.css";
 import { FaFilePdf } from "react-icons/fa";
 import ApiRoutes from "../../components/ApiRoutes";
+import AlertNotification from "../../components/AlertNotificationP";
 
 // Interfaz para las prórrogas
 interface Prorroga {
@@ -83,29 +84,29 @@ const TablaSolicitudes: React.FC = () => {
   const [precarios, setPrecario] = useState<Precario[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate(); // Hook para la navegación
+  const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (token) {
       try {
-        const decodedToken = jwtDecode<DecodedToken>(token); // Decodificar el token para obtener roles
-
+        const decodedToken = jwtDecode<DecodedToken>(token);
         if (!decodedToken.roles.includes("admin")) {
-          window.alert("No tienes permiso para acceder a esta página."); // Mostrar alerta al usuario
-          navigate("/"); // Redirige a una página de acceso denegado o inicio
+          window.alert("No tienes permiso para acceder a esta página.");
+          navigate("/");
           return;
         }
       } catch (error) {
         console.error("Error al decodificar el token:", error);
         window.alert("Ha ocurrido un error. Por favor, inicie sesión nuevamente.");
-        navigate("/login"); // Redirige a login si hay un problema con el token
+        navigate("/login");
         return;
       }
     } else {
       window.alert("No se ha encontrado un token de acceso. Por favor, inicie sesión.");
-      navigate("/login"); // Redirige a login si no hay un token
+      navigate("/login");
       return;
     }
 
@@ -140,174 +141,212 @@ const TablaSolicitudes: React.FC = () => {
 
   const manejarCambioEstado = async (id: number, nuevoEstado: string) => {
     const confirmacion = window.confirm(`¿Estás seguro de que deseas cambiar el estado a "${nuevoEstado}"?`);
-    if (!confirmacion) return; // Salir si el usuario cancela la acción
+    if (!confirmacion) return;
 
     const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("Token no encontrado");
-      return;
-    }
+    if (!token) return;
+
     try {
-      const response = await fetch(
-        `${ApiRoutes.concesiones}/${id}/status`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ Status: nuevoEstado }),
-        }
-      );
-      if (!response.ok) {
-        throw new Error(`Error al actualizar el estado de la prórroga con ID: ${id}`);
-      }
-      setProrrogas((prevProrrogas) =>
-        prevProrrogas.map((prorroga) =>
+      const response = await fetch(`${ApiRoutes.concesiones}/${id}/status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ Status: nuevoEstado }),
+      });
+
+      if (!response.ok) throw new Error();
+
+      setProrrogas(prev =>
+        prev.map(prorroga =>
           prorroga.id === id ? { ...prorroga, Status: nuevoEstado } : prorroga
         )
       );
-    } catch (error) {
-      console.error("Error al cambiar el estado de la prórroga:", error);
+
+      setAlert({
+        type: 'success',
+        message: `La prórroga fue ${nuevoEstado === 'aprobada' ? 'aprobada' : 'denegada'} correctamente.`,
+      });
+    } catch {
+      setAlert({ type: 'error', message: 'Ocurrió un error al cambiar el estado de la prórroga.' });
     }
   };
+
   const manejarCambioEstadoPrecario = async (id: number, nuevoEstado: string) => {
     const confirmacion = window.confirm(`¿Estás seguro de que deseas cambiar el estado a "${nuevoEstado}"?`);
-    if (!confirmacion) return; // Salir si el usuario cancela la acción
+    if (!confirmacion) return;
 
     const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("Token no encontrado");
-      return;
-    }
+    if (!token) return;
+
     try {
-      const response = await fetch(
-        `${ApiRoutes.concesiones}/${id}/status`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ Status: nuevoEstado }),
-        }
+      const response = await fetch(`${ApiRoutes.concesiones}/${id}/status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ Status: nuevoEstado }),
+      });
+
+      if (!response.ok) throw new Error();
+
+      setPrecario(prev =>
+        prev.map(p => (p.id === id ? { ...p, Status: nuevoEstado } : p))
       );
-      if (!response.ok) {
-        throw new Error(`Error al actualizar el estado de la solicitud con ID: ${id}`);
-      }
-      setPrecario((prevPrecarios) =>
-        prevPrecarios.map((precario) =>
-          precario.id === id ? { ...precario, Status: nuevoEstado } : precario
-        )
-      );
-    } catch (error) {
-      console.error("Error al cambiar el estado de la solicitud:", error);
+
+      setAlert({
+        type: 'success',
+        message: `La solicitud fue ${nuevoEstado === 'aprobada' ? 'aprobada' : 'denegada'} correctamente.`,
+      });
+    } catch {
+      setAlert({ type: 'error', message: 'Ocurrió un error al cambiar el estado de la solicitud.' });
     }
   };
+
   const manejarCambioEstadoConcesion = async (id: number, nuevoEstado: string) => {
     const confirmacion = window.confirm(`¿Estás seguro de que deseas cambiar el estado a "${nuevoEstado}"?`);
-    if (!confirmacion) return; // Salir si el usuario cancela la acción
+    if (!confirmacion) return;
 
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const response = await fetch(`${ApiRoutes.concesiones}/${id}/status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ Status: nuevoEstado }),
+      });
+
+      if (!response.ok) throw new Error();
+
+      setConcesiones(prev =>
+        prev.map(c => (c.id === id ? { ...c, Status: nuevoEstado } : c))
+      );
+
+      setAlert({
+        type: 'success',
+        message: `La concesión fue ${nuevoEstado === 'aprobada' ? 'aprobada' : 'denegada'} correctamente.`,
+      });
+    } catch {
+      setAlert({ type: 'error', message: 'Ocurrió un error al cambiar el estado de la concesión.' });
+    }
+  };
+
+  if (loading) return <p>Cargando solicitudes...</p>;
+  if (error) return <p>Error: {error}</p>;
+
+  function manejarEliminarPrecario(id: number): void {
+    const confirmacion = window.confirm("¿Estás seguro de que deseas eliminar esta solicitud?");
+    if (!confirmacion) return;
+  
     const token = localStorage.getItem("token");
     if (!token) {
       console.error("Token no encontrado");
       return;
     }
-    try {
-      const response = await fetch(
-        `${ApiRoutes.concesiones}/${id}/status`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ Status: nuevoEstado }),
+  
+    fetch(`${ApiRoutes.expedientes}/${id}/status`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error al eliminar la solicitud con ID: ${id}`);
         }
-      );
-      if (!response.ok) {
-        throw new Error(`Error al actualizar el estado de la concesión con ID: ${id}`);
-      }
-      setConcesiones((prevConcesiones) =>
-        prevConcesiones.map((concesion) =>
-          concesion.id === id ? { ...concesion, Status: nuevoEstado } : concesion
-        )
-      );
-    } catch (error) {
-      console.error("Error al cambiar el estado de la concesión:", error);
-    }
-  };
-
-  if (loading) {
-    return <p>Cargando solicitudes...</p>;
+        setPrecario((prev) => prev.filter((p) => p.id !== id));
+        setAlert({
+          type: 'success',
+          message: `La solicitud con ID ${id} fue eliminada correctamente.`,
+        });
+      })
+      .catch((error) => {
+        console.error("Error al eliminar la solicitud:", error);
+        setAlert({
+          type: 'error',
+          message: "Ocurrió un error al eliminar la solicitud.",
+        });
+      });
   }
+  
 
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
-
-  const manejarEliminar = async (id: number) => {
+  function manejarEliminar(id: number): void {
     const confirmacion = window.confirm("¿Estás seguro de que deseas eliminar esta prórroga?");
     if (!confirmacion) return;
-
-    try {
-      const response = await fetch(`${ApiRoutes.concesiones}/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error al eliminar la prórroga con ID: ${id}`);
-      }
-
-      setProrrogas((prevProrrogas) =>
-        prevProrrogas.filter((prorroga) => prorroga.id !== id)
-      );
-      console.log(`Prórroga con ID: ${id} eliminada`);
-    } catch (error) {
-      console.error('Error al eliminar la prórroga:', error);
+  
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("Token no encontrado");
+      return;
     }
-  };
+  
+    fetch(`${ApiRoutes.concesiones}/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error al eliminar la prórroga con ID: ${id}`);
+        }
+        setProrrogas((prev) => prev.filter((p) => p.id !== id));
+        setAlert({
+          type: 'success',
+          message: `La prórroga con ID ${id} fue eliminada correctamente.`,
+        });
+      })
+      .catch((error) => {
+        console.error("Error al eliminar la prórroga:", error);
+        setAlert({
+          type: 'error',
+          message: "Ocurrió un error al eliminar la prórroga.",
+        });
+      });
+  }
+  
 
-  const manejarEliminarConcesion = async (id: number) => {
+  function manejarEliminarConcesion(id: number): void {
     const confirmacion = window.confirm("¿Estás seguro de que deseas eliminar esta concesión?");
     if (!confirmacion) return;
-    try {
-      const response = await fetch(`${ApiRoutes.expedientes}/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error al eliminar la concesión con ID: ${id}`);
-      }
-
-      setConcesiones((prevConcesiones) =>
-        prevConcesiones.filter((concesion) => concesion.id !== id)
-      );
-      console.log(`Concesión con ID: ${id} eliminada`);
-    } catch (error) {
-      console.error('Error al eliminar la solicitud:', error);
+  
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("Token no encontrado");
+      return;
     }
-  };
-  const manejarEliminarPrecario = async (id: number) => {
-    const confirmacion = window.confirm("¿Estás seguro de que deseas eliminar esta solicitud?");
-    if (!confirmacion) return;
-    try {
-      const response = await fetch(`${ApiRoutes.expedientes}/${id}/status`, {
-        method: 'DELETE',
+  
+    fetch(`${ApiRoutes.expedientes}/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error al eliminar la concesión con ID: ${id}`);
+        }
+        setConcesiones((prev) => prev.filter((c) => c.id !== id));
+        setAlert({
+          type: 'success',
+          message: `La concesión con ID ${id} fue eliminada correctamente.`,
+        });
+      })
+      .catch((error) => {
+        console.error("Error al eliminar la concesión:", error);
+        setAlert({
+          type: 'error',
+          message: "Ocurrió un error al eliminar la concesión.",
+        });
       });
-
-      if (!response.ok) {
-        throw new Error(`Error al eliminar la solicitud con ID: ${id}`);
-      }
-
-      setPrecario((prevPrecarios) =>
-        prevPrecarios.filter((precario) => precario.id !== id)
-      );
-      console.log(`Solicitud con ID: ${id} eliminada`);
-    } catch (error) {
-      console.error('Error al eliminar la solicitud:', error);
-    }
-  };
+  }
+  
 
   return (
     <div className="tabla-container">
@@ -449,7 +488,17 @@ const TablaSolicitudes: React.FC = () => {
           ))}
         </tbody>
       </table>
+
+      {/* ✅ Alerta visual */}
+      {alert && (
+        <AlertNotification
+          type={alert.type}
+          message={alert.message}
+          onClose={() => setAlert(null)}
+        />
+      )}
     </div>
+    
   );
 };
 

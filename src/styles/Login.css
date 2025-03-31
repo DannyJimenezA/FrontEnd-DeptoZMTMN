@@ -1,13 +1,24 @@
-.input-wrapper {
+/* .input-wrapper {
   display: flex;
   align-items: center;
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 5px;
   background-color: white;
-  position: relative; /* Asegura que los íconos y botones no afecten el input */
+  position: relative; 
+  width: 100%;
+} */
+.login-input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px;
+  background-color: white;
+  position: relative;
   width: 100%;
 }
+
 
 .icon-container {
   display: flex;

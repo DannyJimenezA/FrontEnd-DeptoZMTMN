@@ -1,0 +1,280 @@
+/* 📌 Contenedor principal (Diseño tipo tarjeta) */
+.detalle-tabla {
+    width: 50%; /* Media pantalla */
+    max-width: 600px;
+    background: white;
+    padding: 20px;
+    margin: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    max-height: 80vh; /* 🔹 Limitar la altura máxima al 80% de la pantalla */
+    overflow-y: auto; /* 🔹 Habilitar scroll vertical si hay demasiados campos */
+  }
+  
+  .detalle-tabla::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .detalle-tabla::-webkit-scrollbar-thumb {
+    background-color: #cccccc;
+    border-radius: 3px;
+  }
+  .detalle-tabla::-webkit-scrollbar-track {
+    background-color: #f0f0f0;
+  }
+  
+  .detalle-tabla h3 {
+    text-align: center;
+    font-size: 18px;
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+    width: 100%;
+  }
+  .detalle-archivos {
+    width: 100%;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    text-align: left;
+  }
+  
+  .detalle-archivos p {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .detalle-archivos .fa-file-pdf {
+    color: #dc3545;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .detalle-archivos .fa-file-pdf:hover {
+    color: #b92c2c;
+    transform: scale(1.1);
+  }
+  
+  
+  /* 📌 Información de la cita */
+  .detalle-contenido {
+    width: 100%;
+  }
+  
+  .detalle-info {
+    font-size: 14px;
+    color: #555;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-wrap: wrap; /* 🔹 Permite que los campos se acomoden automáticamente */
+  }
+  
+  .detalle-info p {
+    margin: 0;
+    padding: 4px 0;
+  }
+  
+  .detalle-info strong {
+    color: #222;
+  }
+  
+  /* 📌 Sección de mensaje */
+  .mensaje-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .mensaje-container h3 {
+    text-align: center;
+    font-size: 16px;
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+  }
+  
+  .mensaje-container textarea {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: none;
+  }
+  
+  /* 📌 Botón de enviar mensaje */
+  .btn-enviar {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 14px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    align-self: flex-end; /* Mover a la derecha */
+  }
+  
+  .btn-enviar:hover {
+    background-color: #0056b3;
+  }
+  
+  .estado-botones {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Centrar botones */
+    gap: 8px;
+  }
+  
+  /* ✅ Botón de aprobar */
+  .boton-aprobar {
+    background-color: #28a745 !important;
+    color: white !important;
+    padding: 6px 10px; /* 🔹 Reducir tamaño horizontal */
+    font-size: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    min-width: 100px; /* 🔹 Ancho mínimo para mantener proporción */
+    text-align: center;
+  }
+  
+  .boton-aprobar:hover {
+    background-color: #218838 !important;
+  }
+  
+  /* ❌ Botón de denegar */
+  .boton-denegar {
+    background-color: #dc3545 !important;
+    color: white !important;
+    padding: 6px 10px; /* 🔹 Reducir tamaño horizontal */
+    font-size: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    min-width: 100px; /* 🔹 Ancho mínimo para mantener proporción */
+    text-align: center;
+  }
+  
+  .boton-denegar:hover {
+    background-color: #c82333 !important;
+  }
+  
+  /* 📌 Ajuste del botón "Volver" */
+  .volver-btn {
+    background-color: #6c757d;
+    color: white;
+    padding: 6px 10px; /* 🔹 Reducir tamaño */
+    font-size: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    align-self: flex-end;
+  }
+  
+  .volver-btn:hover {
+    background-color: #5a6268;
+  }
+  
+  /* 📱 Responsividad */
+  @media (max-width: 768px) {
+    .detalle-tabla {
+      width: 90%;
+      max-width: none;
+    }
+  
+    .btn-enviar,
+  .boton-aprobar,
+  .boton-denegar,
+  .volver-btn {
+    font-size: 10px;
+    padding: 5px 8px; /* 🔹 Aún más compacto en móviles */
+  }
+
+  .estado-botones {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .boton-aprobar,
+  .boton-denegar {
+    min-width: 90px; /* 🔹 Asegurar tamaño compacto */
+  }
+}
+  
+
+/* Fondo oscuro detrás del modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+}
+
+/* Contenedor del modal */
+.modal-content {
+  background: white;
+  padding: 20px;
+  width: 80%;
+  max-width: 800px;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 8px;
+  position: relative;
+}
+
+/* Botón para cerrar el modal */
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+/* Botones de navegación */
+.modal-prev, .modal-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.modal-prev { left: 10px; }
+.modal-next { right: 10px; }
+
+.modal-prev:disabled, .modal-next:disabled {
+  background: rgba(0, 0, 0, 0.2);
+  cursor: not-allowed;
+}
+
+/* Visualizador de PDF */
+.pdf-viewer {
+  width: 100%;
+  height: 100%;
+  border: none;
+}

@@ -34,11 +34,13 @@ export interface Concesion {
   id: number;
   ArchivoAdjunto: string;
   Date: string;
+  Detalle: string;
   status?: string;
   user?: {
     cedula: string;
     nombre: string;
     apellido1: string;
+    apellido2: string;
     email: string;
   };
 }
@@ -48,6 +50,7 @@ export interface Precario {
   id: number;
   ArchivoAdjunto: string;
   Date: String;
+  Detalle: string;
   status?: string;
   user?: {
     cedula: string;
@@ -86,6 +89,7 @@ export interface RevisionPlano {
   NumeroExpediente: string;
   NumeroPlano: string;
   ArchivosAdjuntos: string;
+  Comentario: string;
   status?: string;
   user?: {
     id: number;
@@ -103,6 +107,8 @@ export interface Prorroga {
   id: number;
   ArchivoAdjunto: string;
   Date: String; 
+  Detalle: string;
+
   status?: string;
   user?: {
     id: number;

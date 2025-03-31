@@ -123,9 +123,7 @@ const ExpedientesTable: React.FC<ExpedientesTableProps> = ({ onVerExpediente }) 
   const expedientesActuales = expedientesFiltrados.slice(indexPrimerExpediente, indexUltimoExpediente);
   const numeroPaginas = Math.ceil(expedientesFiltrados.length / itemsPerPage);
 
-  const manejarEliminarExpediente = async (id: number) => {
-    await eliminarEntidad<CopiaExpediente>('expedientes', id, setExpedientes);
-  };
+  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<CopiaExpediente>("expedientes", setExpedientes);
 
   if (loading) return <p>Cargando expedientes...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -149,7 +147,7 @@ const ExpedientesTable: React.FC<ExpedientesTableProps> = ({ onVerExpediente }) 
 
       <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 sticky top-0 z-10">
             <tr>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">ID</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Nombre Solicitante</th>
@@ -169,10 +167,10 @@ const ExpedientesTable: React.FC<ExpedientesTableProps> = ({ onVerExpediente }) 
                 <td className="px-4 py-2">{expediente.status || 'Pendiente'}</td>
                 <td className="px-4 py-2 space-x-2">
                   <button onClick={() => onVerExpediente(expediente)} className="button-view">
-                    <FaEye /> Ver
+                    <FaEye />
                   </button>
-                  <button onClick={() => manejarEliminarExpediente(expediente.idExpediente)} className="button-delete">
-                    <FaTrash /> Eliminar
+                  <button className="button-delete" onClick={() => abrirModalEliminar(expediente.idExpediente)}>
+                    <FaTrash />
                   </button>
                 </td>
               </tr>
@@ -188,6 +186,7 @@ const ExpedientesTable: React.FC<ExpedientesTableProps> = ({ onVerExpediente }) 
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+      <ModalEliminar />
     </div>
   );
 };

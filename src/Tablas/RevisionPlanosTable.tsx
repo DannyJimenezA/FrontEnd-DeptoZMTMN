@@ -122,9 +122,7 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
   const RevisionplanoActuales = RevisionplanoFiltradas.slice(indexPrimeraRevisionPlano, indexUltimaRevisionPlano);
   const numeroPaginas = Math.ceil(RevisionplanoFiltradas.length / itemsPerPage);
 
-  const manejarEliminarRevisionPlano = async (id: number) => {
-    await eliminarEntidad<RevisionPlano>('Revision-Plano', id, setRevisionplano);
-  };
+  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<RevisionPlano>("revision-plano", setRevisionplano);
 
   if (loading) {
     return <p>Cargando solicitudes de revisión de planos...</p>;
@@ -153,7 +151,7 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
 
       <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 sticky top-0 z-10">
             <tr>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">ID</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Nombre Solicitante</th>
@@ -173,10 +171,10 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
                 <td className="px-4 py-2">{RevisionPlano.status || 'Pendiente'}</td>
                 <td className="px-4 py-2 space-x-2">
                   <button onClick={() => onVerRevisionPlano(RevisionPlano)} className="button-view">
-                    <FaEye /> Ver
+                    <FaEye />
                   </button>
-                  <button onClick={() => manejarEliminarRevisionPlano(RevisionPlano.id)} className="button-delete">
-                    <FaTrash /> Eliminar
+                  <button className="button-delete" onClick={() => abrirModalEliminar(RevisionPlano.id)}>
+                    <FaTrash />
                   </button>
                 </td>
               </tr>
@@ -192,6 +190,7 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+      <ModalEliminar />
     </div>
   );
 };

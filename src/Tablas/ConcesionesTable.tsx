@@ -120,9 +120,7 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
   const concesionesActuales = concesionesFiltradas.slice(indexPrimeraConcesion, indexUltimaConcesion);
   const numeroPaginas = Math.ceil(concesionesFiltradas.length / itemsPerPage);
 
-  const manejarEliminarConcesion = async (id: number) => {
-    await eliminarEntidad<Concesion>('Concesiones', id, setConcesiones);
-  };
+  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Concesion>("Concesiones", setConcesiones);
 
   if (loading) return <p>Cargando concesiones...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -146,7 +144,7 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
 
       <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 sticky top-0 z-10">
             <tr>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">ID</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Nombre Solicitante</th>
@@ -166,10 +164,10 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
                 <td className="px-4 py-2">{concesion.status || 'Pendiente'}</td>
                 <td className="px-4 py-2 space-x-2">
                   <button onClick={() => onVerConcesion(concesion)} className="button-view">
-                    <FaEye /> Ver
+                    <FaEye />
                   </button>
-                  <button onClick={() => manejarEliminarConcesion(concesion.id)} className="button-delete">
-                    <FaTrash /> Eliminar
+                  <button className="button-delete" onClick={() => abrirModalEliminar(concesion.id)}>
+                    <FaTrash />
                   </button>
                 </td>
               </tr>
@@ -185,6 +183,7 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+      <ModalEliminar />
     </div>
   );
 };

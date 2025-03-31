@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CopiaExpediente } from '../Types/Types';
 import ApiRoutes from '../components/ApiRoutes';
-
+import  '../styles/DetalleSolicitud.css'
 interface DetalleExpedienteProps {
   expediente: CopiaExpediente;
   onVolver: () => void;  // Función para volver a la lista de expedientes
@@ -40,13 +40,14 @@ const DetalleExpediente: React.FC<DetalleExpedienteProps> = ({ expediente, onVol
     }
   };
 
-  // Función para manejar el cambio de estado
-  const manejarCambioEstado = (nuevoEstado: string) => {
-    onEstadoCambiado(expediente.idExpediente, nuevoEstado); // Llamar a la función del componente padre para cambiar el estado
-  };
+
+  const [confirmModal, setConfirmModal] = useState<{
+    visible: boolean;
+    nuevoEstado: string;
+  } | null>(null);
 
   return (
-    <div className="detalle-expediente">
+    <div className="detalle-tabla">
       <h3>Detalles de la Solicitud de Expediente</h3>
       <div className="detalle-contenido">
         {/* Información general del expediente */}
@@ -74,20 +75,77 @@ const DetalleExpediente: React.FC<DetalleExpedienteProps> = ({ expediente, onVol
         <button onClick={enviarCorreo} className="btn-enviar">Enviar mensaje</button>
       </div>
 
-      {/* Botones para cambiar el estado del expediente */}
-      <div className="estado-botones">
-        <button className="btn-aprobar" onClick={() => manejarCambioEstado('Aprobada')}>
-          Aprobar Expediente
+      {/* Botones de aprobar/denegar con confirmación */}
+      <div className="estado-botones" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+        <button
+          style={{
+            backgroundColor: '#4caf50',
+            color: 'white',
+            padding: '10px 20px',
+            border: 'none',
+            borderRadius: '6px'
+          }}
+          onClick={() => setConfirmModal({ visible: true, nuevoEstado: 'Aprobada' })}
+        >
+          Aprobar
         </button>
-        <button className="btn-denegar" onClick={() => manejarCambioEstado('Denegada')}>
-          Denegar Expediente
+        <button
+          style={{
+            backgroundColor: '#f44336',
+            color: 'white',
+            padding: '10px 20px',
+            border: 'none',
+            borderRadius: '6px'
+          }}
+          onClick={() => setConfirmModal({ visible: true, nuevoEstado: 'Denegada' })}
+        >
+          Denegar
         </button>
       </div>
 
-      {/* Botón para volver a la lista de expedientes */}
-      <button className="volver-btn" onClick={onVolver}>
-        Volver a la lista de expedientes
-      </button>
+      {/* Volver */}
+      <button className="volver-btn" onClick={onVolver}>Volver</button>
+
+      {/* Modal de confirmación */}
+      {confirmModal?.visible && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ textAlign: 'center', padding: '20px' }}>
+            <h3>Confirmación</h3>
+            <p>¿Estás seguro de cambiar el estado a <strong>{confirmModal.nuevoEstado}</strong>?</p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '15px' }}>
+              <button
+                style={{
+                  backgroundColor: '#4caf50',
+                  color: 'white',
+                  padding: '8px 16px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 'bold',
+                }}
+                onClick={() => {
+                  onEstadoCambiado(expediente.idExpediente, confirmModal.nuevoEstado);
+                  setConfirmModal(null);
+                }}
+              >
+                Aceptar
+              </button>
+              <button
+                style={{
+                  backgroundColor: '#f44336',
+                  color: 'white',
+                  padding: '8px 16px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 'bold',
+                }}
+                onClick={() => setConfirmModal(null)}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

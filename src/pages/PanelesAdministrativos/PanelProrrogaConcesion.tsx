@@ -4,6 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import "../../styles/Administrativos/TablaProrrogaConcesion.css";
 import { FaFilePdf } from 'react-icons/fa';
 import ApiRoutes from '../../components/ApiRoutes';
+import AlertNotification from '../../components/AlertNotificationP';
 
 // Interfaz para las prórrogas
 interface Prorroga {
@@ -18,38 +19,28 @@ interface Prorroga {
   };
 }
 
-// Interfaz para el token decodificado
 interface DecodedToken {
   roles: string[];
 }
 
-
 const fetchProrrogas = async (): Promise<Prorroga[]> => {
+  const response = await fetch(ApiRoutes.prorrogas, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
 
-  try {
-    const response = await fetch(ApiRoutes.prorrogas, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status} - ${response.statusText}`);
-    }
-
-    const data: Prorroga[] = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching prorrogas:', error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`Error: ${response.status} - ${response.statusText}`);
   }
+
+  return await response.json();
 };
 
 const TablaProrrogas: React.FC = () => {
   const [prorrogas, setProrrogas] = useState<Prorroga[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -58,7 +49,6 @@ const TablaProrrogas: React.FC = () => {
     if (token) {
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
-
         if (!decodedToken.roles.includes('admin')) {
           window.alert('No tienes permiso para acceder a esta página.');
           navigate('/');
@@ -92,14 +82,11 @@ const TablaProrrogas: React.FC = () => {
   }, [navigate]);
 
   const manejarCambioEstado = async (id: number, nuevoEstado: string) => {
-    const confirmacion = window.confirm(`¿Estás seguro de que deseas cambiar el estado a "${nuevoEstado}"?`);
-    if (!confirmacion) return; // Salir si el usuario cancela la acción
+    const confirmacion = window.confirm(`¿Estás seguro de cambiar el estado a "${nuevoEstado}"?`);
+    if (!confirmacion) return;
 
     const token = localStorage.getItem('token');
-    if (!token) {
-      console.error('Token no encontrado');
-      return;
-    }
+    if (!token) return;
 
     try {
       const response = await fetch(`${ApiRoutes.prorrogas}/${id}/status`, {
@@ -110,39 +97,49 @@ const TablaProrrogas: React.FC = () => {
         },
         body: JSON.stringify({ Status: nuevoEstado }),
       });
-      if (!response.ok) {
-        throw new Error(`Error al actualizar el estado de la prórroga con ID: ${id}`);
-      }
-      setProrrogas((prevProrrogas) =>
-        prevProrrogas.map((prorroga) =>
-          prorroga.id === id ? { ...prorroga, Status: nuevoEstado } : prorroga
-        )
+
+      if (!response.ok) throw new Error();
+
+      setProrrogas(prev =>
+        prev.map(p => (p.id === id ? { ...p, Status: nuevoEstado } : p))
       );
-      window.alert(`Estado de la prórroga con ID: ${id} cambiado a "${nuevoEstado}".`);
+
+      setAlert({
+        type: 'success',
+        message: `La prórroga fue ${nuevoEstado === 'aprobada' ? 'aprobada' : 'denegada'} correctamente.`,
+      });
     } catch (error) {
       console.error('Error al cambiar el estado de la prórroga:', error);
+      setAlert({ type: 'error', message: 'Ocurrió un error al cambiar el estado.' });
     }
   };
 
   const manejarEliminar = async (id: number) => {
     const confirmacion = window.confirm('¿Estás seguro de que deseas eliminar esta prórroga?');
-    if (!confirmacion) return; // Salir si el usuario cancela la acción
+    if (!confirmacion) return;
+
+    const token = localStorage.getItem('token');
+    if (!token) return;
 
     try {
-      const response = await fetch(ApiRoutes.prorrogas, {
+      const response = await fetch(`${ApiRoutes.prorrogas}/${id}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
 
-      if (!response.ok) {
-        throw new Error(`Error al eliminar la prórroga con ID: ${id}`);
-      }
+      if (!response.ok) throw new Error();
 
-      setProrrogas((prevProrrogas) =>
-        prevProrrogas.filter((prorroga) => prorroga.id !== id)
-      );
-      window.alert(`Prórroga con ID: ${id} eliminada exitosamente.`);
+      setProrrogas(prev => prev.filter(p => p.id !== id));
+
+      setAlert({
+        type: 'success',
+        message: `La prórroga con ID ${id} fue eliminada correctamente.`,
+      });
     } catch (error) {
       console.error('Error al eliminar la prórroga:', error);
+      setAlert({ type: 'error', message: 'Ocurrió un error al eliminar la prórroga.' });
     }
   };
 
@@ -150,17 +147,12 @@ const TablaProrrogas: React.FC = () => {
     if (archivoUrl && archivoUrl !== 'undefined') {
       window.open(`${ApiRoutes}${archivoUrl}`, '_blank');
     } else {
-      alert('El archivo no está disponible.');
+      window.alert('El Archivo no esta disponible');
     }
   };
 
-  if (loading) {
-    return <p>Cargando prórrogas...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
+  if (loading) return <p>Cargando prórrogas...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="tabla-container">
@@ -179,7 +171,11 @@ const TablaProrrogas: React.FC = () => {
           {prorrogas.map((prorroga) => (
             <tr key={prorroga.id}>
               <td>{prorroga.user?.nombre || 'Nombre no disponible'}</td>
-              <td>{prorroga.user?.apellido1 && prorroga.user?.apellido2 ? `${prorroga.user.apellido1} ${prorroga.user.apellido2}` : 'Apellidos no disponibles'}</td>
+              <td>
+                {prorroga.user?.apellido1 && prorroga.user?.apellido2
+                  ? `${prorroga.user.apellido1} ${prorroga.user.apellido2}`
+                  : 'Apellidos no disponibles'}
+              </td>
               <td>
                 {prorroga.ArchivoAdjunto ? (
                   JSON.parse(prorroga.ArchivoAdjunto).map((archivo: string, index: number) => (
@@ -204,6 +200,15 @@ const TablaProrrogas: React.FC = () => {
           ))}
         </tbody>
       </table>
+
+      {/* ✅ Componente de alerta */}
+      {alert && (
+        <AlertNotification
+          type={alert.type}
+          message={alert.message}
+          onClose={() => setAlert(null)}
+        />
+      )}
     </div>
   );
 };

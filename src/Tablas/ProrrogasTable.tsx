@@ -121,9 +121,7 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
   const prorrogasActuales = prorrogasFiltradas.slice(indexPrimeraProrroga, indexUltimaProrroga);
   const numeroPaginas = Math.ceil(prorrogasFiltradas.length / itemsPerPage);
 
-  const manejarEliminarProrroga = async (id: number) => {
-    await eliminarEntidad<Prorroga>('Prorrogas', id, setProrrogas);
-  };
+  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Prorroga>("prorrogas", setProrrogas);
 
   if (loading) {
     return <p>Cargando prórrogas...</p>;
@@ -152,7 +150,7 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
 
       <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 sticky top-0 z-10">
             <tr>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">ID</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Nombre Solicitante</th>
@@ -172,10 +170,10 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
                 <td className="px-4 py-2">{prorroga.status || 'Pendiente'}</td>
                 <td className="px-4 py-2 space-x-2">
                   <button onClick={() => onVerProrroga(prorroga)} className="button-view">
-                    <FaEye /> Ver
+                    <FaEye />
                   </button>
-                  <button onClick={() => manejarEliminarProrroga(prorroga.id)} className="button-delete">
-                    <FaTrash /> Eliminar
+                  <button className="button-delete" onClick={() => abrirModalEliminar(prorroga.id)}>
+                    <FaTrash />
                   </button>
                 </td>
               </tr>
@@ -191,6 +189,7 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+      <ModalEliminar />
     </div>
   );
 };

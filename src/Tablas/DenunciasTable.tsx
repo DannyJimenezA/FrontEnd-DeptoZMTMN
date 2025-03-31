@@ -293,9 +293,7 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
     onVerDenuncia(denuncia);
   };
 
-  const manejarEliminarDenuncia = async (id: number) => {
-    await eliminarEntidad<Denuncia>('denuncia', id, setDenuncias);
-  };
+  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Denuncia>("denuncia", setDenuncias);
 
   if (loading) {
     return <p>Cargando denuncias...</p>;
@@ -325,7 +323,7 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
       {/* Contenedor de la tabla con overflow y ajuste de tamaño */}
       <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 sticky top-0 z-10">
             <tr>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">ID</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Nombre del Denunciante</th>
@@ -349,10 +347,10 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
                 <td className="px-4 py-2">{denuncia.status}</td>
                 <td className="px-4 py-2 space-x-2">
                   <button onClick={() => manejarVer(denuncia)} className="button-view">
-                    <FaEye /> Ver
+                    <FaEye />
                   </button>
-                  <button onClick={() => manejarEliminarDenuncia(denuncia.id)} className="button-delete">
-                    <FaTrash /> Eliminar
+                  <button className="button-delete" onClick={() => abrirModalEliminar(denuncia.id)}>
+                    <FaTrash />
                   </button>
                 </td>
               </tr>
@@ -369,6 +367,7 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+      <ModalEliminar />
     </div>
   );
 };
