@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaFilePdf, FaTimes } from 'react-icons/fa';
+import { FaFilePdf } from 'react-icons/fa';
 import { Concesion } from '../Types/Types';
 import ApiRoutes from '../components/ApiRoutes';
 import AlertNotification from '../components/AlertNotificationP';
@@ -131,16 +131,51 @@ const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver
         </div>
       </div>
 
-      {archivoVistaPrevia && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <button className="modal-close" onClick={cerrarVistaPrevia}>
-              <FaTimes size={20} />
-            </button>
-            <iframe src={archivoVistaPrevia} title="Vista Previa" className="pdf-viewer"></iframe>
-          </div>
-        </div>
-      )}
+{/* {archivoVistaPrevia && (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center"
+    onClick={cerrarVistaPrevia}
+  >
+    <div
+      className="relative w-full max-w-4xl h-[80vh] bg-white rounded-lg shadow-lg overflow-hidden"
+      onClick={(e) => e.stopPropagation()} // Evita cerrar al hacer clic dentro
+    >
+      <button
+        onClick={cerrarVistaPrevia}
+        className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 transition"
+        title="Cerrar"
+      >
+        <FaTimes size={20} />
+      </button>
+
+      <iframe
+        src={archivoVistaPrevia}
+        className="w-full h-full"
+        style={{ border: 'none' }}
+        title="Vista previa del archivo PDF"
+      />
+    </div>
+  </div>
+)} */}
+{archivoVistaPrevia && (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center"
+    onClick={cerrarVistaPrevia}
+  >
+    <div
+      className="relative w-full max-w-4xl h-[80vh] bg-white rounded-lg shadow-lg overflow-hidden"
+      onClick={(e) => e.stopPropagation()} // Prevenir cierre si clic dentro del visor
+    >
+      <iframe
+        src={archivoVistaPrevia}
+        className="w-full h-full"
+        style={{ border: 'none' }}
+        title="Vista previa del archivo PDF"
+      />
+    </div>
+  </div>
+)}
+
 
       <div className="mensaje-container">
         <h3>Enviar mensaje a: {concesion.user?.email}</h3>

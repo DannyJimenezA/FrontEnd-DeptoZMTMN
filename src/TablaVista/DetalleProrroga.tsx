@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaFilePdf, FaTimes } from 'react-icons/fa';
+import { FaFilePdf } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { Prorroga } from '../Types/Types';
@@ -142,7 +142,7 @@ const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver, o
         </div>
       </div>
 
-      {archivoVistaPrevia && (
+      {/* {archivoVistaPrevia && (
         <div className="modal-overlay">
           <div className="modal-content">
             <button className="modal-close" onClick={cerrarVistaPrevia}>
@@ -151,7 +151,25 @@ const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver, o
             <iframe src={archivoVistaPrevia} title="Vista Previa" className="pdf-viewer"></iframe>
           </div>
         </div>
-      )}
+      )} */}
+{archivoVistaPrevia && (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center"
+    onClick={cerrarVistaPrevia}
+  >
+    <div
+      className="relative w-full max-w-4xl h-[80vh] bg-white rounded-lg shadow-lg overflow-hidden"
+      onClick={(e) => e.stopPropagation()} // Evita cerrar al hacer clic dentro del visor
+    >
+      <iframe
+        src={archivoVistaPrevia}
+        className="w-full h-full"
+        style={{ border: 'none' }}
+        title="Vista previa del archivo PDF"
+      />
+    </div>
+  </div>
+)}
 
       <div className="mensaje-container">
         <h3>Enviar mensaje a: {prorroga.user?.email}</h3>
