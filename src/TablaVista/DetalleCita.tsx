@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 import { Cita } from '../Types/Types';
-import CambiarEstadoCita from '../components/CambioEstado'; // Importar el nuevo componente
 import ApiRoutes from '../components/ApiRoutes';
-import  '../styles/DetalleSolicitud.css'
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import '../styles/DetalleSolicitud.css';
+
 interface DetalleCitaProps {
   cita: Cita;
-  onVolver: () => void;  // Función para volver a la lista de citas
-  onEstadoCambiado: (id: number, nuevoEstado: string) => void; // Función para manejar el cambio de estado en el padre
+  onVolver: () => void;
+  onEstadoCambiado: (id: number, nuevoEstado: string) => void;
 }
 
-const DetalleCita: React.FC<DetalleCitaProps> = ({ cita, onVolver, onEstadoCambiado }) => {
-  const [mensaje, setMensaje] = useState<string>(''); // Estado para almacenar el mensaje personalizado
+const MySwal = withReactContent(Swal);
 
-  // Función para enviar el correo al usuario de la cita
+const DetalleCita: React.FC<DetalleCitaProps> = ({ cita, onVolver, onEstadoCambiado }) => {
+  const [mensaje, setMensaje] = useState<string>('');
+
   const enviarCorreo = async () => {
     if (!cita.user?.email || !mensaje) {
       alert('Por favor, asegúrate de que el usuario tiene un correo y escribe un mensaje.');
@@ -22,16 +25,14 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita, onVolver, onEstadoCambi
     try {
       const response = await fetch(`${ApiRoutes.urlBase}/mailer/send-custom-message`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: cita.user.email, message: mensaje }),
       });
 
       const result = await response.json();
       if (result.success) {
         alert('Mensaje enviado exitosamente.');
-        setMensaje(''); // Limpiar el mensaje después de enviarlo
+        setMensaje('');
       } else {
         alert('Error al enviar el mensaje.');
       }
@@ -41,8 +42,52 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita, onVolver, onEstadoCambi
     }
   };
 
+  const confirmarCambioEstado = async (nuevoEstado: string) => {
+    const result = await MySwal.fire({
+      title: `¿Estás seguro de ${nuevoEstado === 'Aprobada' ? 'aprobar' : 'denegar'} esta cita?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Aceptar',
+      cancelButtonText: 'Cancelar',
+      customClass: {
+        confirmButton: 'btn-verde',
+        cancelButton: 'btn-rojo',
+        actions: 'botones-horizontales',
+      },
+      buttonsStyling: false,
+    });
+
+    if (result.isConfirmed) {
+      onEstadoCambiado(cita.id, nuevoEstado);
+    }
+  };
+
   return (
     <div className="detalle-tabla">
+      <style>{`
+        .btn-verde {
+          background-color: #16a34a !important;
+          color: white !important;
+          border: none !important;
+          border-radius: 6px !important;
+          padding: 8px 20px !important;
+          font-weight: bold !important;
+        }
+        .btn-rojo {
+          background-color: #dc2626 !important;
+          color: white !important;
+          border: none !important;
+          border-radius: 6px !important;
+          padding: 8px 20px !important;
+          font-weight: bold !important;
+        }
+        .botones-horizontales {
+          display: flex !important;
+          justify-content: center;
+          gap: 10px;
+        }
+      `}</style>
+
       <h3>Detalles de la Cita</h3>
       <div className="detalle-contenido">
         <div className="detalle-info">
@@ -51,12 +96,11 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita, onVolver, onEstadoCambi
           <p><strong>Cédula:</strong> {cita.user?.cedula}</p>
           <p><strong>Fecha:</strong> {new Date(cita.availableDate.date).toLocaleDateString()}</p>
           <p><strong>Hora:</strong> {cita.horaCita.hora}</p>
-          <p><strong>Descripcion: </strong> {cita.description}</p>
+          <p><strong>Descripcion:</strong> {cita.description}</p>
           <p><strong>Estado:</strong> {cita.status || 'Pendiente'}</p>
         </div>
       </div>
 
-      {/* Sección para enviar mensaje */}
       <div className="mensaje-container">
         <h3>Enviar mensaje a: {cita.user?.email}</h3>
         <textarea
@@ -68,25 +112,21 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita, onVolver, onEstadoCambi
         <button onClick={enviarCorreo} className="btn-enviar">Enviar mensaje</button>
       </div>
 
-      {/* Botones de acción */}
       <div className="estado-botones">
-        <CambiarEstadoCita
-          id={cita.id}
-          nuevoEstado="Aprobada"
-          onEstadoCambiado={onEstadoCambiado}
-          label="Aprobar"
+        <button
+          onClick={() => confirmarCambioEstado('Aprobada')}
           className="boton-aprobar"
-        />
-        <CambiarEstadoCita
-          id={cita.id}
-          nuevoEstado="Denegada"
-          onEstadoCambiado={onEstadoCambiado}
-          label="Denegar"
+        >
+          Aprobar
+        </button>
+        <button
+          onClick={() => confirmarCambioEstado('Denegada')}
           className="boton-denegar"
-        />
+        >
+          Denegar
+        </button>
       </div>
 
-      {/* Botón de volver */}
       <button className="volver-btn" onClick={onVolver}>
         Volver
       </button>

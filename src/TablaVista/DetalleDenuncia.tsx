@@ -97,8 +97,12 @@
 
 import React, { useState } from 'react';
 import { FaFilePdf, FaTimes, FaImage } from 'react-icons/fa';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import { Denuncia } from '../Types/Types';
 import '../styles/DetalleSolicitud.css';
+
+const MySwal = withReactContent(Swal);
 
 interface DetalleDenunciaProps {
   denuncia: Denuncia;
@@ -131,20 +135,33 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, o
 
   const archivosProcesados = procesarArchivos(denuncia.archivosEvidencia);
 
-  // Función para manejar la previsualización de archivos
   const manejarVerArchivo = (archivo: string) => {
     if (archivo.match(/\.(jpeg|jpg|png|gif)$/i)) {
-      setArchivoVistaPrevia(archivo); // Muestra la imagen en el modal
+      setArchivoVistaPrevia(archivo);
     } else {
-      window.open(archivo, '_blank'); // Abre PDFs en otra pestaña
+      window.open(archivo, '_blank');
     }
   };
 
-  const [confirmModal, setConfirmModal] = useState<{
-    visible: boolean;
-    nuevoEstado: string;
-  } | null>(null);
+  const confirmarCambioEstado = async (nuevoEstado: string) => {
+    const result = await MySwal.fire({
+      title: `¿Estás seguro de ${nuevoEstado === 'Aprobada' ? 'aprobar' : 'denegar'} esta denuncia?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Aceptar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: false,
+      customClass: {
+        confirmButton: 'bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700',
+        cancelButton: 'bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 ml-2'
+      },
+      buttonsStyling: false
+    });
 
+    if (result.isConfirmed) {
+      onEstadoCambiado(denuncia.id, nuevoEstado);
+    }
+  };
 
   return (
     <div className="detalle-tabla">
@@ -183,7 +200,6 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, o
         </div>
       </div>
 
-      {/* Modal de imagen */}
       {archivoVistaPrevia && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -195,29 +211,16 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, o
         </div>
       )}
 
-      {/* Botones con confirmación */}
       <div className="estado-botones" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
         <button
-          onClick={() => setConfirmModal({ visible: true, nuevoEstado: 'Aprobada' })}
-          style={{
-            backgroundColor: '#4caf50',
-            color: 'white',
-            padding: '10px 20px',
-            border: 'none',
-            borderRadius: '6px'
-          }}
+          onClick={() => confirmarCambioEstado('Aprobada')}
+          style={{ backgroundColor: '#4caf50', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '6px' }}
         >
           Aprobar
         </button>
         <button
-          onClick={() => setConfirmModal({ visible: true, nuevoEstado: 'Denegada' })}
-          style={{
-            backgroundColor: '#f44336',
-            color: 'white',
-            padding: '10px 20px',
-            border: 'none',
-            borderRadius: '6px'
-          }}
+          onClick={() => confirmarCambioEstado('Denegada')}
+          style={{ backgroundColor: '#f44336', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '6px' }}
         >
           Denegar
         </button>
@@ -226,49 +229,9 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, o
       <button className="volver-btn" onClick={onVolver}>
         Volver
       </button>
-
-      {/* Modal de confirmación */}
-      {confirmModal?.visible && (
-        <div className="modal-overlay">
-          <div className="modal-content" style={{ textAlign: 'center', padding: '20px' }}>
-            <h3>Confirmación</h3>
-            <p>¿Estás seguro de cambiar el estado a <strong>{confirmModal.nuevoEstado}</strong>?</p>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '15px' }}>
-              <button
-                style={{
-                  backgroundColor: '#4caf50',
-                  color: 'white',
-                  padding: '8px 16px',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 'bold',
-                }}
-                onClick={() => {
-                  onEstadoCambiado(denuncia.id, confirmModal.nuevoEstado);
-                  setConfirmModal(null);
-                }}
-              >
-                Aceptar
-              </button>
-              <button
-                style={{
-                  backgroundColor: '#f44336',
-                  color: 'white',
-                  padding: '8px 16px',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 'bold',
-                }}
-                onClick={() => setConfirmModal(null)}
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
 export default DetalleDenuncia;
+

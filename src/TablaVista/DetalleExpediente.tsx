@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import { CopiaExpediente } from '../Types/Types';
 import ApiRoutes from '../components/ApiRoutes';
-import  '../styles/DetalleSolicitud.css'
+import '../styles/DetalleSolicitud.css';
+
+const MySwal = withReactContent(Swal);
+
 interface DetalleExpedienteProps {
   expediente: CopiaExpediente;
-  onVolver: () => void;  // Función para volver a la lista de expedientes
-  onEstadoCambiado: (id: number, nuevoEstado: string) => void; // Función para cambiar el estado
+  onVolver: () => void;
+  onEstadoCambiado: (id: number, nuevoEstado: string) => void;
 }
 
 const DetalleExpediente: React.FC<DetalleExpedienteProps> = ({ expediente, onVolver, onEstadoCambiado }) => {
-  const [mensaje, setMensaje] = useState<string>(''); // Estado para almacenar el mensaje personalizado
+  const [mensaje, setMensaje] = useState<string>('');
 
-  // Función para enviar el correo al usuario que solicitó el expediente
   const enviarCorreo = async () => {
     if (!expediente.user?.email || !mensaje) {
       alert('Por favor, asegúrate de que el usuario tiene un correo y escribe un mensaje.');
@@ -21,16 +25,14 @@ const DetalleExpediente: React.FC<DetalleExpedienteProps> = ({ expediente, onVol
     try {
       const response = await fetch(`${ApiRoutes.urlBase}/mailer/send-custom-message`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: expediente.user.email, message: mensaje }),
       });
 
       const result = await response.json();
       if (result.success) {
         alert('Mensaje enviado exitosamente.');
-        setMensaje(''); // Limpiar el mensaje después de enviarlo
+        setMensaje('');
       } else {
         alert('Error al enviar el mensaje.');
       }
@@ -40,17 +42,30 @@ const DetalleExpediente: React.FC<DetalleExpedienteProps> = ({ expediente, onVol
     }
   };
 
+  const confirmarCambioEstado = async (nuevoEstado: string) => {
+    const result = await MySwal.fire({
+      title: `¿Estás seguro de ${nuevoEstado === 'Aprobada' ? 'aprobar' : 'denegar'} esta solicitud?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Aceptar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: false,
+      customClass: {
+        confirmButton: 'bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700',
+        cancelButton: 'bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 ml-2'
+      },
+      buttonsStyling: false
+    });
 
-  const [confirmModal, setConfirmModal] = useState<{
-    visible: boolean;
-    nuevoEstado: string;
-  } | null>(null);
+    if (result.isConfirmed) {
+      onEstadoCambiado(expediente.idExpediente, nuevoEstado);
+    }
+  };
 
   return (
     <div className="detalle-tabla">
       <h3>Detalles de la Solicitud de Expediente</h3>
       <div className="detalle-contenido">
-        {/* Información general del expediente */}
         <div className="detalle-info">
           <p><strong>ID Expediente:</strong> {expediente.idExpediente}</p>
           <p><strong>Nombre Solicitante:</strong> {expediente.nombreSolicitante}</p>
@@ -62,7 +77,6 @@ const DetalleExpediente: React.FC<DetalleExpedienteProps> = ({ expediente, onVol
         </div>
       </div>
 
-      {/* Sección para enviar el mensaje */}
       <div className="mensaje-container">
         <h3>Enviar mensaje a: {expediente.user?.email}</h3>
         <textarea
@@ -75,77 +89,22 @@ const DetalleExpediente: React.FC<DetalleExpedienteProps> = ({ expediente, onVol
         <button onClick={enviarCorreo} className="btn-enviar">Enviar mensaje</button>
       </div>
 
-      {/* Botones de aprobar/denegar con confirmación */}
       <div className="estado-botones" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
         <button
-          style={{
-            backgroundColor: '#4caf50',
-            color: 'white',
-            padding: '10px 20px',
-            border: 'none',
-            borderRadius: '6px'
-          }}
-          onClick={() => setConfirmModal({ visible: true, nuevoEstado: 'Aprobada' })}
+          onClick={() => confirmarCambioEstado('Aprobada')}
+          style={{ backgroundColor: '#4caf50', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '6px' }}
         >
           Aprobar
         </button>
         <button
-          style={{
-            backgroundColor: '#f44336',
-            color: 'white',
-            padding: '10px 20px',
-            border: 'none',
-            borderRadius: '6px'
-          }}
-          onClick={() => setConfirmModal({ visible: true, nuevoEstado: 'Denegada' })}
+          onClick={() => confirmarCambioEstado('Denegada')}
+          style={{ backgroundColor: '#f44336', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '6px' }}
         >
           Denegar
         </button>
       </div>
 
-      {/* Volver */}
       <button className="volver-btn" onClick={onVolver}>Volver</button>
-
-      {/* Modal de confirmación */}
-      {confirmModal?.visible && (
-        <div className="modal-overlay">
-          <div className="modal-content" style={{ textAlign: 'center', padding: '20px' }}>
-            <h3>Confirmación</h3>
-            <p>¿Estás seguro de cambiar el estado a <strong>{confirmModal.nuevoEstado}</strong>?</p>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '15px' }}>
-              <button
-                style={{
-                  backgroundColor: '#4caf50',
-                  color: 'white',
-                  padding: '8px 16px',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 'bold',
-                }}
-                onClick={() => {
-                  onEstadoCambiado(expediente.idExpediente, confirmModal.nuevoEstado);
-                  setConfirmModal(null);
-                }}
-              >
-                Aceptar
-              </button>
-              <button
-                style={{
-                  backgroundColor: '#f44336',
-                  color: 'white',
-                  padding: '8px 16px',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 'bold',
-                }}
-                onClick={() => setConfirmModal(null)}
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

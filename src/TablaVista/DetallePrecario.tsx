@@ -108,12 +108,15 @@
 // };
 
 // export default DetallePrecario;
-
 import React, { useState } from 'react';
 import { FaFilePdf, FaTimes } from 'react-icons/fa';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import { Precario } from '../Types/Types';
 import ApiRoutes from '../components/ApiRoutes';
 import '../styles/DetalleSolicitud.css';
+
+const MySwal = withReactContent(Swal);
 
 interface DetallePrecarioProps {
   precario: Precario;
@@ -124,9 +127,8 @@ interface DetallePrecarioProps {
 const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver, onEstadoCambiado }) => {
   const [mensaje, setMensaje] = useState<string>('');
   const [estado, setEstado] = useState<string>(precario.status || 'Pendiente');
-  const [archivoVistaPrevia, setArchivoVistaPrevia] = useState<string | null>(null); // Estado para previsualización
+  const [archivoVistaPrevia, setArchivoVistaPrevia] = useState<string | null>(null);
 
-  // Función para enviar correo
   const enviarCorreo = async () => {
     if (!precario.user?.email || !mensaje) {
       alert('Por favor, asegúrate de que el usuario tiene un correo y escribe un mensaje.');
@@ -152,7 +154,6 @@ const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver, o
     }
   };
 
-  // Función para previsualizar un archivo PDF en el modal
   const manejarVerArchivo = (archivo: string) => {
     const archivoFinal = archivo.replace(/[\[\]"]/g, '');
     if (archivoFinal) {
@@ -161,20 +162,28 @@ const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver, o
     }
   };
 
-  // Función para cerrar la vista previa
   const cerrarVistaPrevia = () => setArchivoVistaPrevia(null);
 
-  // Función para cambiar el estado del precario
-  const manejarCambioEstado = (nuevoEstado: string) => {
-    onEstadoCambiado(precario.id, nuevoEstado);
-    setEstado(nuevoEstado);
-  };
+  const confirmarCambioEstado = async (nuevoEstado: string) => {
+    const result = await MySwal.fire({
+      title: `¿Estás seguro de ${nuevoEstado === 'Aprobada' ? 'aprobar' : 'denegar'} esta solicitud?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Aceptar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: false,
+      customClass: {
+        confirmButton: 'bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700',
+        cancelButton: 'bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 ml-2',
+      },
+      buttonsStyling: false
+    });
 
-  const [confirmModal, setConfirmModal] = useState<{
-    visible: boolean;
-    nuevoEstado: string;
-  } | null>(null);
-  
+    if (result.isConfirmed) {
+      onEstadoCambiado(precario.id, nuevoEstado);
+      setEstado(nuevoEstado);
+    }
+  };
 
   return (
     <div className="detalle-tabla">
@@ -189,7 +198,6 @@ const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver, o
           <p><strong>Estado:</strong> {estado}</p>
         </div>
 
-        {/* Sección de Archivos Adjuntos */}
         <div className="detalle-archivos">
           <p><strong>Archivos Adjuntos:</strong></p>
           {precario.ArchivoAdjunto ? (
@@ -216,7 +224,6 @@ const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver, o
         </div>
       </div>
 
-      {/* Modal para previsualizar el PDF */}
       {archivoVistaPrevia && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -228,7 +235,6 @@ const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver, o
         </div>
       )}
 
-      {/* Sección para enviar el mensaje */}
       <div className="mensaje-container">
         <h3>Enviar mensaje a: {precario.user?.email}</h3>
         <textarea
@@ -241,76 +247,22 @@ const DetallePrecario: React.FC<DetallePrecarioProps> = ({ precario, onVolver, o
         <button onClick={enviarCorreo} className="btn-enviar">Enviar mensaje</button>
       </div>
 
-      {/* Botones para cambiar estado */}
       <div className="estado-botones" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
         <button
-          style={{
-            backgroundColor: '#4caf50',
-            color: 'white',
-            padding: '10px 20px',
-            border: 'none',
-            borderRadius: '6px'
-          }}
-          onClick={() => setConfirmModal({ visible: true, nuevoEstado: 'Aprobada' })}
+          onClick={() => confirmarCambioEstado('Aprobada')}
+          style={{ backgroundColor: '#4caf50', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '6px' }}
         >
           Aprobar
         </button>
         <button
-          style={{
-            backgroundColor: '#f44336',
-            color: 'white',
-            padding: '10px 20px',
-            border: 'none',
-            borderRadius: '6px'
-          }}
-          onClick={() => setConfirmModal({ visible: true, nuevoEstado: 'Denegada' })}
+          onClick={() => confirmarCambioEstado('Denegada')}
+          style={{ backgroundColor: '#f44336', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '6px' }}
         >
           Denegar
         </button>
       </div>
 
       <button className="volver-btn" onClick={onVolver}>Volver</button>
-
-      {/* Modal de confirmación */}
-      {confirmModal?.visible && (
-        <div className="modal-overlay">
-          <div className="modal-content" style={{ textAlign: 'center', padding: '20px' }}>
-            <h3>Confirmación</h3>
-            <p>¿Estás seguro de cambiar el estado a <strong>{confirmModal.nuevoEstado}</strong>?</p>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '15px' }}>
-              <button
-                style={{
-                  backgroundColor: '#4caf50',
-                  color: 'white',
-                  padding: '8px 16px',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 'bold',
-                }}
-                onClick={() => {
-                  manejarCambioEstado(confirmModal.nuevoEstado);
-                  setConfirmModal(null);
-                }}
-              >
-                Aceptar
-              </button>
-              <button
-                style={{
-                  backgroundColor: '#f44336',
-                  color: 'white',
-                  padding: '8px 16px',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 'bold',
-                }}
-                onClick={() => setConfirmModal(null)}
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

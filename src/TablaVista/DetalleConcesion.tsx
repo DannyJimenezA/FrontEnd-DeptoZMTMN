@@ -3,7 +3,11 @@ import { FaFilePdf, FaTimes } from 'react-icons/fa';
 import { Concesion } from '../Types/Types';
 import ApiRoutes from '../components/ApiRoutes';
 import AlertNotification from '../components/AlertNotificationP';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import '../styles/DetalleSolicitud.css';
+
+const MySwal = withReactContent(Swal);
 
 interface DetalleConcesionProps {
   concesion: Concesion;
@@ -28,10 +32,7 @@ const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver
 
   const enviarCorreo = async () => {
     if (!concesion.user?.email || !mensaje) {
-      setCustomAlert({
-        type: 'error',
-        message: 'Por favor, asegúrate de que el usuario tiene un correo y escribe un mensaje.',
-      });
+      setCustomAlert({ type: 'error', message: 'Por favor, asegúrate de que el usuario tiene un correo y escribe un mensaje.' });
       return;
     }
 
@@ -44,34 +45,63 @@ const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver
 
       const result = await response.json();
       if (result.success) {
-        setCustomAlert({
-          type: 'success',
-          message: 'Mensaje enviado exitosamente.',
-        });
+        setCustomAlert({ type: 'success', message: 'Mensaje enviado exitosamente.' });
         setMensaje('');
       } else {
-        setCustomAlert({
-          type: 'error',
-          message: 'Error al enviar el mensaje.',
-        });
+        setCustomAlert({ type: 'error', message: 'Error al enviar el mensaje.' });
       }
     } catch (error) {
       console.error('Error al enviar el correo:', error);
-      setCustomAlert({
-        type: 'error',
-        message: 'Hubo un error al intentar enviar el mensaje.',
-      });
+      setCustomAlert({ type: 'error', message: 'Hubo un error al intentar enviar el mensaje.' });
     }
   };
 
-  const [confirmModal, setConfirmModal] = useState<{
-    visible: boolean;
-    nuevoEstado: string;
-  } | null>(null);
-  
+  const confirmarCambioEstado = async (nuevoEstado: string) => {
+    const result = await MySwal.fire({
+      title: `¿Estás seguro de ${nuevoEstado === 'Aprobada' ? 'aprobar' : 'denegar'} esta solicitud?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Aceptar',
+      cancelButtonText: 'Cancelar',
+      customClass: {
+        confirmButton: 'btn-verde',
+        cancelButton: 'btn-rojo',
+        actions: 'botones-horizontales',
+      },
+      buttonsStyling: false,
+    });
+
+    if (result.isConfirmed) {
+      onEstadoCambiado(concesion.id, nuevoEstado);
+    }
+  };
 
   return (
     <div className="detalle-tabla">
+      <style>{`
+        .btn-verde {
+          background-color: #16a34a !important;
+          color: white !important;
+          border: none !important;
+          border-radius: 6px !important;
+          padding: 8px 20px !important;
+          font-weight: bold !important;
+        }
+        .btn-rojo {
+          background-color: #dc2626 !important;
+          color: white !important;
+          border: none !important;
+          border-radius: 6px !important;
+          padding: 8px 20px !important;
+          font-weight: bold !important;
+        }
+        .botones-horizontales {
+          display: flex !important;
+          justify-content: center;
+          gap: 10px;
+        }
+      `}</style>
+
       <h3>Detalles de la Concesión</h3>
       <div className="detalle-contenido">
         <div className="detalle-info">
@@ -82,7 +112,7 @@ const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver
           <p><strong>Detalle:</strong> {concesion.Detalle}</p>
           <p><strong>Estado:</strong> {concesion.status || 'Pendiente'}</p>
         </div>
-        
+
         <div className="detalle-archivos">
           <p><strong>Archivo Adjunto:</strong></p>
           {concesion.ArchivoAdjunto ? (
@@ -101,7 +131,6 @@ const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver
         </div>
       </div>
 
-      {/* Modal de vista previa */}
       {archivoVistaPrevia && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -125,80 +154,23 @@ const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver
         <button onClick={enviarCorreo} className="btn-enviar">Enviar mensaje</button>
       </div>
 
-      {/* Botones Aprobar/Denegar con modal */}
       <div className="estado-botones" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
         <button
-          onClick={() => setConfirmModal({ visible: true, nuevoEstado: 'Aprobada' })}
-          style={{
-            backgroundColor: '#4caf50',
-            color: 'white',
-            padding: '10px 20px',
-            border: 'none',
-            borderRadius: '6px'
-          }}
+          onClick={() => confirmarCambioEstado('Aprobada')}
+          style={{ backgroundColor: '#16a34a', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '6px' }}
         >
           Aprobar
         </button>
         <button
-          onClick={() => setConfirmModal({ visible: true, nuevoEstado: 'Denegada' })}
-          style={{
-            backgroundColor: '#f44336',
-            color: 'white',
-            padding: '10px 20px',
-            border: 'none',
-            borderRadius: '6px'
-          }}
+          onClick={() => confirmarCambioEstado('Denegada')}
+          style={{ backgroundColor: '#dc2626', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '6px' }}
         >
           Denegar
         </button>
       </div>
 
-      <button className="volver-btn" onClick={onVolver}>
-        Volver
-      </button>
+      <button className="volver-btn" onClick={onVolver}>Volver</button>
 
-      {/* Modal de confirmación */}
-      {confirmModal?.visible && (
-        <div className="modal-overlay">
-          <div className="modal-content" style={{ textAlign: 'center', padding: '20px' }}>
-            <h3>Confirmación</h3>
-            <p>¿Estás seguro de cambiar el estado a <strong>{confirmModal.nuevoEstado}</strong>?</p>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '15px' }}>
-              <button
-                style={{
-                  backgroundColor: '#4caf50',
-                  color: 'white',
-                  padding: '8px 16px',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 'bold',
-                }}
-                onClick={() => {
-                  onEstadoCambiado(concesion.id, confirmModal.nuevoEstado);
-                  setConfirmModal(null);
-                }}
-              >
-                Aceptar
-              </button>
-              <button
-                style={{
-                  backgroundColor: '#f44336',
-                  color: 'white',
-                  padding: '8px 16px',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 'bold',
-                }}
-                onClick={() => setConfirmModal(null)}
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ✅ Alerta visual personalizada */}
       {customAlert && (
         <AlertNotification
           type={customAlert.type}
@@ -208,7 +180,6 @@ const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver
       )}
     </div>
   );
-
 };
 
 export default DetalleConcesion;

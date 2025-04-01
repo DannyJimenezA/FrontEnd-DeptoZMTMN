@@ -111,16 +111,19 @@
 // };
 
 // export default DetalleRevisionPlano;
-
 import React, { useState } from 'react';
 import { FaFilePdf, FaTimes } from 'react-icons/fa';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import { RevisionPlano } from '../Types/Types';
 import ApiRoutes from '../components/ApiRoutes';
 import '../styles/DetalleSolicitud.css';
 
+const MySwal = withReactContent(Swal);
+
 interface DetalleRevisionPlanoProps {
   revisionPlano: RevisionPlano;
-  onVolver: () => void;                   
+  onVolver: () => void;
   onEstadoCambiado: (id: number, nuevoEstado: string) => void;
 }
 
@@ -128,7 +131,6 @@ const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPla
   const [mensaje, setMensaje] = useState<string>('');
   const [archivoVistaPrevia, setArchivoVistaPrevia] = useState<string | null>(null);
 
-  // Función para enviar el correo
   const enviarCorreo = async () => {
     if (!revisionPlano.user?.email || !mensaje) {
       alert('Por favor, asegúrate de que el usuario tiene un correo y escribe un mensaje.');
@@ -155,7 +157,6 @@ const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPla
     }
   };
 
-  // Función para previsualizar un archivo PDF en el modal
   const manejarVerArchivo = (archivo: { nombre: string; ruta: string }) => {
     if (archivo && archivo.ruta) {
       const fileUrl = `${ApiRoutes.urlBase}/${archivo.ruta.replace(/\\/g, '/')}`;
@@ -165,16 +166,27 @@ const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPla
     }
   };
 
-  // Función para cerrar la vista previa
   const cerrarVistaPrevia = () => setArchivoVistaPrevia(null);
 
-  // Función para cambiar el estado de la revisión del plano
-  const cambiarEstado = (nuevoEstado: string) => {
-    onEstadoCambiado(revisionPlano.id, nuevoEstado);
+  const confirmarCambioEstado = async (nuevoEstado: string) => {
+    const result = await MySwal.fire({
+      title: `¿Estás seguro de ${nuevoEstado === 'Aprobada' ? 'aprobar' : 'denegar'} esta revisión?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Aceptar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: false,
+      customClass: {
+        confirmButton: 'bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700',
+        cancelButton: 'bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 ml-2',
+      },
+      buttonsStyling: false,
+    });
+
+    if (result.isConfirmed) {
+      onEstadoCambiado(revisionPlano.id, nuevoEstado);
+    }
   };
-
-  const [confirmarEstado, setConfirmarEstado] = useState<{ mostrar: boolean; estado: string }>({ mostrar: false, estado: '' });
-
 
   return (
     <div className="detalle-tabla">
@@ -189,7 +201,7 @@ const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPla
           <p><strong>Comentario:</strong> {revisionPlano.Comentario}</p>
           <p><strong>Estado:</strong> {revisionPlano.status || 'Pendiente'}</p>
         </div>
-  
+
         <div className="detalle-archivos">
           <p><strong>Archivos Adjuntos:</strong></p>
           {revisionPlano.ArchivosAdjuntos && Array.isArray(revisionPlano.ArchivosAdjuntos) ? (
@@ -207,8 +219,7 @@ const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPla
           )}
         </div>
       </div>
-  
-      {/* Modal para vista previa */}
+
       {archivoVistaPrevia && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -219,7 +230,7 @@ const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPla
           </div>
         </div>
       )}
-  
+
       <div className="mensaje-container">
         <h3>Enviar mensaje a: {revisionPlano.user?.email}</h3>
         <textarea
@@ -231,52 +242,25 @@ const DetalleRevisionPlano: React.FC<DetalleRevisionPlanoProps> = ({ revisionPla
         />
         <button onClick={enviarCorreo} className="btn-enviar">Enviar mensaje</button>
       </div>
-  
+
       <div className="estado-botones" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
         <button
-          onClick={() => setConfirmarEstado({ mostrar: true, estado: 'Aprobada' })}
+          onClick={() => confirmarCambioEstado('Aprobada')}
           style={{ backgroundColor: '#4CAF50', color: '#fff', padding: '8px 16px', border: 'none', borderRadius: '4px' }}
         >
           Aprobar
         </button>
         <button
-          onClick={() => setConfirmarEstado({ mostrar: true, estado: 'Denegada' })}
+          onClick={() => confirmarCambioEstado('Denegada')}
           style={{ backgroundColor: '#f44336', color: '#fff', padding: '8px 16px', border: 'none', borderRadius: '4px' }}
         >
           Denegar
         </button>
       </div>
-  
+
       <button className="volver-btn" onClick={onVolver}>Volver</button>
-  
-      {/* Modal de Confirmación */}
-      {confirmarEstado.mostrar && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>Confirmación</h3>
-            <p>¿Estás seguro de cambiar el estado a <strong>{confirmarEstado.estado}</strong>?</p>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
-              <button
-                onClick={() => {
-                  cambiarEstado(confirmarEstado.estado);
-                  setConfirmarEstado({ mostrar: false, estado: '' });
-                }}
-                style={{ backgroundColor: '#4CAF50', color: '#fff', padding: '8px 16px', border: 'none', borderRadius: '4px' }}
-              >
-                Aceptar
-              </button>
-              <button
-                onClick={() => setConfirmarEstado({ mostrar: false, estado: '' })}
-                style={{ backgroundColor: '#f44336', color: '#fff', padding: '8px 16px', border: 'none', borderRadius: '4px' }}
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
-  );  
+  );
 };
 
 export default DetalleRevisionPlano;

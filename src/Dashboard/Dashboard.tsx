@@ -31,7 +31,7 @@ import GestionDenunciasTable from '../Tablas/GestionDenunciasTable';
 import TablaDenunciasDashboard from '../Tablas/TablaDenuncia';
 import ApiRoutes from '../components/ApiRoutes';
 import DashboardHome from './DashboardHome';
-
+import Swal from 'sweetalert2';
 
 
 const AdminDashboard: React.FC = () => {
@@ -113,10 +113,8 @@ const AdminDashboard: React.FC = () => {
   const manejarCambioEstadoCita = async (id: number, nuevoEstado: string) => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Token de autenticación no encontrado.');
-      }
-
+      if (!token) throw new Error('Token de autenticación no encontrado.');
+  
       const response = await fetch(`${ApiRoutes.citas.crearcita}/${id}/status`, {
         method: 'PUT',
         headers: {
@@ -125,29 +123,31 @@ const AdminDashboard: React.FC = () => {
         },
         body: JSON.stringify({ status: nuevoEstado }),
       });
-
-      if (!response.ok) {
-        throw new Error('Error al actualizar el estado de la cita');
-      }
-
+  
+      if (!response.ok) throw new Error('Error al actualizar el estado de la cita');
+  
       if (citaSeleccionada && citaSeleccionada.id === id) {
         setCitaSeleccionada({ ...citaSeleccionada, status: nuevoEstado });
       }
-
-      alert(`El estado de la cita ha sido actualizado a: ${nuevoEstado}`);
+  
+      await Swal.fire({
+        title: 'Estado actualizado',
+        text: `La cita ha sido ${nuevoEstado.toLowerCase()} correctamente.`,
+        icon: 'success',
+        confirmButtonColor: '#16a34a',
+        confirmButtonText: 'Aceptar'
+      });
     } catch (error) {
       console.error('Error al cambiar el estado de la cita:', error);
-      alert('Hubo un error al intentar cambiar el estado de la cita.');
+      Swal.fire('Error', 'Hubo un error al intentar cambiar el estado de la cita.', 'error');
     }
   };
 
   const manejarCambioEstadoConcesion = async (id: number, nuevoEstado: string) => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Token de autenticación no encontrado.');
-      }
-
+      if (!token) throw new Error('Token de autenticación no encontrado.');
+  
       const response = await fetch(`${ApiRoutes.concesiones}/${id}/status`, {
         method: 'PUT',
         headers: {
@@ -156,29 +156,26 @@ const AdminDashboard: React.FC = () => {
         },
         body: JSON.stringify({ status: nuevoEstado }),
       });
-
-      if (!response.ok) {
-        throw new Error('Error al actualizar el estado de la concesión');
-      }
-
+  
+      if (!response.ok) throw new Error('Error al actualizar el estado de la concesión');
+  
       if (concesionSeleccionada && concesionSeleccionada.id === id) {
         setConcesionSeleccionada({ ...concesionSeleccionada, status: nuevoEstado });
       }
-
-      alert(`El estado de la concesión ha sido actualizado a: ${nuevoEstado}`);
+  
+      Swal.fire('Estado actualizado', `La concesión ha sido ${nuevoEstado.toLowerCase()} correctamente.`, 'success');
     } catch (error) {
       console.error('Error al cambiar el estado de la concesión:', error);
-      alert('Hubo un error al intentar cambiar el estado de la concesión.');
+      Swal.fire('Error', 'Hubo un error al intentar cambiar el estado de la concesión.', 'error');
     }
   };
-
   const manejarCambioEstadoExpediente = async (id: number, nuevoEstado: string) => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('Token de autenticación no encontrado.');
       }
-
+  
       const response = await fetch(`${ApiRoutes.expedientes}/${id}/status`, {
         method: 'PUT',
         headers: {
@@ -187,22 +184,21 @@ const AdminDashboard: React.FC = () => {
         },
         body: JSON.stringify({ status: nuevoEstado }),
       });
-
+  
       if (!response.ok) {
         throw new Error('Error al actualizar el estado del expediente');
       }
-
+  
       if (expedienteSeleccionado && expedienteSeleccionado.idExpediente === id) {
         setExpedienteSeleccionado({ ...expedienteSeleccionado, status: nuevoEstado });
       }
-
-      alert(`El estado del expediente ha sido actualizado a: ${nuevoEstado}`);
+  
+      Swal.fire('Estado actualizado', `El expediente ha sido ${nuevoEstado.toLowerCase()} correctamente.`, 'success');
     } catch (error) {
       console.error('Error al cambiar el estado del expediente:', error);
-      alert('Hubo un error al intentar cambiar el estado del expediente.');
+      Swal.fire('Error', 'Hubo un error al intentar cambiar el estado del expediente.', 'error');
     }
   };
-
   const manejarCambioEstadoPrecario = async (id: number, nuevoEstado: string) => {
     try {
       const token = localStorage.getItem('token');
@@ -216,18 +212,29 @@ const AdminDashboard: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ status: nuevoEstado }), // Asegúrate de que el campo coincide con la API
+        body: JSON.stringify({ status: nuevoEstado }),
       });
   
       if (!response.ok) {
         throw new Error('Error al actualizar el estado del uso precario');
       }
   
-      // Si el estado fue actualizado exitosamente, actualiza el estado local si es necesario
-      alert(`El estado del uso precario ha sido actualizado a: ${nuevoEstado}`);
+      if (precarioSeleccionado && precarioSeleccionado.id === id) {
+        setPrecarioSeleccionado({ ...precarioSeleccionado, status: nuevoEstado });
+      }
+  
+      await Swal.fire({
+        icon: 'success',
+        title: 'Estado actualizado',
+        text: `El uso precario ha sido ${nuevoEstado.toLowerCase()} correctamente.`,
+      });
     } catch (error) {
       console.error('Error al cambiar el estado del uso precario:', error);
-      alert('Hubo un error al intentar cambiar el estado del uso precario.');
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un error al intentar cambiar el estado del uso precario.',
+      });
     }
   };
   
@@ -255,10 +262,18 @@ const AdminDashboard: React.FC = () => {
         setDenunciaSeleccionada({ ...denunciaSeleccionada, status: nuevoEstado });
       }
   
-      alert(`El estado de la denuncia ha sido actualizado a: ${nuevoEstado}`);
+      await Swal.fire({
+        icon: 'success',
+        title: 'Estado actualizado',
+        text: `La denuncia ha sido ${nuevoEstado.toLowerCase()} correctamente.`,
+      });
     } catch (error) {
       console.error('Error al cambiar el estado de la denuncia:', error);
-      alert('Hubo un error al intentar cambiar el estado de la denuncia.');
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un error al intentar cambiar el estado de la denuncia.',
+      });
     }
   };
 
@@ -286,75 +301,98 @@ const AdminDashboard: React.FC = () => {
         setRevisionPlanoSeleccionado({ ...revisionPlanoSeleccionado, status: nuevoEstado });
       }
   
-      alert(`El estado de la revisión de plano ha sido actualizado a: ${nuevoEstado}`);
+      await Swal.fire({
+        icon: 'success',
+        title: 'Estado actualizado',
+        text: `La revisión del plano ha sido ${nuevoEstado.toLowerCase()} correctamente.`,
+      });
     } catch (error) {
       console.error('Error al cambiar el estado de la revisión de plano:', error);
-      alert('Hubo un error al intentar cambiar el estado de la revisión de plano.');
-    }
-  };
-  
-  const manejarCambioEstadoProrroga = async (id: number, nuevoEstado: string) => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Token de autenticación no encontrado.');
-      }
-  
-      const response = await fetch(`${ApiRoutes.prorrogas}/${id}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ status: nuevoEstado }),
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un error al intentar cambiar el estado de la revisión del plano.',
       });
-  
-      if (!response.ok) {
-        throw new Error('Error al actualizar el estado de la prórroga');
-      }
-  
-      if (prorrogaSeleccionada && prorrogaSeleccionada.id === id) {
-        setProrrogaSeleccionada({ ...prorrogaSeleccionada, status: nuevoEstado });
-      }
-  
-      alert(`El estado de la prórroga ha sido actualizado a: ${nuevoEstado}`);
-    } catch (error) {
-      console.error('Error al cambiar el estado de la prórroga:', error);
-      alert('Hubo un error al intentar cambiar el estado de la prórroga.');
     }
   };
 
-  const manejarCambioEstadoUsuario = async (id: number, nuevoEstado: boolean) => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Token de autenticación no encontrado.');
-      }
-  
-      const response = await fetch(`${ApiRoutes.usuarios}/${id}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ isActive: nuevoEstado }),
-      });
-  
-      if (!response.ok) {
-        throw new Error('Error al actualizar el estado del usuario');
-      }
-  
-      // Actualizar el estado local del usuario seleccionado
-      if (usuarioSeleccionado && usuarioSeleccionado.id === id) {
-        setUsuarioSeleccionado({ ...usuarioSeleccionado, isActive: nuevoEstado });
-      }
-  
-      alert(`El estado del usuario ha sido actualizado a: ${nuevoEstado ? 'Activo' : 'Inactivo'}`);
-    } catch (error) {
-      console.error('Error al cambiar el estado del usuario:', error);
-      alert('Hubo un error al intentar cambiar el estado del usuario.');
+ const manejarCambioEstadoProrroga = async (id: number, nuevoEstado: string) => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('Token de autenticación no encontrado.');
     }
-  };
+
+    const response = await fetch(`${ApiRoutes.prorrogas}/${id}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status: nuevoEstado }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al actualizar el estado de la prórroga');
+    }
+
+    if (prorrogaSeleccionada && prorrogaSeleccionada.id === id) {
+      setProrrogaSeleccionada({ ...prorrogaSeleccionada, status: nuevoEstado });
+    }
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Estado actualizado',
+      text: `La prórroga ha sido ${nuevoEstado.toLowerCase()} correctamente.`,
+    });
+  } catch (error) {
+    console.error('Error al cambiar el estado de la prórroga:', error);
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Hubo un error al intentar cambiar el estado de la prórroga.',
+    });
+  }
+};
+
+const manejarCambioEstadoUsuario = async (id: number, nuevoEstado: boolean) => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('Token de autenticación no encontrado.');
+    }
+
+    const response = await fetch(`${ApiRoutes.usuarios}/${id}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ isActive: nuevoEstado }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al actualizar el estado del usuario');
+    }
+
+    if (usuarioSeleccionado && usuarioSeleccionado.id === id) {
+      setUsuarioSeleccionado({ ...usuarioSeleccionado, isActive: nuevoEstado });
+    }
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Estado actualizado',
+      text: `El usuario ha sido marcado como ${nuevoEstado ? 'Activo' : 'Inactivo'} correctamente.`,
+    });
+  } catch (error) {
+    console.error('Error al cambiar el estado del usuario:', error);
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Hubo un error al intentar cambiar el estado del usuario.',
+    });
+  }
+};
   
   const manejarAsignarPermisos = (rol: Role) => {
     setRolSeleccionado(rol); // ✅ Guardamos el rol seleccionado
