@@ -5,13 +5,12 @@ import '../styles/Global.css';
 import { Cita, DecodedToken } from '../Types/Types';
 import { FaEye, FaTrash, FaPlus } from 'react-icons/fa';
 import Paginacion from '../components/Paginacion';
-import FilterButtons from '../components/FilterButton';
 import ApiRoutes from '../components/ApiRoutes';
 import FiltroFecha from '../components/FiltroFecha';
-import SearchBar from '../components/SearchBar';
+import SearchFilterBar from '../components/SearchFilterBar';
 import "../styles/TableButtons.css";
-import ModalCrearFecha from '../TablaVista/ModalCrearFecha'; // Asegúrate de que la ruta sea correcta
-import ModalAgregarHoras from '../TablaVista/ModalAgregarHoras'; // Asegúrate de que la ruta sea correcta
+import ModalCrearFecha from '../TablaVista/ModalCrearFecha';
+import ModalAgregarHoras from '../TablaVista/ModalAgregarHoras';
 import { eliminarEntidad } from '../Helpers/eliminarEntidad';
 
 interface CitasTableProps {
@@ -22,47 +21,40 @@ const fetchCitas = async (): Promise<Cita[]> => {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('Token no encontrado');
 
-  try {
-    const response = await fetch(ApiRoutes.citas.crearcita, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+  const response = await fetch(ApiRoutes.citas.crearcita, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
 
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status} - ${response.statusText}`);
-    }
-
-    const data: Cita[] = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching citas:', error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`Error: ${response.status} - ${response.statusText}`);
   }
+
+  return await response.json();
 };
 
 const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
   const [citas, setCitas] = useState<Cita[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filtroEstado, setFiltroEstado] = useState<string>('todos');
+  const [filtroEstado, setFiltroEstado] = useState('todos');
   const [fechaFiltro, setFechaFiltro] = useState<Date | null>(null);
-  const [searchText, setSearchText] = useState<string>('');
-  const [searchBy, setSearchBy] = useState<string>('nombre');
+  const [searchText, setSearchText] = useState('');
+  const [searchBy, setSearchBy] = useState('nombre');
   const [fechasDisponibles, setFechasDisponibles] = useState<{ id: number; date: string }[]>([]);
-  const [isModalFechaOpen, setIsModalFechaOpen] = useState<boolean>(false); // Estado para el modal de fecha
-  const [isModalHorasOpen, setIsModalHorasOpen] = useState<boolean>(false); // Estado para el modal de horas
+  const [isModalFechaOpen, setIsModalFechaOpen] = useState(false);
+  const [isModalHorasOpen, setIsModalHorasOpen] = useState(false);
   const navigate = useNavigate();
-
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      window.alert('No se ha encontrado un token de acceso. Por favor, inicie sesión.');
+      alert('No se ha encontrado un token de acceso. Por favor, inicie sesión.');
       navigate('/login');
       return;
     }
@@ -70,17 +62,15 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
     try {
       const decodedToken = jwtDecode<DecodedToken>(token);
       const hasPermission = decodedToken.permissions.some(
-        (permission: { action: string; resource: string; }) => permission.action === 'GET' && permission.resource === 'appointments'
+        (permission) => permission.action === 'GET' && permission.resource === 'appointments'
       );
-
       if (!hasPermission) {
-        window.alert('No tienes permiso para acceder a esta página.');
+        alert('No tienes permiso para acceder a esta página.');
         navigate('/');
         return;
       }
-    } catch (error) {
-      console.error('Error al decodificar el token:', error);
-      window.alert('Ha ocurrido un error. Por favor, inicie sesión nuevamente.');
+    } catch (err) {
+      alert('Error al validar el token.');
       navigate('/login');
       return;
     }
@@ -90,7 +80,7 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
         const citasFromAPI = await fetchCitas();
         setCitas(citasFromAPI);
 
-        const responseFechas = await fetch(ApiRoutes.fechaCitas, {
+        const resFechas = await fetch(ApiRoutes.fechaCitas, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -98,14 +88,10 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
           },
         });
 
-        if (!responseFechas.ok) {
-          throw new Error(`Error: ${responseFechas.status} - ${responseFechas.statusText}`);
-        }
-
-        const fechas = await responseFechas.json();
+        if (!resFechas.ok) throw new Error('Error al cargar fechas disponibles');
+        const fechas = await resFechas.json();
         setFechasDisponibles(fechas);
       } catch (error) {
-        console.error('Error al obtener las citas y fechas:', error);
         setError('Error al cargar las citas y fechas.');
       } finally {
         setLoading(false);
@@ -117,115 +103,77 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
 
   const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Cita>("appointments", setCitas);
 
-  const obtenerCitasFiltradas = () => {
-    let citasFiltradas = citas;
+  const citasFiltradas = citas.filter((cita) => {
+    const matchEstado = filtroEstado === 'todos' || cita.status === filtroEstado;
+    const matchFecha = !fechaFiltro || cita.availableDate.date === fechaFiltro.toISOString().split('T')[0];
+    const matchTexto =
+      searchBy === 'nombre'
+        ? cita.user?.nombre?.toLowerCase().includes(searchText.toLowerCase())
+        : cita.user?.cedula?.toLowerCase().includes(searchText.toLowerCase());
+    return matchEstado && matchFecha && matchTexto;
+  });
 
-    if (filtroEstado !== 'todos') {
-      citasFiltradas = citasFiltradas.filter((cita) => cita.status === filtroEstado);
-    }
-
-    if (fechaFiltro) {
-      const fechaSeleccionada = fechaFiltro.toISOString().split('T')[0];
-      citasFiltradas = citasFiltradas.filter((cita) => cita.availableDate.date === fechaSeleccionada);
-    }
-
-    if (searchText) {
-      citasFiltradas = citasFiltradas.filter((cita) =>
-        searchBy === 'nombre'
-          ? cita.user?.nombre?.toLowerCase().includes(searchText.toLowerCase())
-          : cita.user?.cedula?.toLowerCase().includes(searchText.toLowerCase())
-      );
-    }
-
-    return citasFiltradas;
-  };
-
-  const citasFiltradas = obtenerCitasFiltradas();
   const indexUltimaCita = currentPage * itemsPerPage;
   const indexPrimeraCita = indexUltimaCita - itemsPerPage;
   const citasActuales = citasFiltradas.slice(indexPrimeraCita, indexUltimaCita);
   const totalPages = Math.ceil(citasFiltradas.length / itemsPerPage);
 
   const handleFechaCreada = () => {
-    // Recargar las fechas disponibles
     const token = localStorage.getItem('token');
     if (!token) return;
-
     fetch(ApiRoutes.fechaCitas, {
-      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
     })
-      .then((response) => response.json())
-      .then((data) => setFechasDisponibles(data))
-      .catch((error) => console.error('Error al obtener las fechas:', error));
+      .then((res) => res.json())
+      .then((data) => setFechasDisponibles(data));
   };
-
-  const handleHorasAgregadas = () => {
-    // Recargar las horas disponibles si es necesario
-    // Puedes implementar esta lógica según tus necesidades
-  };
-
-  if (loading) return <p>Cargando citas...</p>;
-  if (error) return <p>{error}</p>;
 
   return (
     <div className="flex flex-col w-full h-full p-4">
       <h2 className="text-2xl font-semibold mb-4">Citas Programadas</h2>
-  
-      {/* Botones para abrir los modales */}
+
+      {/* Botones de Modal */}
       <div className="flex space-x-4 mb-4">
-        <button
-          onClick={() => setIsModalFechaOpen(true)}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
+        <button onClick={() => setIsModalFechaOpen(true)} className="bg-blue-500 text-white px-4 py-2 rounded">
           <FaPlus /> Crear Nueva Fecha
         </button>
-        <button
-          onClick={() => setIsModalHorasOpen(true)}
-          className="bg-green-500 text-white px-4 py-2 rounded"
-        >
+        <button onClick={() => setIsModalHorasOpen(true)} className="bg-green-500 text-white px-4 py-2 rounded">
           <FaPlus /> Agregar Horas
         </button>
       </div>
-  
-      {/* Modal para crear fechas */}
-      {isModalFechaOpen && (
-        <div className="modal-overlay">
-          <div className="modal-container">
-            <ModalCrearFecha
-              isOpen={isModalFechaOpen}
-              onClose={() => setIsModalFechaOpen(false)}
-              onFechaCreada={handleFechaCreada}
-            />
-          </div>
-        </div>
-      )}
-  
-      {/* Modal para agregar horas */}
-      {isModalHorasOpen && (
-        <div className="modal-overlay">
-          <div className="modal-container">
-            <ModalAgregarHoras
-              isOpen={isModalHorasOpen}
-              onClose={() => setIsModalHorasOpen(false)}
-              onHorasAgregadas={handleHorasAgregadas}
-              fechasDisponibles={fechasDisponibles}
-            />
-          </div>
-        </div>
-      )}
-  
-      <SearchBar
-        onSearch={setSearchText}
-        searchBy={searchBy}
+
+      {/* SearchFilterBar con filtros de estado y fecha */}
+      <SearchFilterBar
+        searchPlaceholder="Buscar por nombre o cédula..."
+        searchText={searchText}
+        onSearchTextChange={setSearchText}
+        searchByOptions={[
+          { value: 'nombre', label: 'Nombre' },
+          { value: 'cedula', label: 'Cédula' },
+        ]}
+        selectedSearchBy={searchBy}
         onSearchByChange={setSearchBy}
+        extraFilters={
+          <div className="flex flex-wrap items-end gap-2">
+            <select
+              value={filtroEstado}
+              onChange={(e) => setFiltroEstado(e.target.value)}
+              className="text-sm py-2 px-3 border border-gray-300 rounded-md w-44"
+            >
+              <option value="todos">Todos</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="Aprobada">Aprobada</option>
+              <option value="Cancelada">Cancelada</option>
+            </select>
+            <FiltroFecha fechaFiltro={fechaFiltro} onChangeFecha={setFechaFiltro} />
+          </div>
+        }
       />
-      <FiltroFecha fechaFiltro={fechaFiltro} onChangeFecha={setFechaFiltro} />
-      <FilterButtons onFilterChange={setFiltroEstado} />
-  
+
+      {/* Tabla de Citas */}
       <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50 sticky top-0 z-10">
@@ -239,32 +187,27 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {citasActuales.map((cita) => {
-              const fecha = cita.availableDate ? cita.availableDate.date : 'No disponible';
-              const hora = cita.horaCita ? cita.horaCita.hora : 'No disponible';
-  
-              return (
-                <tr key={cita.id}>
-                  <td className="px-4 py-2">{cita.id}</td>
-                  <td className="px-4 py-2">{`${fecha} ${hora}`}</td>
-                  <td className="px-4 py-2">{cita.user?.cedula || 'No disponible'}</td>
-                  <td className="px-4 py-2">{cita.user?.nombre || 'No disponible'}</td>
-                  <td className="px-4 py-2">{cita.status}</td>
-                  <td className="px-4 py-2 space-x-2">
-                    <button onClick={() => onVerCita(cita)} className="button-view">
-                      <FaEye />
-                    </button>
-                    <button onClick={() => abrirModalEliminar(cita.id)} className="button-delete">
-                      <FaTrash />
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
+            {citasActuales.map((cita) => (
+              <tr key={cita.id}>
+                <td className="px-4 py-2">{cita.id}</td>
+                <td className="px-4 py-2">{`${cita.availableDate?.date || 'No disponible'} ${cita.horaCita?.hora || ''}`}</td>
+                <td className="px-4 py-2">{cita.user?.cedula || 'No disponible'}</td>
+                <td className="px-4 py-2">{cita.user?.nombre || 'No disponible'}</td>
+                <td className="px-4 py-2">{cita.status}</td>
+                <td className="px-4 py-2 space-x-2">
+                  <button onClick={() => onVerCita(cita)} className="button-view">
+                    <FaEye />
+                  </button>
+                  <button onClick={() => abrirModalEliminar(cita.id)} className="button-delete">
+                    <FaTrash />
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
-  
+
       <Paginacion
         currentPage={currentPage}
         totalPages={totalPages}
@@ -272,9 +215,35 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+
       <ModalEliminar />
+
+      {isModalFechaOpen && (
+        <div className="modal-overlay">
+          <div className="modal-container">
+            <ModalCrearFecha
+              isOpen={isModalFechaOpen}
+              onClose={() => setIsModalFechaOpen(false)}
+              onFechaCreada={handleFechaCreada}
+            />
+          </div>
+        </div>
+      )}
+
+      {isModalHorasOpen && (
+        <div className="modal-overlay">
+          <div className="modal-container">
+            <ModalAgregarHoras
+              isOpen={isModalHorasOpen}
+              onClose={() => setIsModalHorasOpen(false)}
+              onHorasAgregadas={() => {}}
+              fechasDisponibles={fechasDisponibles}
+            />
+          </div>
+        </div>
+      )}
     </div>
-  );  
+  );
 };
 
 export default TablaCitas;

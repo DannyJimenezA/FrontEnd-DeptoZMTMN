@@ -1,154 +1,155 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { DecodedToken, Prorroga } from '../Types/Types';
 import { eliminarEntidad } from '../Helpers/eliminarEntidad';
 import Paginacion from '../components/Paginacion';
-import FilterButtons from '../components/FilterButton';
 import FiltroFecha from '../components/FiltroFecha';
-import SearchBar from '../components/SearchBar';
+import SearchFilterBar from '../components/SearchFilterBar';
 import { FaEye, FaTrash } from 'react-icons/fa';
 import ApiRoutes from '../components/ApiRoutes';
-import "../styles/TableButtons.css"
+import '../styles/TableButtons.css';
 
 interface ProrrogasTableProps {
   onVerProrroga: (prorroga: Prorroga) => void;
 }
 
-// Función para obtener las prórrogas desde la API
 const fetchProrrogas = async (): Promise<Prorroga[]> => {
   const token = localStorage.getItem('token');
-  try {
-    const response = await fetch(ApiRoutes.prorrogas, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+  const response = await fetch(ApiRoutes.prorrogas, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
 
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status} - ${response.statusText}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching prorrogas:', error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`Error: ${response.status} - ${response.statusText}`);
   }
+
+  return await response.json();
 };
 
 const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
   const [prorrogas, setProrrogas] = useState<Prorroga[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filtroEstado, setFiltroEstado] = useState<string>('todos');
+  const [filtroEstado, setFiltroEstado] = useState('todos');
   const [fechaFiltro, setFechaFiltro] = useState<Date | null>(null);
-  const [searchText, setSearchText] = useState<string>('');
-  const [searchBy, setSearchBy] = useState<string>('nombre');
+  const [searchText, setSearchText] = useState('');
+  const [searchBy, setSearchBy] = useState('nombre');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+
     if (token) {
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
         const hasPermission = decodedToken.permissions.some(
-          (permission: { action: string; resource: string }) =>
-            permission.action === 'GET' && permission.resource === 'prorroga'
+          (perm) => perm.action === 'GET' && perm.resource === 'prorroga'
         );
 
         if (!hasPermission) {
-          window.alert('No tienes permiso para acceder a esta página.');
-          navigate('/');
-          return;
+          alert('No tienes permiso para acceder a esta página.');
+          return navigate('/');
         }
       } catch (error) {
         console.error('Error al decodificar el token:', error);
-        window.alert('Ha ocurrido un error. Por favor, inicie sesión nuevamente.');
-        navigate('/login');
-        return;
+        alert('Ha ocurrido un error. Por favor, inicia sesión nuevamente.');
+        return navigate('/login');
       }
     } else {
-      window.alert('No se ha encontrado un token de acceso. Por favor, inicie sesión.');
-      navigate('/login');
-      return;
+      alert('No se ha encontrado un token de acceso. Por favor, inicia sesión.');
+      return navigate('/login');
     }
 
-    const obtenerProrrogas = async () => {
+    const cargarProrrogas = async () => {
       try {
-        const prorrogasFromAPI = await fetchProrrogas();
-        setProrrogas(prorrogasFromAPI);
+        const data = await fetchProrrogas();
+        setProrrogas(data);
       } catch (error) {
-        console.error('Error al obtener las prórrogas:', error);
+        console.error('Error al obtener prórrogas:', error);
         setError('Error al cargar las prórrogas.');
       } finally {
         setLoading(false);
       }
     };
 
-    obtenerProrrogas();
+    cargarProrrogas();
   }, [navigate]);
 
-  const obtenerProrrogasFiltradas = () => {
-    let prorrogasFiltradas = prorrogas;
+  const obtenerFiltradas = () => {
+    let resultado = prorrogas;
 
     if (filtroEstado !== 'todos') {
-      prorrogasFiltradas = prorrogasFiltradas.filter((prorroga) => prorroga.status === filtroEstado);
+      resultado = resultado.filter((p) => p.status === filtroEstado);
     }
 
     if (fechaFiltro) {
-      const fechaSeleccionada = fechaFiltro.toISOString().split('T')[0];
-      prorrogasFiltradas = prorrogasFiltradas.filter((prorroga) => prorroga.Date === fechaSeleccionada);
+      const fecha = fechaFiltro.toISOString().split('T')[0];
+      resultado = resultado.filter((p) => p.Date === fecha);
     }
 
     if (searchText) {
-      prorrogasFiltradas = prorrogasFiltradas.filter((prorroga) =>
+      resultado = resultado.filter((p) =>
         searchBy === 'nombre'
-          ? prorroga.user?.nombre?.toLowerCase().includes(searchText.toLowerCase())
-          : prorroga.user?.cedula?.toLowerCase().includes(searchText.toLowerCase())
+          ? p.user?.nombre?.toLowerCase().includes(searchText.toLowerCase())
+          : p.user?.cedula?.toLowerCase().includes(searchText.toLowerCase())
       );
     }
 
-    return prorrogasFiltradas;
+    return resultado;
   };
 
-  const prorrogasFiltradas = obtenerProrrogasFiltradas();
-  const indexUltimaProrroga = currentPage * itemsPerPage;
-  const indexPrimeraProrroga = indexUltimaProrroga - itemsPerPage;
-  const prorrogasActuales = prorrogasFiltradas.slice(indexPrimeraProrroga, indexUltimaProrroga);
-  const numeroPaginas = Math.ceil(prorrogasFiltradas.length / itemsPerPage);
+  const prorrogasFiltradas = obtenerFiltradas();
+  const indexFinal = currentPage * itemsPerPage;
+  const indexInicio = indexFinal - itemsPerPage;
+  const paginaActual = prorrogasFiltradas.slice(indexInicio, indexFinal);
+  const totalPaginas = Math.ceil(prorrogasFiltradas.length / itemsPerPage);
 
-  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Prorroga>("prorrogas", setProrrogas);
+  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Prorroga>('prorrogas', setProrrogas);
 
-  if (loading) {
-    return <p>Cargando prórrogas...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
+  if (loading) return <p>Cargando prórrogas...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="flex flex-col w-full h-full p-4">
       <h2 className="text-2xl font-semibold mb-4">Prórrogas de Concesiones</h2>
 
-      {/* Barra de búsqueda */}
-      <SearchBar
-        onSearch={setSearchText}
-        searchBy={searchBy}
+      {/* Filtros unificados */}
+      <SearchFilterBar
+        searchPlaceholder="Buscar por nombre o cédula..."
+        searchText={searchText}
+        onSearchTextChange={setSearchText}
+        searchByOptions={[
+          { value: 'nombre', label: 'Nombre' },
+          { value: 'cedula', label: 'Cédula' },
+        ]}
+        selectedSearchBy={searchBy}
         onSearchByChange={setSearchBy}
+        extraFilters={
+          <div className="flex flex-wrap items-end gap-2">
+            <select
+              value={filtroEstado}
+              onChange={(e) => setFiltroEstado(e.target.value)}
+              className="text-sm py-2 px-3 border border-gray-300 rounded-md w-44"
+            >
+              <option value="todos">Todos</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="Aprobada">Aprobada</option>
+              <option value="Denegada">Denegada</option>
+            </select>
+
+            <FiltroFecha fechaFiltro={fechaFiltro} onChangeFecha={setFechaFiltro} />
+          </div>
+        }
       />
-      {/* Filtro por fecha */}
-      <FiltroFecha fechaFiltro={fechaFiltro} onChangeFecha={setFechaFiltro} />
 
-      {/* Componente de filtro por estado */}
-      <FilterButtons onFilterChange={setFiltroEstado} />
-
-
-      <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg">
+      <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg max-h-[70vh]">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50 sticky top-0 z-10">
             <tr>
@@ -161,18 +162,18 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {prorrogasActuales.map((prorroga) => (
+            {paginaActual.map((prorroga) => (
               <tr key={prorroga.id}>
                 <td className="px-4 py-2">{prorroga.id}</td>
-                <td className="px-4 py-2">{prorroga.user?.nombre || 'Nombre no disponible'}</td>
-                <td className="px-4 py-2">{prorroga.user?.cedula}</td>
+                <td className="px-4 py-2">{prorroga.user?.nombre || 'No disponible'}</td>
+                <td className="px-4 py-2">{prorroga.user?.cedula || 'No disponible'}</td>
                 <td className="px-4 py-2">{prorroga.Date}</td>
                 <td className="px-4 py-2">{prorroga.status || 'Pendiente'}</td>
                 <td className="px-4 py-2 space-x-2">
                   <button onClick={() => onVerProrroga(prorroga)} className="button-view">
                     <FaEye />
                   </button>
-                  <button className="button-delete" onClick={() => abrirModalEliminar(prorroga.id)}>
+                  <button onClick={() => abrirModalEliminar(prorroga.id)} className="button-delete">
                     <FaTrash />
                   </button>
                 </td>
@@ -184,11 +185,12 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
 
       <Paginacion
         currentPage={currentPage}
-        totalPages={numeroPaginas}
+        totalPages={totalPaginas}
         itemsPerPage={itemsPerPage}
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+
       <ModalEliminar />
     </div>
   );

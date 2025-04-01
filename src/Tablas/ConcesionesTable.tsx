@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Concesion, DecodedToken } from '../Types/Types';
 import Paginacion from '../components/Paginacion';
-import FilterButtons from '../components/FilterButton';
 import FiltroFecha from '../components/FiltroFecha';
-import SearchBar from '../components/SearchBar';
+import SearchFilterBar from '../components/SearchFilterBar';
 import { eliminarEntidad } from '../Helpers/eliminarEntidad';
-import '../styles/Botones.css';
 import { FaEye, FaTrash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import ApiRoutes from '../components/ApiRoutes';
-import "../styles/TableButtons.css"
+import '../styles/TableButtons.css';
 
 interface ConcesionesTableProps {
   onVerConcesion: (concesion: Concesion) => void;
@@ -18,34 +16,29 @@ interface ConcesionesTableProps {
 
 const fetchConcesiones = async (): Promise<Concesion[]> => {
   const token = localStorage.getItem('token');
-  try {
-    const response = await fetch(ApiRoutes.concesiones, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+  const response = await fetch(ApiRoutes.concesiones, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
 
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status} - ${response.statusText}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching concesiones:', error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`Error: ${response.status} - ${response.statusText}`);
   }
+
+  return await response.json();
 };
 
 const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) => {
   const [concesiones, setConcesiones] = useState<Concesion[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filtroEstado, setFiltroEstado] = useState<string>('todos');
+  const [filtroEstado, setFiltroEstado] = useState('todos');
   const [fechaFiltro, setFechaFiltro] = useState<Date | null>(null);
-  const [searchText, setSearchText] = useState<string>('');
-  const [searchBy, setSearchBy] = useState<string>('nombre');
+  const [searchText, setSearchText] = useState('');
+  const [searchBy, setSearchBy] = useState('nombre');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const navigate = useNavigate();
@@ -56,32 +49,29 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
         const hasPermission = decodedToken.permissions.some(
-          (permission: { action: string; resource: string; }) => permission.action === 'GET' && permission.resource === 'concesion'
+          (permission) =>
+            permission.action === 'GET' && permission.resource === 'concesion'
         );
 
         if (!hasPermission) {
-          window.alert('No tienes permiso para acceder a esta página.');
-          navigate('/');
-          return;
+          alert('No tienes permiso para acceder a esta página.');
+          return navigate('/');
         }
       } catch (error) {
-        console.error('Error al decodificar el token:', error);
-        window.alert('Ha ocurrido un error. Por favor, inicie sesión nuevamente.');
-        navigate('/login');
-        return;
+        alert('Error con el token. Por favor, inicia sesión de nuevo.');
+        return navigate('/login');
       }
     } else {
-      window.alert('No se ha encontrado un token de acceso. Por favor, inicie sesión.');
-      navigate('/login');
-      return;
+      alert('No se encontró token. Inicia sesión.');
+      return navigate('/login');
     }
 
     const obtenerConcesiones = async () => {
       try {
-        const concesionesFromAPI = await fetchConcesiones();
-        setConcesiones(concesionesFromAPI);
-      } catch (error) {
-        console.error('Error al obtener las concesiones:', error);
+        const data = await fetchConcesiones();
+        setConcesiones(data);
+      } catch (err) {
+        console.error('Error al obtener concesiones:', err);
         setError('Error al cargar las concesiones.');
       } finally {
         setLoading(false);
@@ -92,35 +82,35 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
   }, [navigate]);
 
   const obtenerConcesionesFiltradas = () => {
-    let concesionesFiltradas = concesiones;
+    let resultado = concesiones;
 
     if (filtroEstado !== 'todos') {
-      concesionesFiltradas = concesionesFiltradas.filter((concesion) => concesion.status === filtroEstado);
+      resultado = resultado.filter((c) => c.status === filtroEstado);
     }
 
     if (fechaFiltro) {
-      const fechaSeleccionada = fechaFiltro.toISOString().split('T')[0];
-      concesionesFiltradas = concesionesFiltradas.filter((concesion) => concesion.Date === fechaSeleccionada);
+      const fecha = fechaFiltro.toISOString().split('T')[0];
+      resultado = resultado.filter((c) => c.Date === fecha);
     }
 
     if (searchText) {
-      concesionesFiltradas = concesionesFiltradas.filter((concesion) =>
+      resultado = resultado.filter((c) =>
         searchBy === 'nombre'
-          ? concesion.user?.nombre?.toLowerCase().includes(searchText.toLowerCase())
-          : concesion.user?.cedula?.toLowerCase().includes(searchText.toLowerCase())
+          ? c.user?.nombre?.toLowerCase().includes(searchText.toLowerCase())
+          : c.user?.cedula?.toLowerCase().includes(searchText.toLowerCase())
       );
     }
 
-    return concesionesFiltradas;
+    return resultado;
   };
 
   const concesionesFiltradas = obtenerConcesionesFiltradas();
-  const indexUltimaConcesion = currentPage * itemsPerPage;
-  const indexPrimeraConcesion = indexUltimaConcesion - itemsPerPage;
-  const concesionesActuales = concesionesFiltradas.slice(indexPrimeraConcesion, indexUltimaConcesion);
-  const numeroPaginas = Math.ceil(concesionesFiltradas.length / itemsPerPage);
+  const indexFinal = currentPage * itemsPerPage;
+  const indexInicio = indexFinal - itemsPerPage;
+  const paginaActual = concesionesFiltradas.slice(indexInicio, indexFinal);
+  const totalPaginas = Math.ceil(concesionesFiltradas.length / itemsPerPage);
 
-  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Concesion>("Concesiones", setConcesiones);
+  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Concesion>('Concesiones', setConcesiones);
 
   if (loading) return <p>Cargando concesiones...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -129,20 +119,35 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
     <div className="flex flex-col w-full h-full p-4">
       <h2 className="text-2xl font-semibold mb-4">Solicitudes de Concesión</h2>
 
-      {/* Barra de búsqueda */}
-      <SearchBar
-        onSearch={setSearchText}
-        searchBy={searchBy}
+      <SearchFilterBar
+        searchPlaceholder="Buscar por nombre o cédula..."
+        searchText={searchText}
+        onSearchTextChange={setSearchText}
+        searchByOptions={[
+          { value: 'nombre', label: 'Nombre' },
+          { value: 'cedula', label: 'Cédula' },
+        ]}
+        selectedSearchBy={searchBy}
         onSearchByChange={setSearchBy}
+        extraFilters={
+          <div className="flex flex-wrap items-end gap-2">
+            <select
+              value={filtroEstado}
+              onChange={(e) => setFiltroEstado(e.target.value)}
+              className="text-sm py-2 px-3 border border-gray-300 rounded-md w-44"
+            >
+              <option value="todos">Todos</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="Aprobada">Aprobada</option>
+              <option value="Denegada">Denegada</option>
+            </select>
+
+            <FiltroFecha fechaFiltro={fechaFiltro} onChangeFecha={setFechaFiltro} />
+          </div>
+        }
       />
 
-      {/* Filtro por fecha */}
-      <FiltroFecha fechaFiltro={fechaFiltro} onChangeFecha={setFechaFiltro} />
-
-      {/* Componente de filtro por estado */}
-      <FilterButtons onFilterChange={setFiltroEstado} />
-
-      <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg">
+      <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg max-h-[70vh]">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50 sticky top-0 z-10">
             <tr>
@@ -155,18 +160,18 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {concesionesActuales.map((concesion) => (
+            {paginaActual.map((concesion) => (
               <tr key={concesion.id}>
                 <td className="px-4 py-2">{concesion.id}</td>
-                <td className="px-4 py-2">{concesion.user?.nombre}</td>
-                <td className="px-4 py-2">{concesion.user?.cedula}</td>
+                <td className="px-4 py-2">{concesion.user?.nombre || 'No disponible'}</td>
+                <td className="px-4 py-2">{concesion.user?.cedula || 'No disponible'}</td>
                 <td className="px-4 py-2">{concesion.Date}</td>
                 <td className="px-4 py-2">{concesion.status || 'Pendiente'}</td>
                 <td className="px-4 py-2 space-x-2">
                   <button onClick={() => onVerConcesion(concesion)} className="button-view">
                     <FaEye />
                   </button>
-                  <button className="button-delete" onClick={() => abrirModalEliminar(concesion.id)}>
+                  <button onClick={() => abrirModalEliminar(concesion.id)} className="button-delete">
                     <FaTrash />
                   </button>
                 </td>
@@ -178,11 +183,12 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
 
       <Paginacion
         currentPage={currentPage}
-        totalPages={numeroPaginas}
+        totalPages={totalPaginas}
         itemsPerPage={itemsPerPage}
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+
       <ModalEliminar />
     </div>
   );

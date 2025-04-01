@@ -170,9 +170,8 @@
 
 import React, { useEffect, useState } from 'react';
 import Paginacion from '../components/Paginacion';
-import FilterButtons from '../components/FilterButton';
 import FiltroFecha from '../components/FiltroFecha';
-import SearchBar from '../components/SearchBar';
+import SearchFilterBar from '../components/SearchFilterBar';
 import { DecodedToken, Denuncia } from '../Types/Types';
 import { eliminarEntidad } from '../Helpers/eliminarEntidad';
 import { FaEye, FaTrash } from 'react-icons/fa';
@@ -225,7 +224,8 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
         const hasPermission = decodedToken.permissions.some(
-          (permission: { action: string; resource: string; }) => permission.action === 'GET' && permission.resource === 'denuncia'
+          (permission: { action: string; resource: string }) =>
+            permission.action === 'GET' && permission.resource === 'denuncia'
         );
 
         if (!hasPermission) {
@@ -293,42 +293,51 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
     onVerDenuncia(denuncia);
   };
 
-  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Denuncia>("denuncia", setDenuncias);
+  const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Denuncia>('denuncia', setDenuncias);
 
-  if (loading) {
-    return <p>Cargando denuncias...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
+  if (loading) return <p>Cargando denuncias...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="flex flex-col w-full h-full p-4">
       <h2 className="text-2xl font-semibold mb-4">Listado de Denuncias</h2>
 
-      {/* Barra de búsqueda */}
-      <SearchBar
-        onSearch={setSearchText}
-        searchBy={searchBy}
+      <SearchFilterBar
+        searchPlaceholder="Buscar por nombre o cédula..."
+        searchText={searchText}
+        onSearchTextChange={setSearchText}
+        searchByOptions={[
+          { value: 'nombreDenunciante', label: 'Nombre' },
+          { value: 'cedulaDenunciante', label: 'Cédula' },
+        ]}
+        selectedSearchBy={searchBy}
         onSearchByChange={setSearchBy}
+        extraFilters={
+          <div className="flex flex-wrap items-end gap-2">
+            <select
+              value={filtroEstado}
+              onChange={(e) => setFiltroEstado(e.target.value)}
+              className="text-sm py-2 px-3 border border-gray-300 rounded-md w-44"
+            >
+              <option value="todos">Todos</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="Aprobada">Aprobada</option>
+              <option value="Denegada">Denegada</option>
+            </select>
+
+            <FiltroFecha fechaFiltro={fechaFiltro} onChangeFecha={setFechaFiltro} />
+          </div>
+        }
       />
-      {/* Filtro por fecha */}
-      <FiltroFecha fechaFiltro={fechaFiltro} onChangeFecha={setFechaFiltro} />
 
-      {/* Componente de filtro por estado */}
-      <FilterButtons onFilterChange={setFiltroEstado} />
-
-
-      {/* Contenedor de la tabla con overflow y ajuste de tamaño */}
-      <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg">
+      <div className="flex-1 overflow-auto bg-white shadow-lg rounded-lg max-h-[70vh]">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50 sticky top-0 z-10">
             <tr>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">ID</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Nombre del Denunciante</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Cédula del Denunciante</th>
-              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Fecha Creacion</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Fecha Creación</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Tipo de Denuncia</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Lugar de Denuncia</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-500 uppercase">Estado</th>
@@ -359,7 +368,6 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
         </table>
       </div>
 
-      {/* Componente de Paginación */}
       <Paginacion
         currentPage={currentPage}
         totalPages={numeroPaginas}
@@ -367,6 +375,7 @@ const TablaDenuncias: React.FC<TablaDenunciasProps> = ({ onVerDenuncia }) => {
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+
       <ModalEliminar />
     </div>
   );
