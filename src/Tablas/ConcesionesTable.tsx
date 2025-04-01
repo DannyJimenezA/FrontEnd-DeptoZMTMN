@@ -49,7 +49,7 @@ const ConcesionesTable: React.FC<ConcesionesTableProps> = ({ onVerConcesion }) =
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
         const hasPermission = decodedToken.permissions.some(
-          (permission) =>
+          (permission: { action: string; resource: string; }) =>
             permission.action === 'GET' && permission.resource === 'concesion'
         );
 

@@ -9,20 +9,19 @@ import TablaProrrogas from '../Tablas/ProrrogasTable';
 import TablaRevisionPlanos from '../Tablas/RevisionPlanosTable';
 import TablaUsuarios from '../Tablas/UsersTable';
 import TablaSolicitudExpediente from '../Tablas/ExpedientesTable';
+
 import TablaUsoPrecario from '../Tablas/UsoPrecarioTable';
 import TablaConcesiones from '../Tablas/ConcesionesTable';
 import { jwtDecode } from 'jwt-decode';
-import {
-  DecodedToken, Denuncia, Concesion, Precario, CopiaExpediente,
-  RevisionPlano, Prorroga, Role, Usuario, Cita
-} from '../Types/Types';
+import { DecodedToken, Denuncia, Concesion, Precario, CopiaExpediente, RevisionPlano, Prorroga, Role, Usuario } from '../Types/Types'; // Importar las interfaces
 import DetalleUsoPrecario from '../TablaVista/DetallePrecario';
 import DetalleExpediente from '../TablaVista/DetalleExpediente';
 import DetalleRevisionPlano from '../TablaVista/DetalleRevisionPlano';
 import DetalleProrroga from '../TablaVista/DetalleProrroga';
 import DetalleCita from '../TablaVista/DetalleCita';
 import '../styles/Botones.css';
-import LogoutButton from '../components/LogoutButton';
+import LogoutButton from '../components/LogoutButton';  // Importar el componente LogoutButton
+import { Cita } from '../Types/Types';
 import TablaCitas from '../Tablas/AppointmentTable';
 import RolesTable from '../Tablas/RolesTable';
 import CrearRolForm from '../Tablas/CrearRolForm';
@@ -32,7 +31,7 @@ import GestionDenunciasTable from '../Tablas/GestionDenunciasTable';
 import TablaDenunciasDashboard from '../Tablas/TablaDenuncia';
 import ApiRoutes from '../components/ApiRoutes';
 import DashboardHome from './DashboardHome';
-
+import Swal from 'sweetalert2';
 
 
 const AdminDashboard: React.FC = () => {
@@ -45,38 +44,57 @@ const AdminDashboard: React.FC = () => {
   const [prorrogaSeleccionada, setProrrogaSeleccionada] = useState<Prorroga | null>(null);
   const [citaSeleccionada, setCitaSeleccionada] = useState<Cita | null>(null);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<Usuario | null>(null);
-  const [rolSeleccionado, setRolSeleccionado] = useState<Role | null>(null);
+  const [rolSeleccionado, setRolSeleccionado] = useState<Role | null>(null); // Estado para el rol seleccionado
   const [mostrarFormularioRol, setMostrarFormularioRol] = useState(false);
   const navigate = useNavigate();
 
+
   useEffect(() => {
     const token = localStorage.getItem('token');
+  
     if (token) {
       try {
-        const decoded = jwtDecode<DecodedToken>(token);
-        if (!decoded.permissions || decoded.permissions.length === 0) {
-          alert('Acceso denegado.');
+        const decodedToken = jwtDecode<DecodedToken>(token);
+        
+        // Verifica que tenga al menos un permiso
+        if (!decodedToken.permissions || decodedToken.permissions.length === 0) {
+          window.alert('Acceso limitado. No tiene permisos para acceder a este componente.');
+
+
+  
+
+  
           navigate('/');
         }
-      } catch {
-        alert('Token inválido. Inicie sesión nuevamente.');
+      } catch (error) {
+        console.error('Error al decodificar el token:', error);
+        window.alert('Ha ocurrido un error. Por favor, inicie sesión nuevamente.');
         navigate('/login');
       }
     } else {
-      alert('Debe iniciar sesión.');
+      window.alert('No se ha encontrado un token de acceso. Por favor, inicie sesión.');
       navigate('/login');
     }
   }, [navigate]);
 
-  const manejarVerDenuncia = (d: Denuncia) => setDenunciaSeleccionada(d);
-  const manejarVerConcesion = (c: Concesion) => setConcesionSeleccionada(c);
-  const manejarVerPrecario = (p: Precario) => setPrecarioSeleccionado(p);
-  const manejarVerExpediente = (e: CopiaExpediente) => setExpedienteSeleccionado(e);
-  const manejarVerRevisionPlano = (r: RevisionPlano) => setRevisionPlanoSeleccionado(r);
-  const manejarVerProrroga = (p: Prorroga) => setProrrogaSeleccionada(p);
-  const manejarVerCita = (c: Cita) => setCitaSeleccionada(c);
-  const manejarVerUsuario = (u: Usuario) => setUsuarioSeleccionado(u);
-  const manejarAsignarPermisos = (rol: Role) => setRolSeleccionado(rol);
+  // Función para mostrar el formulario de crear rol
+  const manejarMostrarFormularioCrearRol = () => {
+    setMostrarFormularioRol(true);
+    setRolSeleccionado(null);  // Asegurarse de que no se esté editando un rol
+  };
+
+  // // Función para ocultar el formulario de crear rol
+  // const manejarOcultarFormularioCrearRol = () => {
+  //   setMostrarFormularioRol(false);
+  // };
+
+  // // Función para editar los permisos del rol seleccionado
+  // const manejarEditarRol = (rol: Role) => {
+  //   setRolSeleccionado(rol);
+  //   setMostrarFormularioRol(false);  // Asegurarse de que no esté en modo de creación
+  // };
+
+  // Función para volver a la tabla de roles
   const manejarVolverRoles = () => {
     setMostrarFormularioRol(false);
     setRolSeleccionado(null);
@@ -95,10 +113,8 @@ const AdminDashboard: React.FC = () => {
   const manejarCambioEstadoCita = async (id: number, nuevoEstado: string) => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Token de autenticación no encontrado.');
-      }
-
+      if (!token) throw new Error('Token de autenticación no encontrado.');
+  
       const response = await fetch(`${ApiRoutes.citas.crearcita}/${id}/status`, {
         method: 'PUT',
         headers: {
@@ -107,29 +123,31 @@ const AdminDashboard: React.FC = () => {
         },
         body: JSON.stringify({ status: nuevoEstado }),
       });
-
-      if (!response.ok) {
-        throw new Error('Error al actualizar el estado de la cita');
-      }
-
+  
+      if (!response.ok) throw new Error('Error al actualizar el estado de la cita');
+  
       if (citaSeleccionada && citaSeleccionada.id === id) {
         setCitaSeleccionada({ ...citaSeleccionada, status: nuevoEstado });
       }
-
-      alert(`El estado de la cita ha sido actualizado a: ${nuevoEstado}`);
+  
+      await Swal.fire({
+        title: 'Estado actualizado',
+        text: `La cita ha sido ${nuevoEstado.toLowerCase()} correctamente.`,
+        icon: 'success',
+        confirmButtonColor: '#16a34a',
+        confirmButtonText: 'Aceptar'
+      });
     } catch (error) {
       console.error('Error al cambiar el estado de la cita:', error);
-      alert('Hubo un error al intentar cambiar el estado de la cita.');
+      Swal.fire('Error', 'Hubo un error al intentar cambiar el estado de la cita.', 'error');
     }
   };
 
   const manejarCambioEstadoConcesion = async (id: number, nuevoEstado: string) => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Token de autenticación no encontrado.');
-      }
-
+      if (!token) throw new Error('Token de autenticación no encontrado.');
+  
       const response = await fetch(`${ApiRoutes.concesiones}/${id}/status`, {
         method: 'PUT',
         headers: {
@@ -138,29 +156,26 @@ const AdminDashboard: React.FC = () => {
         },
         body: JSON.stringify({ status: nuevoEstado }),
       });
-
-      if (!response.ok) {
-        throw new Error('Error al actualizar el estado de la concesión');
-      }
-
+  
+      if (!response.ok) throw new Error('Error al actualizar el estado de la concesión');
+  
       if (concesionSeleccionada && concesionSeleccionada.id === id) {
         setConcesionSeleccionada({ ...concesionSeleccionada, status: nuevoEstado });
       }
-
-      alert(`El estado de la concesión ha sido actualizado a: ${nuevoEstado}`);
+  
+      Swal.fire('Estado actualizado', `La concesión ha sido ${nuevoEstado.toLowerCase()} correctamente.`, 'success');
     } catch (error) {
       console.error('Error al cambiar el estado de la concesión:', error);
-      alert('Hubo un error al intentar cambiar el estado de la concesión.');
+      Swal.fire('Error', 'Hubo un error al intentar cambiar el estado de la concesión.', 'error');
     }
   };
-
   const manejarCambioEstadoExpediente = async (id: number, nuevoEstado: string) => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('Token de autenticación no encontrado.');
       }
-
+  
       const response = await fetch(`${ApiRoutes.expedientes}/${id}/status`, {
         method: 'PUT',
         headers: {
@@ -169,22 +184,21 @@ const AdminDashboard: React.FC = () => {
         },
         body: JSON.stringify({ status: nuevoEstado }),
       });
-
+  
       if (!response.ok) {
         throw new Error('Error al actualizar el estado del expediente');
       }
-
+  
       if (expedienteSeleccionado && expedienteSeleccionado.idExpediente === id) {
         setExpedienteSeleccionado({ ...expedienteSeleccionado, status: nuevoEstado });
       }
-
-      alert(`El estado del expediente ha sido actualizado a: ${nuevoEstado}`);
+  
+      Swal.fire('Estado actualizado', `El expediente ha sido ${nuevoEstado.toLowerCase()} correctamente.`, 'success');
     } catch (error) {
       console.error('Error al cambiar el estado del expediente:', error);
-      alert('Hubo un error al intentar cambiar el estado del expediente.');
+      Swal.fire('Error', 'Hubo un error al intentar cambiar el estado del expediente.', 'error');
     }
   };
-
   const manejarCambioEstadoPrecario = async (id: number, nuevoEstado: string) => {
     try {
       const token = localStorage.getItem('token');
@@ -198,21 +212,31 @@ const AdminDashboard: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ status: nuevoEstado }), // Asegúrate de que el campo coincide con la API
+        body: JSON.stringify({ status: nuevoEstado }),
       });
   
       if (!response.ok) {
         throw new Error('Error al actualizar el estado del uso precario');
       }
   
-      // Si el estado fue actualizado exitosamente, actualiza el estado local si es necesario
-      alert(`El estado del uso precario ha sido actualizado a: ${nuevoEstado}`);
+      if (precarioSeleccionado && precarioSeleccionado.id === id) {
+        setPrecarioSeleccionado({ ...precarioSeleccionado, status: nuevoEstado });
+      }
+  
+      await Swal.fire({
+        icon: 'success',
+        title: 'Estado actualizado',
+        text: `El uso precario ha sido ${nuevoEstado.toLowerCase()} correctamente.`,
+      });
     } catch (error) {
       console.error('Error al cambiar el estado del uso precario:', error);
-      alert('Hubo un error al intentar cambiar el estado del uso precario.');
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un error al intentar cambiar el estado del uso precario.',
+      });
     }
   };
-  
   const manejarCambioEstadoDenuncia = async (id: number, nuevoEstado: string) => {
     try {
       const token = localStorage.getItem('token');
@@ -237,10 +261,18 @@ const AdminDashboard: React.FC = () => {
         setDenunciaSeleccionada({ ...denunciaSeleccionada, status: nuevoEstado });
       }
   
-      alert(`El estado de la denuncia ha sido actualizado a: ${nuevoEstado}`);
+      await Swal.fire({
+        icon: 'success',
+        title: 'Estado actualizado',
+        text: `La denuncia ha sido ${nuevoEstado.toLowerCase()} correctamente.`,
+      });
     } catch (error) {
       console.error('Error al cambiar el estado de la denuncia:', error);
-      alert('Hubo un error al intentar cambiar el estado de la denuncia.');
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un error al intentar cambiar el estado de la denuncia.',
+      });
     }
   };
 
@@ -268,43 +300,61 @@ const AdminDashboard: React.FC = () => {
         setRevisionPlanoSeleccionado({ ...revisionPlanoSeleccionado, status: nuevoEstado });
       }
   
-      alert(`El estado de la revisión de plano ha sido actualizado a: ${nuevoEstado}`);
+      await Swal.fire({
+        icon: 'success',
+        title: 'Estado actualizado',
+        text: `La revisión del plano ha sido ${nuevoEstado.toLowerCase()} correctamente.`,
+      });
     } catch (error) {
       console.error('Error al cambiar el estado de la revisión de plano:', error);
-      alert('Hubo un error al intentar cambiar el estado de la revisión de plano.');
-    }
-  };
-  
-  const manejarCambioEstadoProrroga = async (id: number, nuevoEstado: string) => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Token de autenticación no encontrado.');
-      }
-  
-      const response = await fetch(`${ApiRoutes.prorrogas}/${id}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ status: nuevoEstado }),
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un error al intentar cambiar el estado de la revisión del plano.',
       });
-  
-      if (!response.ok) {
-        throw new Error('Error al actualizar el estado de la prórroga');
-      }
-  
-      if (prorrogaSeleccionada && prorrogaSeleccionada.id === id) {
-        setProrrogaSeleccionada({ ...prorrogaSeleccionada, status: nuevoEstado });
-      }
-  
-      alert(`El estado de la prórroga ha sido actualizado a: ${nuevoEstado}`);
-    } catch (error) {
-      console.error('Error al cambiar el estado de la prórroga:', error);
-      alert('Hubo un error al intentar cambiar el estado de la prórroga.');
     }
   };
+
+
+
+ const manejarCambioEstadoProrroga = async (id: number, nuevoEstado: string) => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('Token de autenticación no encontrado.');
+    }
+
+    const response = await fetch(`${ApiRoutes.prorrogas}/${id}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status: nuevoEstado }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al actualizar el estado de la prórroga');
+    }
+
+    if (prorrogaSeleccionada && prorrogaSeleccionada.id === id) {
+      setProrrogaSeleccionada({ ...prorrogaSeleccionada, status: nuevoEstado });
+    }
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Estado actualizado',
+      text: `La prórroga ha sido ${nuevoEstado.toLowerCase()} correctamente.`,
+    });
+  } catch (error) {
+    console.error('Error al cambiar el estado de la prórroga:', error);
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Hubo un error al intentar cambiar el estado de la prórroga.',
+    });
+  }
+};
 
   const manejarCambioEstadoUsuario = async (id: number, nuevoEstado: boolean) => {
     try {
@@ -344,46 +394,140 @@ const AdminDashboard: React.FC = () => {
   
 
   const renderSection = () => {
-    if (denunciaSeleccionada) return <DetalleDenuncia denuncia={denunciaSeleccionada} onVolver={() => setDenunciaSeleccionada(null)} />;
-    if (concesionSeleccionada) return <DetalleConcesion concesion={concesionSeleccionada} onVolver={() => setConcesionSeleccionada(null)} />;
-    if (precarioSeleccionado) return <DetalleUsoPrecario precario={precarioSeleccionado} onVolver={() => setPrecarioSeleccionado(null)} />;
-    if (expedienteSeleccionado) return <DetalleExpediente expediente={expedienteSeleccionado} onVolver={() => setExpedienteSeleccionado(null)} />;
-    if (revisionPlanoSeleccionado) return <DetalleRevisionPlano revisionPlano={revisionPlanoSeleccionado} onVolver={() => setRevisionPlanoSeleccionado(null)} />;
-    if (prorrogaSeleccionada) return <DetalleProrroga prorroga={prorrogaSeleccionada} onVolver={() => setProrrogaSeleccionada(null)} />;
-    if (citaSeleccionada) return <DetalleCita cita={citaSeleccionada} onVolver={() => setCitaSeleccionada(null)} />;
-    if (usuarioSeleccionado) return <DetalleUsuario usuario={usuarioSeleccionado} onVolver={() => setUsuarioSeleccionado(null)} />;
-    if (mostrarFormularioRol) return <CrearRolForm onRolCreado={manejarVolverRoles} onCancelar={manejarVolverRoles} />;
-    if (rolSeleccionado) return <AsignarPermisosForm rol={rolSeleccionado} onCancelar={manejarVolverRoles} />;
+    if (denunciaSeleccionada)
+      return (
+        <DetalleDenuncia
+          denuncia={denunciaSeleccionada}
+          onVolver={() => setDenunciaSeleccionada(null)}
+          onEstadoCambiado={manejarCambioEstadoDenuncia} // ✅ Añadido
+        />
+      );
+    
+
+    if (concesionSeleccionada)
+      return (
+        <DetalleConcesion
+          concesion={concesionSeleccionada}
+          onVolver={() => setConcesionSeleccionada(null)}
+          onEstadoCambiado={manejarCambioEstadoConcesion} // ✅ Añadido
+        />
+      );
+    
+
+    if (precarioSeleccionado)
+      return (
+        <DetalleUsoPrecario
+          precario={precarioSeleccionado}
+          onVolver={() => setPrecarioSeleccionado(null)}
+          onEstadoCambiado={manejarCambioEstadoPrecario} // ✅ Añadido
+        />
+      );
+    
+
+    if (expedienteSeleccionado)
+      return (
+        <DetalleExpediente
+          expediente={expedienteSeleccionado}
+          onVolver={() => setExpedienteSeleccionado(null)}
+          onEstadoCambiado={manejarCambioEstadoExpediente} // ✅ Añadido
+        />
+      );
+    
+
+    if (revisionPlanoSeleccionado)
+      return (
+        <DetalleRevisionPlano
+          revisionPlano={revisionPlanoSeleccionado}
+          onVolver={() => setRevisionPlanoSeleccionado(null)}
+          onEstadoCambiado={manejarCambioEstadoRevisionPlano} // ✅ Añadido
+        />
+      );
+    
+
+    if (prorrogaSeleccionada)
+      return (
+        <DetalleProrroga
+          prorroga={prorrogaSeleccionada}
+          onVolver={() => setProrrogaSeleccionada(null)}
+          onEstadoCambiado={manejarCambioEstadoProrroga} // ✅ Agregado
+        />
+      );
+    
+
+    if (citaSeleccionada)
+      return (
+        <DetalleCita
+          cita={citaSeleccionada}
+          onVolver={() => setCitaSeleccionada(null)}
+          onEstadoCambiado={manejarCambioEstadoCita} // ✅ Agregado
+        />
+      );
+    
+
+    if (mostrarFormularioRol) {
+      return <CrearRolForm onRolCreado={manejarVolverRoles} onCancelar={manejarVolverRoles} />;
+    }
+
+  if (usuarioSeleccionado)
+  return (
+    <DetalleUsuario
+      usuario={usuarioSeleccionado}
+      onVolver={() => setUsuarioSeleccionado(null)}
+      onEstadoCambiado={manejarCambioEstadoUsuario} // ✅ aquí está el fix
+    />
+  );
+
+
+    if (rolSeleccionado) {
+      return <AsignarPermisosForm rol={rolSeleccionado} onCancelar={manejarVolverRoles}/>;
+    }
+
+    if (activeSection === 'roles') {
+      return <RolesTable onCrearRol={manejarMostrarFormularioCrearRol} onAsignarPermisos={manejarAsignarPermisos} />;
+    }
+    
 
     switch (activeSection) {
-      case 'citas': return <TablaCitas onVerCita={manejarVerCita} />;
-      case 'prorrogas': return <TablaProrrogas onVerProrroga={manejarVerProrroga} />;
-      case 'revision-planos': return <TablaRevisionPlanos onVerRevisionPlano={manejarVerRevisionPlano} />;
-      case 'users': return <TablaUsuarios onVerUsuario={manejarVerUsuario} />;
-      case 'solicitudes-expedientes': return <TablaSolicitudExpediente onVerExpediente={manejarVerExpediente} />;
-      case 'uso-precario': return <TablaUsoPrecario onVerPrecario={manejarVerPrecario} />;
-      case 'concesiones': return <TablaConcesiones onVerConcesion={manejarVerConcesion} />;
-      case 'denuncias': return <DenunciasTable onVerDenuncia={manejarVerDenuncia} />;
-      case 'gestion-denuncias': return <GestionDenunciasTable />;
-      case 'roles': return <RolesTable onCrearRol={() => setMostrarFormularioRol(true)} onAsignarPermisos={manejarAsignarPermisos} />;
-      case 'denuncias-dashboard': return <TablaDenunciasDashboard />;
-      default: return <DashboardHome />;
+      case 'citas':
+        return <TablaCitas onVerCita={manejarVerCita} />;
+      case 'prorrogas':
+        return <TablaProrrogas onVerProrroga={manejarVerProrroga} />;
+      case 'revision-planos':
+        return <TablaRevisionPlanos onVerRevisionPlano={manejarVerRevisionPlano} />;
+      case 'users':
+        return <TablaUsuarios onVerUsuario={manejarVerUsuario}/>;
+      case 'solicitudes-expedientes':
+        return <TablaSolicitudExpediente onVerExpediente={manejarVerExpediente} />;
+      case 'uso-precario':
+        return <TablaUsoPrecario onVerPrecario={manejarVerPrecario} />;
+      case 'concesiones':
+        return <TablaConcesiones onVerConcesion={manejarVerConcesion} />;
+      case 'denuncias':
+        return <DenunciasTable onVerDenuncia={manejarVerDenuncia} />;
+      case 'gestion-denuncias':
+        return <GestionDenunciasTable/>;
+      case 'denuncias': // Añadido: Renderiza la tabla de denuncias
+        return <TablaDenunciasDashboard />;
+      default:
+        return <DashboardHome/>;
     }
   };
 
+
   const menuItems = [
     { id: 'home', icon: Home, label: 'Inicio' },
-    { id: 'citas', icon: BarChart2, label: 'Citas' },
-    { id: 'concesiones', icon: BarChart2, label: 'Concesiones' },
-    { id: 'prorrogas', icon: BarChart2, label: 'Prórrogas' },
-    { id: 'denuncias', icon: BarChart2, label: 'Denuncias' },
-    { id: 'solicitudes-expedientes', icon: BarChart2, label: 'Expedientes' },
-    { id: 'uso-precario', icon: BarChart2, label: 'Uso Precario' },
-    { id: 'revision-planos', icon: BarChart2, label: 'Revisión de Planos' },
-    { id: 'users', icon: Users, label: 'Usuarios' },
+    { id: 'citas', icon: BarChart2, label: 'Citas', endpoint: ApiRoutes.citas.crearcita },
+    { id: 'concesiones', icon: BarChart2, label: 'Concesiones', endpoint: ApiRoutes.concesiones },
+    { id: 'prorrogas', icon: BarChart2, label: 'Prórrogas', endpoint: ApiRoutes.prorrogas },
+    { id: 'denuncias', icon: BarChart2, label: 'Denuncias', endpoint: ApiRoutes.denuncias },
+    { id: 'solicitudes-expedientes', icon: BarChart2, label: 'Expedientes', endpoint: ApiRoutes.expedientes },
+    { id: 'uso-precario', icon: BarChart2, label: 'Uso Precario', endpoint: ApiRoutes.precarios },
+    { id: 'revision-planos', icon: BarChart2, label: 'Revisión de Planos', endpoint: ApiRoutes.planos },
+    { id: 'users', icon: Users, label: 'Usuarios'},
     { id: 'roles', icon: Settings, label: 'Gestión de Roles' },
     { id: 'gestion-denuncias', icon: Settings, label: 'Gestión de Denuncias' },
   ];
+  
 
   return (
     <div className="dashboard">
@@ -408,6 +552,9 @@ const AdminDashboard: React.FC = () => {
             >
               <item.icon size={20} />
               <span>{item.label}</span>
+              {/* {item.endpoint && (
+        <PendingCountBadge endpoint={item.endpoint} status="Pendiente" />
+      )} */}
             </button>
           ))}
         </nav>

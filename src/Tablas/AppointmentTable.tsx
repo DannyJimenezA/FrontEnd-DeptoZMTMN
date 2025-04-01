@@ -103,6 +103,10 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
 
   const { abrirModalEliminar, ModalEliminar } = eliminarEntidad<Cita>("appointments", setCitas);
 
+  if (loading) {
+    return <p className="text-gray-500">Cargando citas...</p>;
+  }
+
   const citasFiltradas = citas.filter((cita) => {
     const matchEstado = filtroEstado === 'todos' || cita.status === filtroEstado;
     const matchFecha = !fechaFiltro || cita.availableDate.date === fechaFiltro.toISOString().split('T')[0];
@@ -131,9 +135,12 @@ const TablaCitas: React.FC<CitasTableProps> = ({ onVerCita }) => {
       .then((data) => setFechasDisponibles(data));
   };
 
+
+
   return (
     <div className="flex flex-col w-full h-full p-4">
       <h2 className="text-2xl font-semibold mb-4">Citas Programadas</h2>
+      {error && <p className="text-red-500 mb-4">{error}</p>}
 
       {/* Botones de Modal */}
       <div className="flex space-x-4 mb-4">

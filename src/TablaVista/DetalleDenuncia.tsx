@@ -233,3 +233,4 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, o
   );
 };
 
+export default DetalleDenuncia;

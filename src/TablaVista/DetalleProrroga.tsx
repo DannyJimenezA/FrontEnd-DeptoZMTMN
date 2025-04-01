@@ -63,19 +63,19 @@ const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver, o
       showCancelButton: true,
       confirmButtonText: 'Aceptar',
       cancelButtonText: 'Cancelar',
-      reverseButtons: false, // ✅ Ahora Aceptar queda a la izquierda
+      reverseButtons: true,
       customClass: {
         confirmButton: 'bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700',
         cancelButton: 'bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 ml-2'
       },
       buttonsStyling: false
     });
-  
+
     if (result.isConfirmed) {
       onEstadoCambiado(prorroga.id, nuevoEstado);
     }
   };
-  
+
   return (
     <div className="detalle-tabla">
       <h3>Detalles de la Prórroga</h3>

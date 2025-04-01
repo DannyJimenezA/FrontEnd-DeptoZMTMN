@@ -55,7 +55,7 @@ const RevisionplanoTable: React.FC<RevisionplanoTableProps> = ({ onVerRevisionPl
     try {
       const decodedToken = jwtDecode<DecodedToken>(token);
       const hasPermission = decodedToken.permissions.some(
-        (p) => p.action === 'GET' && p.resource === 'revisionplano'
+        (p: { action: string; resource: string; }) => p.action === 'GET' && p.resource === 'revisionplano'
       );
       if (!hasPermission) {
         alert('No tienes permiso para acceder a esta página.');

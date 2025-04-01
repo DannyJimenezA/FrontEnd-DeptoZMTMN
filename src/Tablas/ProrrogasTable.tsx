@@ -50,7 +50,7 @@ const TablaProrrogas: React.FC<ProrrogasTableProps> = ({ onVerProrroga }) => {
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
         const hasPermission = decodedToken.permissions.some(
-          (perm) => perm.action === 'GET' && perm.resource === 'prorroga'
+          (perm: { action: string; resource: string; }) => perm.action === 'GET' && perm.resource === 'prorroga'
         );
 
         if (!hasPermission) {
