@@ -63,22 +63,50 @@ const DetalleProrroga: React.FC<DetalleProrrogaProps> = ({ prorroga, onVolver, o
       showCancelButton: true,
       confirmButtonText: 'Aceptar',
       cancelButtonText: 'Cancelar',
-      reverseButtons: true,
+      reverseButtons: false, // ✅ Aceptar a la izquierda, Cancelar a la derecha
       customClass: {
-        confirmButton: 'bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700',
-        cancelButton: 'bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 ml-2'
+        confirmButton: 'btn-aceptar',
+        cancelButton: 'btn-cancelar',
+        actions: 'botones-horizontales'
       },
       buttonsStyling: false
     });
-
+  
     if (result.isConfirmed) {
       onEstadoCambiado(prorroga.id, nuevoEstado);
     }
   };
+  
 
   return (
     <div className="detalle-tabla">
       <h3>Detalles de la Prórroga</h3>
+      <style>
+{`
+  .btn-aceptar {
+    background-color: #16a34a !important;
+    color: white !important;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+  }
+  .btn-cancelar {
+    background-color: #dc2626 !important;
+    color: white !important;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+  }
+  .botones-horizontales {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+`}
+</style>
+
       <div className="detalle-contenido">
         <div className="detalle-info">
           <p><strong>ID:</strong> {prorroga.id}</p>
