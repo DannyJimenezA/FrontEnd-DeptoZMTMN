@@ -4,52 +4,53 @@ import axios, { AxiosError } from 'axios';
 import ApiRoutes from '../components/ApiRoutes';
 
 const ConfirmAccount = () => {
-  const { token } = useParams<{ token: string }>(); // Captura el token desde la URL
-  const [message, setMessage] = useState<string>(''); // Estado para el mensaje
-  const [loading, setLoading] = useState<boolean>(true); // Estado para indicar carga
-  // const navigate = useNavigate(); // Para redirigir al usuario
+  const { token } = useParams<{ token: string }>();
+  const [message, setMessage] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
+  const [tokenValid, setTokenValid] = useState<boolean>(false);
 
   useEffect(() => {
-    const confirmAccount = async () => {
-      try {
-        // Verificar que el token esté presente
-        if (!token) {
-          setMessage('El token no fue proporcionado.');
-          setLoading(false);
-          return;
-        }
+    const validateToken = async () => {
+      if (!token) {
+        setMessage('Token no proporcionado.');
+        setLoading(false);
+        return;
+      }
 
-        // Realizar la solicitud al backend
-        const response = await axios.get(`${ApiRoutes.urlBase}/users/confirm/${token}`);
-        setMessage(response.data.message || 'Cuenta confirmada con éxito.'); // Mensaje en caso de éxito
+      try {
+        await axios.get(`${ApiRoutes.urlBase}/users/confirm/validate?token=${token}`);
+        setTokenValid(true);
+        setMessage('Token válido. Puedes confirmar tu cuenta.');
       } catch (error) {
         const err = error as AxiosError<{ message: string }>;
-
-        // Manejo de errores
-        if (err.response && err.response.data) {
-          setMessage(err.response.data.message || 'Error al confirmar la cuenta.');
-        } else if (error instanceof Error) {
-          setMessage(`Error inesperado: ${error.message}`);
-        } else {
-          setMessage('Error al conectar con el servidor.');
-        }
+        setMessage(err.response?.data?.message || 'Error al validar el token.');
       } finally {
-        setLoading(false); // Finalizar estado de carga
+        setLoading(false);
       }
     };
 
-    confirmAccount(); // Llamar a la función
+    validateToken();
   }, [token]);
+
+  const handleConfirmAccount = async () => {
+    try {
+      const res = await axios.post(`${ApiRoutes.urlBase}/users/confirm`, { token });
+      setMessage(res.data.message || 'Cuenta activada con éxito.');
+      setTokenValid(false); // Oculta el botón luego de confirmar
+    } catch (error) {
+      const err = error as AxiosError<{ message: string }>;
+      setMessage(err.response?.data?.message || 'Error al confirmar la cuenta.');
+    }
+  };
 
   return (
     <div style={{ textAlign: 'center', marginTop: '50px' }}>
       {loading ? (
-        <p>Activando cuenta, por favor espera...</p> // Indicador de carga
+        <p>Validando token, por favor espera...</p>
       ) : (
         <>
-          <h2>{message}</h2> {/* Mostrar mensaje del backend */}
-          {/* <button onClick={() => navigate('/login')}>Ir a Iniciar Sesión</button> */}
-          Puede cerrar esta pestaña
+          <h2>{message}</h2>
+          {tokenValid && <button onClick={handleConfirmAccount}>Confirmar cuenta</button>}
         </>
       )}
     </div>
