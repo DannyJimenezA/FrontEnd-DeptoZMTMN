@@ -516,7 +516,7 @@ const AdminDashboard: React.FC = () => {
         case 'gestion-citas':
           return <GestionCitasTable/>;
       default:
-        return <DashboardHome/>;
+        return <DashboardHome setActiveSection={setActiveSection} />;
     }
   };
 
