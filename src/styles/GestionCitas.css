@@ -1,0 +1,14 @@
+.modal-container input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  background-color: white !important;
+}
+
+.modal-container input {
+  border: 1px solid #ccc;
+  padding: 10px 14px;
+  font-size: 14px;
+  border-radius: 6px;
+  width: 100%;
+  background-color: white;
+}

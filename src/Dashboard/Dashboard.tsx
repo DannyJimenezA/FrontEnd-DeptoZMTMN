@@ -32,6 +32,7 @@ import TablaDenunciasDashboard from '../Tablas/TablaDenuncia';
 import ApiRoutes from '../components/ApiRoutes';
 import DashboardHome from './DashboardHome';
 import Swal from 'sweetalert2';
+import GestionCitasTable from '../Tablas/GestionCitasTable';
 
 
 const AdminDashboard: React.FC = () => {
@@ -482,6 +483,10 @@ const AdminDashboard: React.FC = () => {
       return <AsignarPermisosForm rol={rolSeleccionado} onCancelar={manejarVolverRoles}/>;
     }
 
+    if (mostrarFormularioRol) {
+      return <CrearRolForm onRolCreado={manejarVolverRoles} onCancelar={manejarVolverRoles} />;
+    }
+
     if (activeSection === 'roles') {
       return <RolesTable onCrearRol={manejarMostrarFormularioCrearRol} onAsignarPermisos={manejarAsignarPermisos} />;
     }
@@ -508,6 +513,8 @@ const AdminDashboard: React.FC = () => {
         return <GestionDenunciasTable/>;
       case 'denuncias': // Añadido: Renderiza la tabla de denuncias
         return <TablaDenunciasDashboard />;
+        case 'gestion-citas':
+          return <GestionCitasTable/>;
       default:
         return <DashboardHome/>;
     }
@@ -526,13 +533,14 @@ const AdminDashboard: React.FC = () => {
     { id: 'users', icon: Users, label: 'Usuarios'},
     { id: 'roles', icon: Settings, label: 'Gestión de Roles' },
     { id: 'gestion-denuncias', icon: Settings, label: 'Gestión de Denuncias' },
+    { id: 'gestion-citas', icon: Settings, label: 'Gestión de Disponibilidad' },
   ];
   
 
   return (
     <div className="dashboard">
       <aside className="sidebar">
-        <div className="logo">AdminPanel</div>
+        <div className="logo">Dashboard</div>
         <nav className="nav">
           {menuItems.map((item) => (
             <button
@@ -548,7 +556,10 @@ const AdminDashboard: React.FC = () => {
                 setProrrogaSeleccionada(null);
                 setCitaSeleccionada(null);
                 setUsuarioSeleccionado(null);
+                setRolSeleccionado(null); // ✅ FIX
+                setMostrarFormularioRol(false); // ✅ por si acaso
               }}
+              
             >
               <item.icon size={20} />
               <span>{item.label}</span>
