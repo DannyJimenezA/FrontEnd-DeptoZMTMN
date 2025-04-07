@@ -131,32 +131,6 @@ const DetalleConcesion: React.FC<DetalleConcesionProps> = ({ concesion, onVolver
         </div>
       </div>
 
-{/* {archivoVistaPrevia && (
-  <div
-    className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center"
-    onClick={cerrarVistaPrevia}
-  >
-    <div
-      className="relative w-full max-w-4xl h-[80vh] bg-white rounded-lg shadow-lg overflow-hidden"
-      onClick={(e) => e.stopPropagation()} // Evita cerrar al hacer clic dentro
-    >
-      <button
-        onClick={cerrarVistaPrevia}
-        className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 transition"
-        title="Cerrar"
-      >
-        <FaTimes size={20} />
-      </button>
-
-      <iframe
-        src={archivoVistaPrevia}
-        className="w-full h-full"
-        style={{ border: 'none' }}
-        title="Vista previa del archivo PDF"
-      />
-    </div>
-  </div>
-)} */}
 {archivoVistaPrevia && (
   <div
     className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center"
