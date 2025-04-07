@@ -10,9 +10,13 @@ interface DecodedToken {
   permissions: { action: string; resource: string }[];
 }
 
+interface DashboardHomeProps {
+  setActiveSection: (section: string) => void;
+}
+
 const COLORS = ["#FFB74D", "#4CAF50", "#E53935"];
 
-export default function DashboardHome() {
+export default function DashboardHome({ setActiveSection }: DashboardHomeProps) {
   const [stats, setStats] = useState({
     citas: { pendiente: 0, aprobada: 0, denegada: 0 },
     expedientes: { pendiente: 0, aprobada: 0, denegada: 0 },
@@ -24,6 +28,17 @@ export default function DashboardHome() {
   });
 
   const navigate = useNavigate();
+
+  // Mapeo de claves internas a secciones del dashboard
+  const seccionesMap: Record<string, string> = {
+    citas: "citas",
+    expedientes: "solicitudes-expedientes",
+    prorrogas: "prorrogas",
+    concesiones: "concesiones",
+    denuncias: "denuncias",
+    precarios: "uso-precario",
+    planos: "revision-planos",
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -111,7 +126,12 @@ export default function DashboardHome() {
       {/* 🔴 Tarjetas de pendientes */}
       <div className="stats-grid">
         {Object.entries(stats).map(([key, value]: any) => (
-          <div key={key} className="stat-card">
+          <div
+            key={key}
+            className="stat-card"
+            onClick={() => value.pendiente > 0 && setActiveSection(seccionesMap[key])}
+            style={{ cursor: value.pendiente > 0 ? "pointer" : "default", opacity: value.pendiente > 0 ? 1 : 0.6 }}
+          >
             <AlertCircle className="stat-icon" size={18} />
             <div>
               <p className="stat-text">{key.toUpperCase()}</p>
@@ -121,7 +141,7 @@ export default function DashboardHome() {
         ))}
       </div>
 
-      {/* 📊 Sección de gráficos en filas de 3 columnas */}
+      {/* 📊 Sección de gráficos */}
       <div className="charts-container">
         {[
           { title: "Citas", data: stats.citas },
@@ -136,7 +156,14 @@ export default function DashboardHome() {
             <h2 className="chart-title">{title}</h2>
             <ResponsiveContainer width="100%" height={160}>
               <PieChart>
-                <Pie data={Object.entries(data).map(([name, value]) => ({ name, value }))} dataKey="value" cx="50%" cy="50%" outerRadius={60} fill="#8884d8">
+                <Pie
+                  data={Object.entries(data).map(([name, value]) => ({ name, value }))}
+                  dataKey="value"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={60}
+                  fill="#8884d8"
+                >
                   {Object.entries(data).map(([_name, _value], index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
