@@ -483,6 +483,10 @@ const AdminDashboard: React.FC = () => {
       return <AsignarPermisosForm rol={rolSeleccionado} onCancelar={manejarVolverRoles}/>;
     }
 
+    if (mostrarFormularioRol) {
+      return <CrearRolForm onRolCreado={manejarVolverRoles} onCancelar={manejarVolverRoles} />;
+    }
+
     if (activeSection === 'roles') {
       return <RolesTable onCrearRol={manejarMostrarFormularioCrearRol} onAsignarPermisos={manejarAsignarPermisos} />;
     }
@@ -552,7 +556,10 @@ const AdminDashboard: React.FC = () => {
                 setProrrogaSeleccionada(null);
                 setCitaSeleccionada(null);
                 setUsuarioSeleccionado(null);
+                setRolSeleccionado(null); // ✅ FIX
+                setMostrarFormularioRol(false); // ✅ por si acaso
               }}
+              
             >
               <item.icon size={20} />
               <span>{item.label}</span>
