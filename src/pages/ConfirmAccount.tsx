@@ -8,6 +8,7 @@ const ConfirmAccount = () => {
   const [message, setMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [tokenValid, setTokenValid] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
     const validateToken = async () => {
@@ -33,13 +34,18 @@ const ConfirmAccount = () => {
   }, [token]);
 
   const handleConfirmAccount = async () => {
+    if (isSubmitting) return; // evita doble clic
+    setIsSubmitting(true);
+  
     try {
       const res = await axios.post(`${ApiRoutes.urlBase}/users/confirm`, { token });
       setMessage(res.data.message || 'Cuenta activada con éxito.');
-      setTokenValid(false); // Oculta el botón luego de confirmar
+      setTokenValid(false); // Oculta el botón
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
       setMessage(err.response?.data?.message || 'Error al confirmar la cuenta.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -50,7 +56,11 @@ const ConfirmAccount = () => {
       ) : (
         <>
           <h2>{message}</h2>
-          {tokenValid && <button onClick={handleConfirmAccount}>Confirmar cuenta</button>}
+          {tokenValid && (
+  <button onClick={handleConfirmAccount} disabled={isSubmitting}>
+    {isSubmitting ? 'Confirmando...' : 'Confirmar cuenta'}
+  </button>
+)}
         </>
       )}
     </div>
