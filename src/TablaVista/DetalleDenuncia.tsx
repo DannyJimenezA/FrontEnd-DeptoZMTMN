@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FaFilePdf, FaImage } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -14,8 +14,6 @@ interface DetalleDenunciaProps {
 }
 
 const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, onEstadoCambiado }) => {
-  const [archivoVistaPrevia, setArchivoVistaPrevia] = useState<string | null>(null);
-
   const procesarArchivos = (archivosEvidencia: string | string[] | undefined) => {
     let archivos: string[] = [];
 
@@ -39,11 +37,7 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, o
   const archivosProcesados = procesarArchivos(denuncia.archivosEvidencia);
 
   const manejarVerArchivo = (archivo: string) => {
-    if (archivo.match(/\.(jpeg|jpg|png|gif)$/i)) {
-      setArchivoVistaPrevia(archivo);
-    } else {
-      window.open(archivo, '_blank');
-    }
+    window.open(archivo, '_blank', 'noopener,noreferrer');
   };
 
   const confirmarCambioEstado = async (nuevoEstado: string) => {
@@ -102,46 +96,6 @@ const DetalleDenuncia: React.FC<DetalleDenunciaProps> = ({ denuncia, onVolver, o
           )}
         </div>
       </div>
-
-      {/* {archivoVistaPrevia && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <button className="modal-close" onClick={() => setArchivoVistaPrevia(null)}>
-              <FaTimes size={20} />
-            </button>
-            <img src={archivoVistaPrevia} alt="Evidencia" className="imagen-preview" />
-          </div>
-        </div>
-      )} */}
-{archivoVistaPrevia && (
-  <div
-    className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center"
-    onClick={() => setArchivoVistaPrevia(null)}
-  >
-    <div
-      className="relative w-auto max-w-4xl max-h-[80vh] overflow-hidden rounded-md bg-white p-4 shadow-xl"
-      onClick={(e) => e.stopPropagation()} // Evita que se cierre si haces clic dentro
-    >
-      <img
-        src={archivoVistaPrevia}
-        alt="Evidencia"
-        className="max-h-[70vh] max-w-full object-contain rounded mb-4"
-      />
-
-      <div className="text-center">
-        <a
-          href={archivoVistaPrevia}
-          download={`evidencia-${Date.now()}.jpg`} // 👉 Asigna nombre al archivo
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-        >
-          Descargar imagen
-        </a>
-      </div>
-    </div>
-  </div>
-)}
-
-
 
       <div className="estado-botones" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
         <button
