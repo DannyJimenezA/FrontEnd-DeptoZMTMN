@@ -1,7 +1,8 @@
 // Interfaz para DecodedToken
 export interface DecodedToken {
-  permissions: any;
-  roles: string[];
+  sub: string;
+  exp: number;
+  permissions: Permission[];  // << aquí está la clave
 }
 
 // Interfaz para la entidad Denuncia
