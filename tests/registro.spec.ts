@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Registro de usuario', () => {
   test('No permite registrar un email ya registrado', async ({ page }) => {
-    await page.goto('http://localhost:5173/register');
+    await page.goto('http://localhost:5174/register');
 
     await page.fill('#nombre', 'Juan');
     await page.fill('#apellido1', 'Perez');
@@ -19,7 +19,7 @@ test.describe('Registro de usuario', () => {
   });
 
   test('Muestra error por formato de correo inválido', async ({ page }) => {
-    await page.goto('http://localhost:5173/register');
+    await page.goto('http://localhost:5174/register');
 
     await page.fill('#nombre', 'Juan');
     await page.fill('#apellido1', 'Perez');
@@ -38,7 +38,7 @@ test.describe('Registro de usuario', () => {
   });
 
   test('Muestra error por contraseñas no coincidentes', async ({ page }) => {
-    await page.goto('http://localhost:5173/register');
+    await page.goto('http://localhost:5174/register');
 
     await page.fill('#nombre', 'Juan');
     await page.fill('#apellido1', 'Perez');
@@ -55,7 +55,7 @@ test.describe('Registro de usuario', () => {
   });
 
   test('Permite registrar un nuevo usuario exitosamente', async ({ page }) => {
-    await page.goto('http://localhost:5173/register');
+    await page.goto('http://localhost:5174/register');
 
     const emailNuevo = `test${Date.now()}@test.com`;
 
